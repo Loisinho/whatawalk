@@ -1,0 +1,8 @@
+# Node modules foder.
+/node_modules
+
+# Keys & certs files.
+*.pem
+
+# Environment variables file.
+.env
