@@ -1,7 +1,8 @@
 <template lang="pug">
     div#app
         Header
-        router-view
+        div#content
+            router-view
 </template>
 
 <script>
@@ -15,6 +16,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "./assets/styles/variables";
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -22,20 +25,20 @@ export default {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.4;
+    background: $body-bg;
+    color: $body-color;
+    font-family: $body-font-family;
 }
 
-.btn {
-    display: inline-block;
-    border: none;
-    background: #555;
-    color: #fff;
-    padding: 7px 20px;
-    cursor: pointer;
+#content {
+    width: 100%;
+    padding: 80px 10px;
 }
 
-.btn:hover {
-    background: #666;
+@media screen and (min-width: 991px) {
+    #content {
+        width: 100%;
+        padding: 100px 100px 0 100px;
+    }
 }
 </style>

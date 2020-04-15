@@ -1,0 +1,25 @@
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+// Color system
+$body-bg: #5551f7;
+$body-color: #ffffff;
+
+$nav-bg-small: #2b2c2d;
+$nav-bg-big: transparent;
+$nav-menu-icon-bg: #ffffff;
+$nav-links-bg: #2b2c2d;
+$nav-links-color: #ffffff;
+$nav-links-hover-bg: #1b1c1d;
+$nav-links-active-color: #acacac;
+
+$isabelline: #eaeaea;
+$orange: #fca311;
+
+// Typography
+@import url('https://fonts.googleapis.com/css?family=Abel|Alata|Comfortaa|Montserrat&display=swap');
+
+$body-font-family: 'Montserrat', sans-serif;
+$logo-font-family: 'Alata', sans-serif;
