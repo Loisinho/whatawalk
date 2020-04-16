@@ -18,25 +18,24 @@
 export default {
     name: "Header",
     methods: {
-        clickable: function() {
-            let x = document.getElementById("menu");
-            if (x.className === "responsive")
-                x.className = "";
-            else
-                x.className = "responsive";
+        menuModifier: function() {
+            let menu = document.getElementById("menu");
+            menu.className === "menu--open"? menu.className = "" : menu.className = "menu--open";
         },
-        menu: function() {
+        resizing: function() {
             let width = window.innerWidth;
             let icon = document.getElementById("menu__icon");
-            if (width < 991)
-                icon.addEventListener("click", this.clickable);
-            else
-                icon.removeEventListener("click", this.clickable);
+            document.getElementById("menu").classList.remove("menu--open");
+            if (width < 991) {
+                icon.addEventListener("click", this.menuModifier);
+            } else {
+                icon.removeEventListener("click", this.menuModifier);
+            }
         }
     },
     mounted: function() {
-        this.menu();
-        window.addEventListener("resize", this.menu);
+        this.resizing();
+        window.addEventListener("resize", this.resizing);
     }
 };
 </script>
@@ -80,8 +79,18 @@ export default {
                 top: 28px;
             }
 
-            &:hover > * {
+            &:hover > .menu__line--first, &:hover > .menu__line--second {
                 top: 19px;
+            }
+
+            @media (hover: none) {
+                &:hover > .menu__line--first {
+                    top: 10px;
+                }
+
+                &:hover > .menu__line--second {
+                    top: 28px;
+                }
             }
         }
     }
@@ -115,7 +124,7 @@ export default {
         }
     }
 
-    &.responsive {
+    &.menu--open {
         #menu__bar #menu__icon .menu__line--first {
             transform: rotate(45deg);
             top: 19px;
