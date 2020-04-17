@@ -1,24 +1,35 @@
 <template lang="pug">
     div#app
-        Header
+        Menu
         div#content
             router-view
 </template>
 
 <script>
-import Header from "./components/layout/Header.vue";
+import Menu from "./components/layout/Menu.vue";
 export default {
     name: "app",
     components: {
-        Header
+        Menu
+    },
+    methods: {
+        resized: function() {
+            document.body.classList.add('body--resize');
+            setTimeout(function() {
+                document.body.classList.remove('body--resize');
+            }, 400);
+        }
+    },
+    mounted: function() {
+        window.addEventListener("resize", this.resized);
     }
 };
 </script>
 
 <style lang="scss">
-@import "./assets/styles/variables";
+@import "./assets/styles/styles";
 
-* {
+*, *:before, *:after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -28,17 +39,39 @@ body {
     background: $body-bg;
     color: $body-color;
     font-family: $body-font-family;
-}
 
-#content {
-    width: 100%;
-    padding: 80px 10px;
-}
-
-@media screen and (min-width: 991px) {
     #content {
         width: 100%;
-        padding: 100px 100px 0 100px;
+        margin: 0 auto;
+        padding: 100px 30px 0 30px;
+    }
+
+    &.body--resize * {
+        transition: none !important;
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "sd")) {
+    body #content {
+        max-width: map-get($conatiner-widths, "sd");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "md")) {
+    body #content {
+        max-width: map-get($conatiner-widths, "md");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "ld")) {
+    body #content {
+        max-width: map-get($conatiner-widths, "ld");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "xd")) {
+    body #content {
+        max-width: map-get($conatiner-widths, "xd");
     }
 }
 </style>

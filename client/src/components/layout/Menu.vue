@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/styles/variables";
+@import "../../assets/styles/styles";
 
 #menu {
     position: fixed;
@@ -113,6 +113,7 @@ export default {
             text-transform: uppercase;
             font-size: 24px;
             color: $nav-links-color;
+            -webkit-tap-highlight-color: transparent;
 
             &:hover {
                 background: $nav-links-hover-bg;
@@ -141,7 +142,7 @@ export default {
     }
 }
 
-@media screen and (min-width: 991px) {
+@media only screen and (min-width: map-get($breakpoints, "ld")) {
     #menu {
         width: auto;
         height: 100%;

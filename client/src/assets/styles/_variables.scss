@@ -15,11 +15,31 @@ $nav-links-color: #ffffff;
 $nav-links-hover-bg: #1b1c1d;
 $nav-links-active-color: #acacac;
 
+$header-name-color: #ffffff;
+$header-name-lastchild-bg: #ffffff;
+$header-name-lastchild-color: #5551f7;
+
 $isabelline: #eaeaea;
-$orange: #fca311;
+$orange: #fcca11;
 
 // Typography
 @import url('https://fonts.googleapis.com/css?family=Abel|Alata|Comfortaa|Montserrat&display=swap');
 
 $body-font-family: 'Montserrat', sans-serif;
 $logo-font-family: 'Alata', sans-serif;
+
+// Main container minimum width breakpoints
+$breakpoints: (
+    sd: 600px,
+    md: 768px,
+    ld: 992px,
+    xd: 1200px
+);
+
+// Main container maximum width
+$conatiner-widths: (
+    sd: 540px,
+    md: 720px,
+    ld: 892px,
+    xd: 1100px
+);
