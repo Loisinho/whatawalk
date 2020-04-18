@@ -15,7 +15,7 @@ $nav-links-color: #ffffff;
 $nav-links-hover-bg: #1b1c1d;
 $nav-links-active-color: #acacac;
 
-$header-name-color: #ffffff;
+$header-name-color: rgba(#000000, 0.2);
 $header-name-lastchild-bg: #ffffff;
 $header-name-lastchild-color: #5551f7;
 
@@ -23,10 +23,13 @@ $isabelline: #eaeaea;
 $orange: #fcca11;
 
 // Typography
-@import url('https://fonts.googleapis.com/css?family=Abel|Alata|Comfortaa|Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Six+Caps|Alata|Comfortaa|Montserrat&display=swap');
 
 $body-font-family: 'Montserrat', sans-serif;
-$logo-font-family: 'Alata', sans-serif;
+$logo-font-family: 'Six Caps', sans-serif;
+
+$home-header-name-size: 40.6vw;
+$home-header-link-size: 3.4vw;
 
 // Main container minimum width breakpoints
 $breakpoints: (

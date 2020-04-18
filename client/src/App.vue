@@ -1,12 +1,13 @@
 <template lang="pug">
     div#app
         Menu
-        div#content
+        div#www
             router-view
 </template>
 
 <script>
 import Menu from "./components/layout/Menu.vue";
+
 export default {
     name: "app",
     components: {
@@ -40,7 +41,7 @@ body {
     color: $body-color;
     font-family: $body-font-family;
 
-    #content {
+    #www {
         width: 100%;
         margin: 0 auto;
         padding: 100px 30px 0 30px;
@@ -52,25 +53,25 @@ body {
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
-    body #content {
+    body #www {
         max-width: map-get($conatiner-widths, "sd");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
-    body #content {
+    body #www {
         max-width: map-get($conatiner-widths, "md");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
-    body #content {
+    body #www {
         max-width: map-get($conatiner-widths, "ld");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "xd")) {
-    body #content {
+    body #www {
         max-width: map-get($conatiner-widths, "xd");
     }
 }

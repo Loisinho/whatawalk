@@ -1,3 +1,14 @@
 // Functions
 //
 // Functions to help with calculations
+
+/**
+ * Transforms the 'vw' font unit to px based on media-query conatiner-width.
+ * 
+ * @param media media-query conatiner-width px value.
+ * @param font font size vw value.
+ * @return the new font-size px value.
+ */
+@function font-size-vw($media, $font) {
+    @return $media / 100 * ($font / 1vw);
+}
