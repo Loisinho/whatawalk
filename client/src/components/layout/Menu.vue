@@ -52,15 +52,17 @@ export default {
     #menu__bar {
         background: $nav-bg-small;
         position: relative;
-        padding: 10px;
+        height: 60px;
         z-index: 1;
 
         #menu__icon {
-            position: relative;
+            position: absolute;
             top: 0;
-            left: 0;
+            bottom: 0;
+            left: 10px;
             width: 40px;
             height: 40px;
+            margin: auto 0;
 
             .menu__line {
                 width: 100%;
@@ -154,10 +156,6 @@ export default {
             z-index: 0;
 
             #menu__icon {
-                top: 50%;
-                height: 50px;
-                transform: translateY(-50%);
-
                 .menu__line {
                     width: 2px;
                     height: 100%;
@@ -181,7 +179,7 @@ export default {
             transform: translateX(-100%);
         }
 
-        #menu__bar:hover ~ #menu__links, #menu__links:hover {
+        &:hover > #menu__links {
             transform: translateX(0);
         }
     }
