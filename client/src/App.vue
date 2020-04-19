@@ -1,16 +1,19 @@
 <template lang="pug">
     div#app
+        Logo
         Menu
         div#www
             router-view
 </template>
 
 <script>
+import Logo from "./components/layout/Logo.vue";
 import Menu from "./components/layout/Menu.vue";
 
 export default {
     name: "app",
     components: {
+        Logo,
         Menu
     },
     methods: {

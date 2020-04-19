@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    name: "Header",
+    name: "Menu",
     methods: {
         menuModifier: function() {
             let menu = document.getElementById("menu");
