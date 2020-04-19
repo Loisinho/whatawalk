@@ -1,9 +1,9 @@
 <template lang="pug">
     div#app
-        Logo
-        Menu
         div#www
             router-view
+        Logo
+        Menu
 </template>
 
 <script>
