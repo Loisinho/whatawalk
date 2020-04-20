@@ -17,6 +17,7 @@ export default {
     top: 16px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 1;
 
     > img {
         height: 28px;
@@ -27,6 +28,7 @@ export default {
     #logo {
         left: 16px;
         transform: translateX(0);
+        z-index: 0;
 
         > img {
             height: 28px;
