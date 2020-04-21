@@ -1,7 +1,7 @@
 <template lang="pug">
-    nav#menu
+    nav#menu(:class="{'menu--open': open}")
         div#menu__bar
-            div#menu__icon
+            div#menu__icon(@click="menu")
                 div.menu__line.menu__line--first
                 div.menu__line.menu__line--second
         div#menu__links
@@ -17,20 +17,19 @@
 <script>
 export default {
     name: "Menu",
+    data: () => {
+        return {
+            open: false,
+            click: false
+        }
+    },
     methods: {
-        menuModifier: function() {
-            let menu = document.getElementById("menu");
-            menu.className === "menu--open"? menu.className = "" : menu.className = "menu--open";
+        menu: function() {
+            if (this.click) this.open = !this.open;
         },
         resizing: function() {
-            let width = window.innerWidth;
-            let icon = document.getElementById("menu__icon");
-            document.getElementById("menu").classList.remove("menu--open");
-            if (width < 991) {
-                icon.addEventListener("click", this.menuModifier);
-            } else {
-                icon.removeEventListener("click", this.menuModifier);
-            }
+            this.open = false;
+            window.innerWidth < 991? this.click = true: this.click = false;
         }
     },
     mounted: function() {
