@@ -6,11 +6,11 @@
                 div.menu__line.menu__line--second
         div#menu__links
             ul
-                li
+                li(@click="open = false")
                     router-link(to="/") Home
-                li
+                li(@click="open = false")
                     router-link(to="/about") About
-                li
+                li(@click="open = false")
                     router-link(to="/test") Test
 </template>
 
