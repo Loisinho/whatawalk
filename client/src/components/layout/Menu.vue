@@ -1,21 +1,21 @@
 <template lang="pug">
     nav#menu(:class="{'menu--open': open}")
         div#menu__bar
-            div#menu__icon(@click="menu")
+            div#menu__icon(@click="menuStatus(true)")
                 div.menu__line.menu__line--first
                 div.menu__line.menu__line--second
         div#menu__links
             ul
-                li(@click="menu(false)")
+                li(@click="menuStatus(false)")
                     router-link(to="/") Home
-                li(@click="menu(false)")
+                li(@click="menuStatus(false)")
                     router-link(to="/about") About
-                li(@click="menu(false)")
+                li(@click="menuStatus(false)")
                     router-link(to="/test") Test
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
     name: "Menu",
@@ -25,12 +25,13 @@ export default {
         })
     },
     methods: {
-        menu: function(flag=true) {
-            this.$store.commit('menuStatus', flag);
-        },
+        ...mapMutations("menu", [
+            "menuStatus",
+            "isClickable"
+        ]),
         resizing: function() {
-            this.$store.commit('menuStatus', false);
-            this.$store.commit('isClickable', window.innerWidth < 991? true: false);
+            this.menuStatus(false);
+            this.isClickable(window.innerWidth < 991? true: false);
         }
     },
     mounted: function() {

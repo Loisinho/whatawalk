@@ -6,9 +6,9 @@
                 div.header__name
                     span What A Walk
         section#access
-            div(@click="menu(false)")
+            div(@click="menuStatus(false)")
                 router-link.access__link(to="/login") Log In
-            div(@click="menu(false)")
+            div(@click="menuStatus(false)")
                 router-link.access__link(to="/signup") Sign Up
         section#main
 </template>
@@ -19,9 +19,9 @@ import { mapMutations } from "vuex";
 export default {
     name: "Home",
     methods: {
-        menu: function(flag=true) {
-            this.$store.commit('menuStatus', flag);
-        },
+        ...mapMutations("menu", [
+            'menuStatus'
+        ])
     }
 };
 </script>
