@@ -7,11 +7,10 @@
 </template>
 
 <script>
-import Logo from "./components/layout/Logo.vue";
-import Menu from "./components/layout/Menu.vue";
+import Logo from "./layout/Logo.vue";
+import Menu from "./layout/Menu.vue";
 
 export default {
-    name: "app",
     components: {
         Logo,
         Menu
@@ -31,7 +30,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/styles/styles";
+@import "../assets/styles/styles";
 
 *, *:before, *:after {
     box-sizing: border-box;

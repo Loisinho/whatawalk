@@ -6,30 +6,31 @@
                 div.menu__line.menu__line--second
         div#menu__links
             ul
-                li(@click="open = false")
+                li(@click="menu(false)")
                     router-link(to="/") Home
-                li(@click="open = false")
+                li(@click="menu(false)")
                     router-link(to="/about") About
-                li(@click="open = false")
+                li(@click="menu(false)")
                     router-link(to="/test") Test
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
     name: "Menu",
-    data: () => {
-        return {
-            open: false,
-            click: false
-        }
+    computed: {
+        ...mapState({
+            open: state => state.menu.open
+        })
     },
     methods: {
-        menu: function() {
-            if (this.click) this.open = !this.open;
+        menu: function(flag=true) {
+            this.$store.commit('menuStatus', flag);
         },
         resizing: function() {
-            this.open = false;
-            window.innerWidth < 991? this.click = true: this.click = false;
+            this.$store.commit('menuStatus', false);
+            this.$store.commit('isClickable', window.innerWidth < 991? true: false);
         }
     },
     mounted: function() {

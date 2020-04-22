@@ -6,14 +6,23 @@
                 div.header__name
                     span What A Walk
         section#access
-            a.access__link(href="#") Log In
-            a.access__link(href="#") Sign Up
+            div(@click="menu(false)")
+                router-link.access__link(to="/login") Log In
+            div(@click="menu(false)")
+                router-link.access__link(to="/signup") Sign Up
         section#main
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
     name: "Home",
+    methods: {
+        menu: function(flag=true) {
+            this.$store.commit('menuStatus', flag);
+        },
+    }
 };
 </script>
 
@@ -43,17 +52,17 @@ export default {
             }
 
             .header__name {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100vh;
-                    transform: translateY(50%);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    overflow: hidden;
-                    z-index: -1;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                transform: translateY(50%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                z-index: -1;
 
                 > span {
                     font-family: $logo-font-family;
@@ -109,13 +118,13 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     #content #access .access__link {
-            font-size: font-size-vw(map-get($conatiner-widths, "sd"), $home-access-link-size);
+        font-size: font-size-vw(map-get($conatiner-widths, "sd"), $home-access-link-size);
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     #content #access .access__link {
-            font-size: font-size-vw(map-get($conatiner-widths, "md"), $home-access-link-size);
+        font-size: font-size-vw(map-get($conatiner-widths, "md"), $home-access-link-size);
     }
 }
 
