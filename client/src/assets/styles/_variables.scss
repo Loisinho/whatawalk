@@ -19,6 +19,16 @@ $header-name-color: rgba(#000000, 0.2);
 $header-name-lastchild-bg: #ffffff;
 $header-name-lastchild-color: #5551f7;
 
+$signup-header-bg: #2b2c2d;
+$signup-header-color: #ffffff;
+$signup-main-color: #eaeaea;
+$signup-input-color: #2b2c2d;
+$signup-placeholder-color: #b3b3b3;
+$signup-error-color: #ff0000;
+$signup-submit-bg: #eaeaea;
+$signup-submit-border: #02df93;
+$signup-submit-color: #02df93;
+
 $isabelline: #eaeaea;
 $orange: #fcca11;
 
@@ -30,6 +40,10 @@ $logo-font-family: 'Six Caps', sans-serif;
 
 $home-header-name-size: 40.6vw;
 $home-access-link-size: 3.4vw;
+
+$signup-header-title: 8vw;
+$signup-form-input: 4vw;
+$signup-form-note: 3vw;
 
 // Main container minimum width breakpoints
 $breakpoints: (

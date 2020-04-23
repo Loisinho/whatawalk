@@ -14,6 +14,12 @@ export default new Router({
             component: Home
         },
         {
+            path: "/signup",
+            name: "signup",
+            component: () =>
+                import(/* webpackChunkName: "signup" */ "./views/Signup.vue")
+        },
+        {
             path: "/about",
             name: "about",
             // Lazy Loading Route
