@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import { required, minLength, email, sameAs } from "vuelidate/lib/validators";
 
 export default {
@@ -74,7 +75,14 @@ export default {
             this.$v.$touch();
             if (!this.$v.$invalid) {
                 this.status = true;
-                console.log("Valid!");
+                let res = await axios
+                    .post("https://www.whatawalk.ooguy.com/signup", {
+                        username: this.username,
+                        email: this.email,
+                        password: this.password
+                    });
+                console.log(res);
+                this.status = false;
             } else {
                 console.log("Invalid!");
             }

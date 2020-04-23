@@ -10,7 +10,7 @@ const fs = require("fs");
 const http = require("http");
 const https = require("https");
 
-const webRoutes = require("./routes/web.routes");
+const appRoutes = require("./routes/app.routes");
 
 
 // Express module instance.
@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, "../client/dist/")));
 // cookie-parser module
 app.use(cookieParser());
 // routes/web.routes.js
-app.use("/", webRoutes);
+app.use("/", appRoutes);
 
 // Loading environment variables from .env file.
 dotenv.config();
