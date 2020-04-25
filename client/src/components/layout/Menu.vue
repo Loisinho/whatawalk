@@ -71,7 +71,7 @@ export default {
                 background: $nav-menu-icon-bg;
                 position: absolute;
                 left: 0;
-                transition: all 0.4s;
+                transition: transform 0.2s, top 0.2s 0.2s;
             }
 
             .menu__line--first {
@@ -129,6 +129,10 @@ export default {
     }
 
     &.menu--open {
+        #menu__bar #menu__icon .menu__line {
+            transition: top 0.2s, transform 0.2s 0.2s;
+        }
+
         #menu__bar #menu__icon .menu__line--first {
             transform: rotate(45deg);
             top: 19px;
