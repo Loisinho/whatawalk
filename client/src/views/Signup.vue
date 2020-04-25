@@ -14,6 +14,7 @@
                         input.signup__email(type="text" v-model.trim="$v.email.$model" placeholder="Email")
                         span.signup__note(v-if="!$v.email.required") Field is required
                         span.signup__note(v-if="!$v.email.email") Invalid email address
+                        span.signup__note(v-if="!$v.email.isUnique") This email is already in use
                     div.signup__group(:class="{'signup__group--error': $v.password.$error}")
                         input.signup__password(type="password" v-model="$v.password.$model" placeholder="Password")
                         span.signup__note(v-if="!$v.password.required") Field is required
@@ -43,23 +44,20 @@ export default {
         username: {
             required,
             minLength: minLength(3),
-            isUnique(value) {
+            async isUnique(value) {
                 if (value.length < 3) return true;
-                // simulate async call, fail for all logins with even length
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        resolve(typeof value === "string" && value.length % 2 !== 0);
-                    }, 350 + Math.random() * 300)
-                });
-            },
-            // async isUnique(value) {
-            //     let res = await fetch(`/api/unique/${value}`);
-            //     return Boolean(await res.json());
-            // }
+                let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/username/${value}`);
+                return Boolean(res.data);
+            }
         },
         email: {
             required,
-            email
+            email,
+            async isUnique(value) {
+                if (!this.$v.email.required || !this.$v.email.email) return true;
+                let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/email/${value}`);
+                return Boolean(res.data);
+            }
         },
         password: {
             required,
@@ -71,7 +69,6 @@ export default {
     },
     methods: {
         async submit() {
-            console.log("Submit!");
             this.$v.$touch();
             if (!this.$v.$invalid) {
                 this.status = true;
@@ -82,8 +79,9 @@ export default {
                         password: this.password
                     });
                 console.log(res);
+                // TODO: Respons actions.
                 this.status = false;
-            } else {
+            } else { // TODO: Submit btn animation.
                 console.log("Invalid!");
             }
         }
@@ -179,6 +177,7 @@ export default {
                     background: $signup-submit-bg;
                     color: $signup-submit-color;
                     border: 4px solid $signup-submit-border;
+                    cursor: pointer;
                     transition: all 0.4s;
 
                     &:hover {
