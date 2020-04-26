@@ -29,8 +29,9 @@ $signup-submit-bg: #eaeaea;
 $signup-submit-border: #02df93;
 $signup-submit-color: #02df93;
 
-$isabelline: #eaeaea;
-$orange: #fcca11;
+$alert-error-bg: #ff0000;
+$alert-warning-bg: #fcca11;
+$alert-success-bg: #02df93;
 
 // Typography
 @import url('https://fonts.googleapis.com/css?family=Six+Caps|Alata|Comfortaa|Montserrat&display=swap');
@@ -41,9 +42,11 @@ $logo-font-family: 'Six Caps', sans-serif;
 $home-header-name-size: 40.6vw;
 $home-access-link-size: 3.4vw;
 
-$signup-header-title: 8vw;
-$signup-form-input: 4vw;
-$signup-form-note: 3vw;
+$signup-header-title-size: 8vw;
+$signup-form-input-size: 4vw;
+$signup-form-note-size: 3vw;
+
+$alert-size: 4vw;
 
 // Main container minimum width breakpoints
 $breakpoints: (
