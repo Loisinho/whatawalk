@@ -25,9 +25,10 @@ $signup-main-color: #eaeaea;
 $signup-input-color: #2b2c2d;
 $signup-placeholder-color: #b3b3b3;
 $signup-error-color: #ff0000;
+$signup-success-color: #02df93;
 $signup-submit-bg: #eaeaea;
-$signup-submit-border: #02df93;
-$signup-submit-color: #02df93;
+$signup-submit-border: #5551f7;
+$signup-submit-color: #5551f7;
 
 $alert-error-bg: #ff0000;
 $alert-warning-bg: #fcca11;
@@ -44,6 +45,7 @@ $home-access-link-size: 3.4vw;
 
 $signup-header-title-size: 8vw;
 $signup-form-input-size: 4vw;
+$signup-icon-size: 5vw;
 $signup-form-note-size: 3vw;
 
 $alert-size: 4vw;
@@ -63,3 +65,6 @@ $conatiner-widths: (
     ld: 892px,
     xd: 1100px
 );
+
+// Other
+$form-shadow: 10px 10px 20px rgba(#000, 0.4);

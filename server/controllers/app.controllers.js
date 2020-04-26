@@ -15,7 +15,7 @@ exports.isUsernameUnique = async function (req, res, next) {
         let user = await model.User.findOne({ username: req.params.username });
         res.status(200).json(user? false : true);
     } catch (error) {
-        res.status(422).json("An error ocurred: " + error);
+        res.status(422).json("Oops, error verifying username. Please try again.");
     }
 }
 
@@ -25,16 +25,14 @@ exports.isEmailUnique = async function (req, res, next) {
         let user = await model.User.findOne({ email: req.params.email });
         res.status(200).json(user? false : true);
     } catch (error) {
-        res.status(422).json("An error ocurred: " + error);
+        res.status(422).json("Oops, error verifying email. Please try again.");
     }
 }
 
 // POST signup.
 exports.signup = async function (req, res, next) {
     try {
-        console.log(req.body);
         let errors = validationResult(req);
-        console.log(errors);
         if (errors.isEmpty()) {
             let newUser = new model.User({
                 username: req.body.username,
@@ -42,13 +40,13 @@ exports.signup = async function (req, res, next) {
                 password: req.body.password
             });
             await newUser.save();
-            res.status(200).json("You signed up!");   
+            res.status(200).json("ok");
         } else {
-            let msges = [];
-            errors.array().map(error => msges.push({ [error.param]: error.msg }));
-            res.status(422).json({ errors: msges });
+            // let msges = [];
+            // errors.array().map(error => msges.push({ [error.param]: error.msg }));
+            res.status(422).json("Error verifying your account. " + errors.errors[0].msg);
         }
     } catch (error) {
-        res.status(422).json("An error ocurred: " + error);
+        res.status(422).json("There was an error verifying your account. Please try again.");
     }
 };

@@ -2,7 +2,8 @@
 const state = {
     msg: "",
     type: "",
-    active: false
+    active: false,
+    time: 3000
 }
 
 // Mutations
@@ -15,7 +16,7 @@ const mutations = {
     },
     alertActive(state) {
         state.active = true;
-        setTimeout(() => { state.active = false; }, 3000);
+        setTimeout(() => { state.active = false; }, state.time);
     }
 }
 
