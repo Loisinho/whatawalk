@@ -20,6 +20,12 @@ export default new Router({
                 import(/* webpackChunkName: "signup" */ "./views/Signup.vue")
         },
         {
+            path: "/login",
+            name: "login",
+            component: () =>
+                import(/* webpackChunkName: "login" */ "./views/Login.vue")
+        },
+        {
             path: "/about",
             name: "about",
             // Lazy Loading Route

@@ -51,3 +51,17 @@ exports.signup = async function (req, res, next) {
         res.status(422).json("There was an error verifying your account. Please try again.");
     }
 };
+
+// POST login.
+exports.login = async function (req, res, next) {
+    try {
+        let errors = validationResult(req);
+        if (errors.isEmpty()) {
+            res.status(200).json("Loged in successfully!");
+        } else {
+            res.status(422).json(errors.errors[0].msg);
+        }
+    } catch (error) {
+        res.status(422).json("There was an error verifying your account. Please try again.");
+    }
+};
