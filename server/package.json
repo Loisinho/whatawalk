@@ -17,16 +17,17 @@
     "author": "Diego Lois",
     "license": "MIT",
     "dependencies": {
+        "bcrypt": "^4.0.1",
         "connect-history-api-fallback": "^1.6.0",
         "cookie-parser": "^1.4.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
-        "express-session": "^1.17.0",
+        "express-session": "^1.17.1",
         "express-validator": "^6.4.0",
         "fs": "0.0.1-security",
         "http": "0.0.1-security",
         "https": "^1.0.0",
-        "mongoose": "^5.9.7",
+        "mongoose": "^5.9.10",
         "path": "^0.12.7"
     }
 }

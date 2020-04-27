@@ -1,6 +1,7 @@
 // App Controllers File.
 const model = require("../models/");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
 
 
 // GET test.
@@ -37,7 +38,7 @@ exports.signup = async function (req, res, next) {
             let newUser = new model.User({
                 username: req.body.username,
                 email: req.body.email,
-                password: req.body.password
+                password: await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10))
             });
             await newUser.save();
             res.status(200).json("ok");
