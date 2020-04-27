@@ -24,7 +24,7 @@
                             font-awesome-icon.signup__icon(:icon="key")
                             input.signup__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
                         span.signup__note(v-if="!$v.password.required") Field is required
-                        span.signup__note(v-if="!$v.password.minLength") Password must contain at least {{$v.password.$params.minLength.min}} characters
+                        span.signup__note(v-if="!$v.password.minLength && $v.password.required") Password must contain at least {{$v.password.$params.minLength.min}} characters
                     div.signup__group(:class="{'signup__group--error': $v.repeatPassword.$error}")
                         div.signup__input
                             font-awesome-icon.signup__icon(:icon="key")
@@ -72,7 +72,7 @@ export default {
                     let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/username/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.alertMsg(error.response.data);
+                    this.alertMsg("Oops, error verifying username. Please try again.");
                     this.alertType("error");
                     this.alertActive(true);
                 }
@@ -87,7 +87,7 @@ export default {
                     let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/email/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.alertMsg(error.response.data);
+                    this.alertMsg("Oops, error verifying email. Please try again.");
                     this.alertType("error");
                     this.alertActive(true);
                 }
