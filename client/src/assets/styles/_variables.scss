@@ -19,16 +19,16 @@ $header-name-color: rgba(#000000, 0.2);
 $header-name-lastchild-bg: #ffffff;
 $header-name-lastchild-color: #5551f7;
 
-$signup-header-bg: #2b2c2d;
-$signup-header-color: #ffffff;
-$signup-main-color: #eaeaea;
-$signup-input-color: #2b2c2d;
-$signup-placeholder-color: #b3b3b3;
-$signup-error-color: #ff0000;
-$signup-success-color: #02df93;
-$signup-submit-bg: #eaeaea;
-$signup-submit-border: #5551f7;
-$signup-submit-color: #5551f7;
+$form-header-bg: #2b2c2d;
+$form-header-color: #ffffff;
+$form-main-color: #eaeaea;
+$form-input-color: #2b2c2d;
+$form-placeholder-color: #b3b3b3;
+$form-error-color: #ff0000;
+$form-success-color: #02df93;
+$form-submit-bg: #eaeaea;
+$form-submit-border: #5551f7;
+$form-submit-color: #5551f7;
 
 $alert-error-bg: #ff0000;
 $alert-warning-bg: #fcca11;
@@ -43,10 +43,10 @@ $logo-font-family: 'Six Caps', sans-serif;
 $home-header-name-size: 40.6vw;
 $home-access-link-size: 3.4vw;
 
-$signup-header-title-size: 8vw;
-$signup-form-input-size: 4vw;
-$signup-icon-size: 5vw;
-$signup-form-note-size: 3vw;
+$form-header-title-size: 8vw;
+$form-input-size: 4vw;
+$form-icon-size: 5vw;
+$form-note-size: 3vw;
 
 $alert-size: 4vw;
 
@@ -59,7 +59,7 @@ $breakpoints: (
 );
 
 // Main container maximum width
-$conatiner-widths: (
+$container-widths: (
     sd: 540px,
     md: 720px,
     ld: 892px,

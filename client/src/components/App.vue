@@ -56,25 +56,25 @@ body {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     body #www {
-        max-width: map-get($conatiner-widths, "sd");
+        max-width: map-get($container-widths, "sd");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     body #www {
-        max-width: map-get($conatiner-widths, "md");
+        max-width: map-get($container-widths, "md");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
     body #www {
-        max-width: map-get($conatiner-widths, "ld");
+        max-width: map-get($container-widths, "ld");
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "xd")) {
     body #www {
-        max-width: map-get($conatiner-widths, "xd");
+        max-width: map-get($container-widths, "xd");
     }
 }
 </style>

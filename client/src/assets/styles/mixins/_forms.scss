@@ -1,0 +1,154 @@
+// Form mixins
+
+@mixin page-centered-form {
+    width: 100%;
+    min-height: calc(100vh - 200px);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .container {
+        box-shadow: $form-shadow;
+    }
+
+    header {
+        background: $form-header-bg;
+        padding: 20px;
+        text-align: center;
+        color: $form-header-color;
+
+        > h2 {
+            text-transform: uppercase;
+            font-size: $form-header-title-size;
+        }
+    }
+
+    main {
+        background: $form-main-color;
+        padding: 20px 10%;
+    }
+
+    @media only screen and (min-width: map-get($breakpoints, "sd")) {
+        width: 480px;
+
+        header > h2 {
+            font-size: font-size-vw(map-get($container-widths, "sd"), $form-header-title-size);
+        }
+    }
+}
+
+@mixin main-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    input {
+        padding: 5px;
+        font-size: $form-input-size;
+        outline: none;
+    }
+
+    @media only screen and (min-width: map-get($breakpoints, "sd")) {
+        input {
+            font-size: font-size-vw(map-get($container-widths, "sd"), $form-input-size);
+        }
+    }
+}
+
+@mixin form-group {
+    height: 10vw;
+    margin: 5px 0;
+
+    .form__inputbox {
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid $form-input-color;
+
+        .form__icon {
+            width: $form-icon-size;
+            height: $form-icon-size;
+            color: $form-input-color;
+        }
+
+        input {
+            width: 100%;
+            background: transparent;
+            border: 0;
+            color: $form-input-color;
+
+            &:-ms-input-placeholder {
+                color: $form-placeholder-color;
+            }
+
+            &::-webkit-input-placeholder {
+                color: $form-placeholder-color;
+            }
+
+            &::placeholder {
+                color: $form-placeholder-color;
+            }
+        }
+    }
+
+    .form__note {
+        display: none;
+        float: right;
+        font-size: $form-note-size;
+        color: $form-error-color;
+    }
+
+    &.form__group--error > .form__inputbox {
+        border-bottom-color: $form-error-color;
+    }
+
+    &.form__group--error > .form__note {
+        display: inline;
+    }
+
+    @media only screen and (min-width: map-get($breakpoints, "sd")) {
+        height: 60px;
+        
+        .form__inputbox .form__icon {
+            width: font-size-vw(map-get($container-widths, "sd"), $form-icon-size);
+            height: font-size-vw(map-get($container-widths, "sd"), $form-icon-size);
+        }
+
+        .form__note {
+            font-size: font-size-vw(map-get($container-widths, "sd"), $form-note-size);
+        }
+    }
+}
+
+@mixin form-submit {
+    margin: 10px 0;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: $form-submit-bg;
+    color: $form-submit-color;
+    border: 4px solid $form-submit-border;
+    cursor: pointer;
+    transition: all 0.4s;
+
+    &:hover {
+        background: $form-submit-border;
+        color: $form-submit-bg;
+    }
+
+    &.form__submit--error {
+        color: $form-error-color;
+        border-color: $form-error-color;
+
+        &:hover {
+            background: $form-error-color;
+            color: $form-submit-bg;
+        }
+    }
+
+    &.form__submit--success {
+        background: $form-success-color;
+        color: $form-submit-bg;
+        border-color: $form-success-color;
+        cursor: auto;
+    }
+}
