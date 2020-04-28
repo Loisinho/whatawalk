@@ -64,12 +64,14 @@ export default {
                 if (!this.$v.$invalid) {
                     this.status = true;
                     let res = await axios
-                        .post("https://www.whatawalk.ooguy.com/login", {
+                        .post("https://www.whatawalk.ooguy.com/users/login", {
                             user: this.user,
                             password: this.password
                         });
                     this.btnValue = "thank you for logging in";
-                    // TODO: redirect
+                    setTimeout(() => {
+                        this.$router.push({name: "home"});
+                    }, 1000);
                 }
             } catch (error) {
                 this.alertMsg(error.response.data);

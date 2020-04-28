@@ -57,6 +57,9 @@ exports.login = async function (req, res, next) {
     try {
         let errors = validationResult(req);
         if (errors.isEmpty()) {
+            console.log(req.session);
+            session = req.session;
+            session.user = {};
             res.status(200).json("Loged in successfully!");
         } else {
             res.status(422).json(errors.errors[0].msg);

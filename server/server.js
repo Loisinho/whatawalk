@@ -10,7 +10,7 @@ const fs = require("fs");
 const http = require("http");
 const https = require("https");
 
-const appRoutes = require("./routes/app.routes");
+const userRoutes = require("./routes/user.routes");
 
 
 // Express module instance.
@@ -26,8 +26,6 @@ app.use(history());
 app.use(express.static(path.join(__dirname, "../client/dist/")));
 // cookie-parser module
 app.use(cookieParser());
-// routes/web.routes.js
-app.use("/", appRoutes);
 
 // Loading environment variables from .env file.
 dotenv.config();
@@ -48,6 +46,10 @@ app.use(session({
     },
     rolling: true,
 }));
+
+
+// routes/web.routes.js
+app.use("/users/", userRoutes);
 
 
 // mongoose module & connection.

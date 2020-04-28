@@ -69,7 +69,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (value.length < 3) return true;
-                    let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/username/${value}`);
+                    let res = await axios.get(`https://www.whatawalk.ooguy.com/users/unique/username/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.alertMsg("Oops, error verifying username. Please try again.");
@@ -84,7 +84,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (!this.$v.email.required || !this.$v.email.email) return true;
-                    let res = await axios.get(`https://www.whatawalk.ooguy.com/unique/email/${value}`);
+                    let res = await axios.get(`https://www.whatawalk.ooguy.com/users/unique/email/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.alertMsg("Oops, error verifying email. Please try again.");
@@ -113,13 +113,15 @@ export default {
                 if (!this.$v.$invalid) {
                     this.status = true;
                     let res = await axios
-                        .post("https://www.whatawalk.ooguy.com/signup", {
+                        .post("https://www.whatawalk.ooguy.com/users/signup", {
                             username: this.username,
                             email: this.email,
                             password: this.password
                         });
                     this.btnValue = "thank you for signing up";
-                    // TODO: redirect
+                    setTimeout(() => {
+                        this.$router.push({name: "login"});
+                    }, 1000);
                 }
             } catch (error) {
                 this.alertMsg(error.response.data);

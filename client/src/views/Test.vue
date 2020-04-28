@@ -19,7 +19,7 @@ export default {
     methods: {
         test() {
             axios
-                .get("https://www.whatawalk.ooguy.com/test")
+                .get("https://www.whatawalk.ooguy.com/users/test")
                 .then(res =>
                     this.data = res.data
                 )
