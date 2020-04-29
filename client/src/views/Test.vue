@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
     name: "Test",
     data() {
@@ -18,8 +16,8 @@ export default {
     },
     methods: {
         test() {
-            axios
-                .get("https://www.whatawalk.ooguy.com/users/test")
+            this.$http
+                .get("users/test")
                 .then(res =>
                     this.data = res.data
                 )

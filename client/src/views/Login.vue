@@ -12,7 +12,7 @@
                         span.form__note(v-if="!$v.user.required") Field is required
                     div.form__group(:class="{'form__group--error': $v.password.$error}")
                         div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="lock")
+                            font-awesome-icon.form__icon(:icon="faLock")
                             input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
                         span.form__note(v-if="!$v.password.required") Field is required
                     input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Alert from "../components/Alert.vue";
 import { mapMutations } from "vuex";
 import { required } from "vuelidate/lib/validators";
@@ -34,10 +33,10 @@ export default {
     },
     data: () => {
         return {
-            faUser: faUser,
-            lock: faLock,
-            eye: faEye,
-            eyeSlash: faEyeSlash,
+            faUser,
+            faLock,
+            faEye,
+            faEyeSlash,
             user: "",
             password: "",
             btnValue: "log in",
@@ -63,8 +62,8 @@ export default {
                 this.$v.$touch();
                 if (!this.$v.$invalid) {
                     this.status = true;
-                    let res = await axios
-                        .post("https://www.whatawalk.ooguy.com/users/login", {
+                    let res = await this.$http
+                        .post("users/login", {
                             user: this.user,
                             password: this.password
                         });
