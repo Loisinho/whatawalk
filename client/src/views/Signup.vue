@@ -54,9 +54,9 @@ export default {
             faEye,
             faEyeSlash,
             username: "",
-            email: "",
-            password: "",
-            repeatPassword: "",
+            email: null,
+            password: null,
+            repeatPassword: null,
             btnValue: "sign up",
             status: false
         }
@@ -71,8 +71,8 @@ export default {
                     let res = await this.$http.get(`users/unique/username/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.alertMsg("Oops, error verifying username. Please try again.");
-                    this.alertType("error");
+                    this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
+                    this.$store.state.alert.type = "error";
                     this.alertActive(true);
                 }
             }
@@ -86,8 +86,8 @@ export default {
                     let res = await this.$http.get(`users/unique/email/${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.alertMsg("Oops, error verifying email. Please try again.");
-                    this.alertType("error");
+                    this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";
+                    this.$store.state.alert.type = "error";
                     this.alertActive(true);
                 }
             }
@@ -102,8 +102,6 @@ export default {
     },
     methods: {
         ...mapMutations("alert", [
-            "alertMsg",
-            "alertType",
             "alertActive"
         ]),
         async submit() {
@@ -123,8 +121,8 @@ export default {
                     }, 1000);
                 }
             } catch (error) {
-                this.alertMsg(error.response.data);
-                this.alertType("error");
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
                 this.alertActive(true);
                 this.status = false;
             }

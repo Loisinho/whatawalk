@@ -1,7 +1,7 @@
 import Vue from "vue"
 import App from "./components/App.vue"
 import router from "./router"
-import store from "./store/store"
+import store from "./store"
 import Axios from "axios"
 import Vuelidate from "vuelidate"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"

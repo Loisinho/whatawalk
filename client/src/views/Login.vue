@@ -37,8 +37,8 @@ export default {
             faLock,
             faEye,
             faEyeSlash,
-            user: "",
-            password: "",
+            user: null,
+            password: null,
             btnValue: "log in",
             status: false
         }
@@ -53,8 +53,6 @@ export default {
     },
     methods: {
         ...mapMutations("alert", [
-            "alertMsg",
-            "alertType",
             "alertActive"
         ]),
         async submit() {
@@ -73,8 +71,8 @@ export default {
                     }, 1000);
                 }
             } catch (error) {
-                this.alertMsg(error.response.data);
-                this.alertType("error");
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
                 this.alertActive(true);
                 this.status = false;
             }
