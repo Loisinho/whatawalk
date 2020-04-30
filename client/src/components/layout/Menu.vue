@@ -10,7 +10,7 @@
                     router-link(to="/") Home
                 li(@click="menuStatus(false)")
                     router-link(to="/about") About
-                li(@click="menuStatus(false)")
+                li(@click="menuStatus(false)" v-if="isLoggedIn")
                     router-link(to="/test") Test
 </template>
 
@@ -21,7 +21,8 @@ export default {
     name: "Menu",
     computed: {
         ...mapState({
-            open: state => state.menu.open
+            open: state => state.menu.open,
+            isLoggedIn: state => state.session.isLoggedIn
         })
     },
     methods: {

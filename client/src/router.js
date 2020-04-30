@@ -45,8 +45,8 @@ const router = new Router({
     ]
 });
 
-router.beforeEach((to, from, next) => {
-    console.log(store.state.session);
+router.beforeEach(async (to, from, next) => {
+    await store.dispatch("session/checkSession");
     if (to.matched.some(record => record.meta.requiresAuth)) {
         !store.state.session.isLoggedIn? next({ name: "login" }) : next();
     } else if (to.matched.some(record => record.meta.guest)) {

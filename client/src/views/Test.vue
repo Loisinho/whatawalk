@@ -21,9 +21,12 @@ export default {
                 .then(res =>
                     this.data = res.data
                 )
-                .catch(err =>
-                    console.log(err)
-                );
+                .catch(err => {
+                    if (err.response.status == 401) {
+                        this.$store.state.session.isLoggedIn = false;
+                        this.$router.push({name: "login"})
+                    }
+                });
         }
     }
 }

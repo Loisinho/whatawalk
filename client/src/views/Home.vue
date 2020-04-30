@@ -5,7 +5,7 @@
                 img.header__logo(src="../assets/logo.svg" alt="WhatAWalk")
                 div.header__name
                     span What A Walk
-        section#access
+        section#access(v-if="!isLoggedIn")
             div(@click="menuStatus(false)")
                 router-link.access__link(to="/login") Log In
             div(@click="menuStatus(false)")
@@ -14,10 +14,15 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
     name: "Home",
+    computed: {
+        ...mapState({
+            isLoggedIn: state => state.session.isLoggedIn
+        })
+    },
     methods: {
         ...mapMutations("menu", [
             'menuStatus'

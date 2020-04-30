@@ -4,11 +4,10 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 
 
-// GET test.
-exports.test = function (req, res, next) {
-    console.log("Hello World!");
-    res.status(200).json("Hello World!");
-};
+// GET session.
+exports.session = function (req, res, next) {
+    res.status(200).json(user);
+}
 
 // GET unique username.
 exports.isUsernameUnique = async function (req, res, next) {
@@ -57,9 +56,10 @@ exports.login = async function (req, res, next) {
     try {
         let errors = validationResult(req);
         if (errors.isEmpty()) {
-            console.log(req.session);
-            session = req.session;
-            session.user = {};
+            let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]});
+            req.session.user = {
+                username: user.username
+            };
             res.status(200).json("Loged in successfully!");
         } else {
             res.status(422).json(errors.errors[0].msg);
@@ -67,4 +67,9 @@ exports.login = async function (req, res, next) {
     } catch (error) {
         res.status(422).json("There was an error verifying your account. Please try again.");
     }
+};
+
+// GET test.
+exports.test = function (req, res, next) {
+    res.status(200).json("Hello World!");
 };
