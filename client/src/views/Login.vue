@@ -60,14 +60,14 @@ export default {
                 this.$v.$touch();
                 if (!this.$v.$invalid) {
                     this.status = true;
-                    let res = await this.$http
+                    await this.$http
                         .post("users/login", {
                             user: this.user,
                             password: this.password
                         });
                     this.btnValue = "thank you for logging in";
                     setTimeout(() => {
-                        this.$router.push({name: "home"});
+                        this.$router.push({name: "test"});
                     }, 1000);
                 }
             } catch (error) {

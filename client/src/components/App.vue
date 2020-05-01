@@ -3,16 +3,19 @@
         div#www
             router-view
         Logo
+        Access
         Menu
 </template>
 
 <script>
 import Logo from "./layout/Logo.vue";
+import Access from "./layout/Access.vue";
 import Menu from "./layout/Menu.vue";
 
 export default {
     components: {
         Logo,
+        Access,
         Menu
     },
     methods: {

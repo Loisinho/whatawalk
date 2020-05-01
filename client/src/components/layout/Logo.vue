@@ -29,10 +29,6 @@ export default {
         left: 16px;
         transform: translateX(0);
         z-index: 0;
-
-        > img {
-            height: 28px;
-        }
     }
 }
 </style>

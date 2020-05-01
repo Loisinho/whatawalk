@@ -69,6 +69,14 @@ exports.login = async function (req, res, next) {
     }
 };
 
+// GET logout.
+exports.logout = function (req, res, next) {
+    req.session.destroy( error => {
+        if (error) res.status(422).end("An error occurred. Please try again.");
+        res.end();
+    });
+}
+
 // GET test.
 exports.test = function (req, res, next) {
     res.status(200).json("Hello World!");

@@ -110,8 +110,7 @@ export default {
 
         a {
             display: block;
-            height: 60px;
-            padding: 10px;
+            line-height: 60px;
             text-decoration: none;
             text-align: center;
             text-transform: uppercase;

@@ -18,10 +18,15 @@ const mutations = {
 const actions = {
     async checkSession (context) {
         let user = await axios.get("https://www.whatawalk.ooguy.com/users/session");
-        if (!!user.data)
+        if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,
                 username: user.data.username || null
+            });
+        else
+            context.commit("checkSession", {
+                isLoggedIn: false,
+                username: null
             });
     }
 }
