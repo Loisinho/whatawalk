@@ -1,16 +1,17 @@
 <template lang="pug">
-    div#content
-        section#header
-            div.header__title
-                img.header__logo(src="../assets/logo.svg" alt="WhatAWalk")
-                div.header__name
-                    span What A Walk
-        section#access(v-if="!isLoggedIn")
-            div(@click="menuStatus(false)")
-                router-link.access__link(to="/login") Log In
-            div(@click="menuStatus(false)")
-                router-link.access__link(to="/signup") Sign Up
-        section#main
+    div
+        div.content
+            section.header
+                div.header__title
+                    img.header__logo(src="../assets/logo.svg" alt="WhatAWalk")
+                    div.header__name
+                        span What A Walk
+            section.access(v-if="!isLoggedIn")
+                div(@click="menuStatus(false)")
+                    router-link.access__link(to="/login") Log In
+                div(@click="menuStatus(false)")
+                    router-link.access__link(to="/signup") Sign Up
+            section.main
 </template>
 
 <script>
@@ -34,10 +35,8 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/styles/styles";
 
-#content {
-    width: 100%;
-
-    #header {
+.content {
+    .header {
         width: 100%;
         height: calc(100vh - 240px);
         min-height: 400px;
@@ -83,7 +82,7 @@ export default {
         }
     }
 
-    #access {
+    .access {
         position: sticky;
         top: 70px;
         width: 100%;
@@ -101,7 +100,7 @@ export default {
         }
 
         .access__link:after {
-            content: " ";
+            content: "";
             display: block;
             width: 0;
             margin: 0 auto;
@@ -115,26 +114,26 @@ export default {
         }
     }
 
-    #main {
+    .main {
         width: 100%;
         height: 2000px;
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
-    #content #access .access__link {
+    .content .access .access__link {
         font-size: font-size-vw(map-get($container-widths, "sd"), $home-access-link-size);
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
-    #content #access .access__link {
+    .content .access .access__link {
         font-size: font-size-vw(map-get($container-widths, "md"), $home-access-link-size);
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
-    #content #access {
+    .content .access {
         top: 12px;
 
         .access__link {

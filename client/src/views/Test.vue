@@ -1,9 +1,10 @@
 <template lang="pug">
-    div.test
-        h1 Test
-        p Press the button to test a server route.
-        button.btn(title="Test" @click="test()") TEST
-        div {{ data }}
+    div
+        div.content
+            h1 Test
+            p Press the button to test a server route.
+            button.btn(title="Test" @click="test()") TEST
+            div {{ data }}
 </template>
 
 <script>

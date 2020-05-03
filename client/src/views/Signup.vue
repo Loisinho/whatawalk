@@ -1,51 +1,46 @@
 <template lang="pug">
-    div#content
-        div.container
-            header
-                h2 Sign up
-            main.signup
-                form.signup__manually(@submit.prevent="submit")
-                    div.form__group(:class="{'form__group--error': $v.username.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faUser")
-                            input.form__username(type="text" v-model.trim="$v.username.$model" placeholder="Username" :disabled="status")
-                        span.form__note(v-if="!$v.username.required") Field is required
-                        span.form__note(v-if="!$v.username.minLength") Username must have at least {{$v.username.$params.minLength.min}} letters
-                        span.form__note(v-if="!$v.username.isUnique") This username is already in use
-                    div.form__group(:class="{'form__group--error': $v.email.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faEnvelope")
-                            input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" :disabled="status")
-                        span.form__note(v-if="!$v.email.required") Field is required
-                        span.form__note(v-if="!$v.email.email") Invalid email address
-                        span.form__note(v-if="!$v.email.isUnique") This email is already in use
-                    div.form__group(:class="{'form__group--error': $v.password.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faKey")
-                            input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
-                        span.form__note(v-if="!$v.password.required") Field is required
-                        span.form__note(v-if="!$v.password.minLength && $v.password.required") Password must contain at least {{$v.password.$params.minLength.min}} characters
-                    div.form__group(:class="{'form__group--error': $v.repeatPassword.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faKey")
-                            input.form__password(type="password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status")
-                        span.form__note(v-if="!$v.repeatPassword.sameAsPassword") Passwords must be identical
-                    input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'sign up'}" :disabled="status")
-        Alert
+    div
+        div.content
+            div.container
+                header
+                    h2 Sign up
+                main.signup
+                    form.signup__manually(@submit.prevent="submit")
+                        div.form__group(:class="{'form__group--error': $v.username.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faUser")
+                                input.form__username(type="text" v-model.trim="$v.username.$model" placeholder="Username" :disabled="status")
+                            span.form__note(v-if="!$v.username.required") Field is required
+                            span.form__note(v-if="!$v.username.minLength") Username must have at least {{$v.username.$params.minLength.min}} letters
+                            span.form__note(v-if="!$v.username.isUnique") This username is already in use
+                        div.form__group(:class="{'form__group--error': $v.email.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faEnvelope")
+                                input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" :disabled="status")
+                            span.form__note(v-if="!$v.email.required") Field is required
+                            span.form__note(v-if="!$v.email.email") Invalid email address
+                            span.form__note(v-if="!$v.email.isUnique") This email is already in use
+                        div.form__group(:class="{'form__group--error': $v.password.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faKey")
+                                input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                            span.form__note(v-if="!$v.password.required") Field is required
+                            span.form__note(v-if="!$v.password.minLength && $v.password.required") Password must contain at least {{$v.password.$params.    minLength.min}} characters
+                        div.form__group(:class="{'form__group--error': $v.repeatPassword.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faKey")
+                                input.form__password(type="password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status")
+                            span.form__note(v-if="!$v.repeatPassword.sameAsPassword") Passwords must be identical
+                        input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'sign up'}" :disabled="status")
 </template>
 
 <script>
-import Alert from "../components/Alert.vue";
-import { mapMutations } from "vuex";
 import { required, minLength, email, sameAs } from "vuelidate/lib/validators";
 import { faUser, faEnvelope, faKey, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 
 export default {
     name: "Signup",
-    components: {
-        Alert
-    },
     data: () => {
         return {
             faUser,
@@ -73,7 +68,7 @@ export default {
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
                     this.$store.state.alert.type = "error";
-                    this.alertActive(true);
+                    this.$store.commit("alert/alertActive");
                 }
             }
         },
@@ -88,7 +83,7 @@ export default {
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";
                     this.$store.state.alert.type = "error";
-                    this.alertActive(true);
+                    this.$store.commit("alert/alertActive");
                 }
             }
         },
@@ -101,9 +96,6 @@ export default {
         }
     },
     methods: {
-        ...mapMutations("alert", [
-            "alertActive"
-        ]),
         async submit() {
             try {
                 this.$v.$touch();
@@ -123,7 +115,7 @@ export default {
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
-                this.alertActive(true);
+                this.$store.commit("alert/alertActive");
                 this.status = false;
             }
         }
@@ -134,7 +126,7 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/styles/styles";
 
-#content {
+.content {
     @include page-centered-form;
 
     .signup__manually {

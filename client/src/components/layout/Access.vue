@@ -12,8 +12,7 @@
 </template>
 
 <script>
-import Alert from "../Alert.vue";
-import { mapState, mapMutations } from "vuex";
+import { mapState } from "vuex";
 import { faUser, faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default {
@@ -31,18 +30,14 @@ export default {
         }
     },
     methods: {
-        ...mapMutations("alert", [
-            "alertActive"
-        ]),
         async logout() {
-            console.log("IN");
             try {
                 await this.$http.get("users/logout");
                 this.$router.push({name: "home"});
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
-                this.alertActive(true);
+                this.$store.commit("alert/alertActive");
             }
         }
     }
@@ -87,6 +82,12 @@ export default {
                 background: $nav-links-bg;
                 color: $nav-links-color;
                 -webkit-tap-highlight-color: transparent;
+                transition: all 0.4s;
+            }
+
+            > a:hover {
+                background: $nav-links-color;
+                color: $nav-links-bg;
             }
 
             &.access__main {

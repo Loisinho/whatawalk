@@ -1,36 +1,31 @@
 <template lang="pug">
-    div#content
-        div.container
-            header
-                h2 Log in
-            main.login
-                form.login__manually(@submit.prevent="submit")
-                    div.form__group(:class="{'form__group--error': $v.user.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faUser")
-                            input.form__user(type="text" v-model.trim="$v.user.$model" placeholder="Username or email" :disabled="status")
-                        span.form__note(v-if="!$v.user.required") Field is required
-                    div.form__group(:class="{'form__group--error': $v.password.$error}")
-                        div.form__inputbox
-                            font-awesome-icon.form__icon(:icon="faLock")
-                            input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
-                        span.form__note(v-if="!$v.password.required") Field is required
-                    input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
-        Alert
+    div
+        div.content
+            div.container
+                header
+                    h2 Log in
+                main.login
+                    form.login__manually(@submit.prevent="submit")
+                        div.form__group(:class="{'form__group--error': $v.user.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faUser")
+                                input.form__user(type="text" v-model.trim="$v.user.$model" placeholder="Username or email" :disabled="status")
+                            span.form__note(v-if="!$v.user.required") Field is required
+                        div.form__group(:class="{'form__group--error': $v.password.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faLock")
+                                input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                            span.form__note(v-if="!$v.password.required") Field is required
+                        input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
 </template>
 
 <script>
-import Alert from "../components/Alert.vue";
-import { mapMutations } from "vuex";
 import { required } from "vuelidate/lib/validators";
 import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 
 export default {
     name: "Login",
-    components: {
-        Alert
-    },
     data: () => {
         return {
             faUser,
@@ -52,9 +47,6 @@ export default {
         }
     },
     methods: {
-        ...mapMutations("alert", [
-            "alertActive"
-        ]),
         async submit() {
             try {
                 this.$v.$touch();
@@ -73,7 +65,7 @@ export default {
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
-                this.alertActive(true);
+                this.$store.commit("alert/alertActive");
                 this.status = false;
             }
         }
@@ -84,7 +76,7 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/styles/styles";
 
-#content {
+.content {
     @include page-centered-form;
 
     .login__manually {

@@ -1,3 +1,49 @@
 @import "variables";
 @import "functions";
 @import "mixins";
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: $body-bg;
+    color: $body-color;
+    font-family: $body-font-family;
+
+    #www {
+        width: 100%;
+        margin: 0 auto;
+        padding: 100px 30px 0 30px;
+    }
+
+    &.body--resize * {
+        transition: none !important;
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "sd")) {
+    body #www {
+        max-width: map-get($container-widths, "sd");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "md")) {
+    body #www {
+        max-width: map-get($container-widths, "md");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "ld")) {
+    body #www {
+        max-width: map-get($container-widths, "ld");
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "xd")) {
+    body #www {
+        max-width: map-get($container-widths, "xd");
+    }
+}
