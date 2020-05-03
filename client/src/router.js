@@ -41,6 +41,10 @@ const router = new Router({
                 requiresAuth: true
             },
             component: () => import(/* webpackChunkName: "test" */ "./views/Test.vue")
+        },
+        {
+            path: "*",
+            component: Home
         }
     ]
 });
