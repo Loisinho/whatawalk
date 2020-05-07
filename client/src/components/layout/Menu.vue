@@ -113,6 +113,7 @@ export default {
         width: 100%;
         transform: translateY(-100%);
         transition: transform $transition-time;
+        box-shadow: $menu-shadow;
 
         a {
             display: block;

@@ -3,7 +3,7 @@
         div.content
             div.profile
                 div.profile__main
-                    img.profile__img(src="https://www.icsi.org/wp-content/plugins/awsm-team-pro/images/default-user.png" alt="Profile image")
+                    img.profile__img(src="" alt="Profile image")
                     div.profile__links
                         div.profile__following
                             span {{ following }}
@@ -59,8 +59,7 @@ export default {
         padding: 10px;
 
         .profile__main {
-            display: flex;
-            align-items: center;
+            @include container-flex(v);
             margin-bottom: 20px;
 
             .profile__img {
@@ -88,13 +87,7 @@ export default {
                     }
 
                     > a {
-                        text-decoration: none;
-                        -webkit-tap-highlight-color: transparent;
-                        color: #ffffff;
-
-                        &:hover {
-                            color: #acacac;
-                        }
+                        @include link-border-animation;
                     }
                 }
 
@@ -105,11 +98,9 @@ export default {
                     font-size: $profile-link-size;
                     font-weight: 600;
                     background: transparent;
-                    color: #ffffff;
-                    border: 4px solid #ffffff;
-                    cursor: pointer;
-                    outline: none;
-                    transition: all 0.4s;
+                    color: rgba(#ffffff, 0.5);
+                    border: 4px solid rgba(#ffffff, 0.5);
+                    transition: all $transition-time;
 
                     &:hover {
                         background: #ffffff;
@@ -121,18 +112,17 @@ export default {
         }
 
         .profile__data {
+            .profile__username, .profile__description {
+                padding: 10px 5px;
+            }
+            
             .profile__group {
-                display: flex;
-                align-items: center;
+                @include container-flex(v);
 
                 .profile__icon {
                     width: $profile-icon-size;
                     margin: 0 3px;
                 }
-            }
-
-            .profile__description {
-                padding: 10px 5px;
             }
         }
     }
@@ -145,6 +135,7 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
             }
         }
+
         .profile__data .profile__group .profile__icon {
             width: vw-to-px(map-get($container-widths, "sd"), $profile-icon-size);
         }
@@ -158,6 +149,7 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
             }
         }
+
         .profile__data .profile__group .profile__icon {
             width: vw-to-px(map-get($container-widths, "md"), $profile-icon-size);
         }
@@ -166,11 +158,12 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
     .content .profile {
-        .profile__main .profile__links {
-            .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "ld"), $profile-link-size);
-            }
-        }
+        // .profile__main .profile__links {
+        //     .profile__following, .profile__followers, .profile__edit {
+        //         font-size: vw-to-px(map-get($container-widths, "ld"), $profile-link-size);
+        //     }
+        // }
+
         .profile__data .profile__group .profile__icon {
             width: vw-to-px(map-get($container-widths, "ld"), $profile-icon-size);
         }
@@ -179,11 +172,12 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "xd")) {
     .content .profile {
-        .profile__main .profile__links {
-            .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "xd"), $profile-link-size);
-            }
-        }
+        // .profile__main .profile__links {
+        //     .profile__following, .profile__followers, .profile__edit {
+        //         font-size: vw-to-px(map-get($container-widths, "xd"), $profile-link-size);
+        //     }
+        // }
+
         .profile__data .profile__group .profile__icon {
             width: vw-to-px(map-get($container-widths, "xd"), $profile-icon-size);
         }

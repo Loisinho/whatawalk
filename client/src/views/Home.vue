@@ -5,7 +5,7 @@
                 div.header__title
                     img.header__logo(src="../assets/logo.svg" alt="WhatAWalk")
                     div.header__name
-                        span What A Walk
+                        h1 What A Walk
             section.access(v-if="!isLoggedIn")
                 div(@click="menuStatus(false)")
                     router-link.access__link(to="/login") Log In
@@ -62,15 +62,20 @@ export default {
                 overflow: hidden;
                 z-index: -1;
 
-                > span {
+                > h1 {
                     font-family: $logo-font-family;
                     font-size: $home-header-name-size;
                     font-weight: 600;
                     line-height: 100%;
                     text-transform: uppercase;
                     text-align: center;
-                    color: $header-name-color;
+                    background-color: $header-name-color;
+                    color: transparent;
                     white-space: nowrap;
+                    text-shadow: 6px 6px 12px rgba(#fff, 0.1);
+                    -webkit-background-clip: text;
+                       -moz-background-clip: text;
+                            background-clip: text;
                 }
             }
         }
