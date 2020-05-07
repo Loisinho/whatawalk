@@ -8,10 +8,16 @@
             ul
                 li(@click="menuStatus(false)")
                     router-link(to="/") Home
-                li(@click="menuStatus(false)")
-                    router-link(to="/about") About
+                li(@click="menuStatus(false)" v-if="isLoggedIn")
+                    router-link(to="/publications") Publications
+                li(@click="menuStatus(false)" v-if="isLoggedIn")
+                    router-link(to="/travels") Travels
+                li(@click="menuStatus(false)" v-if="isLoggedIn")
+                    router-link(to="/explore") Explore
                 li(@click="menuStatus(false)" v-if="isLoggedIn")
                     router-link(to="/test") Test
+                li(@click="menuStatus(false)")
+                    router-link(to="/about") About
 </template>
 
 <script>

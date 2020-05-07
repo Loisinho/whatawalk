@@ -97,20 +97,20 @@ export default {
             text-transform: uppercase;
             font-weight: bold;
             color: #ffffff;
-        }
 
-        .access__link:after {
-            content: "";
-            display: block;
-            width: 0;
-            margin: 0 auto;
-            border: 1px solid rgba(#ffffff, 0);
-            transition: all 400ms ease-in-out;
-        }
+            &:after {
+                content: "";
+                display: block;
+                width: 0;
+                margin: 0 auto;
+                border: 1px solid rgba(#ffffff, 0);
+                transition: all 400ms ease-in-out;
+            }
 
-        .access__link:hover:after {
-            width: 100%;
-            border-color: #ffffff;
+            &:hover:after {
+                width: 100%;
+                border-color: #ffffff;
+            }
         }
     }
 
@@ -122,13 +122,13 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .content .access .access__link {
-        font-size: font-size-vw(map-get($container-widths, "sd"), $home-access-link-size);
+        font-size: vw-to-px(map-get($container-widths, "sd"), $home-access-link-size);
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     .content .access .access__link {
-        font-size: font-size-vw(map-get($container-widths, "md"), $home-access-link-size);
+        font-size: vw-to-px(map-get($container-widths, "md"), $home-access-link-size);
     }
 }
 
@@ -137,7 +137,7 @@ export default {
         top: 12px;
 
         .access__link {
-            font-size: font-size-vw(map-get($container-widths, "ld"), $home-access-link-size);
+            font-size: vw-to-px(map-get($container-widths, "ld"), $home-access-link-size);
         }
     }
 }

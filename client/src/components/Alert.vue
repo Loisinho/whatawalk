@@ -54,7 +54,7 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .alert {
-        font-size: font-size-vw(map-get($container-widths, "sd"), $alert-size);
+        font-size: vw-to-px(map-get($container-widths, "sd"), $alert-size);
     }
 }
 </style>

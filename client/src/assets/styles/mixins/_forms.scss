@@ -33,7 +33,7 @@
         width: 480px;
 
         header > h2 {
-            font-size: font-size-vw(map-get($container-widths, "sd"), $form-header-title-size);
+            font-size: vw-to-px(map-get($container-widths, "sd"), $form-header-title-size);
         }
     }
 }
@@ -51,7 +51,7 @@
 
     @media only screen and (min-width: map-get($breakpoints, "sd")) {
         input {
-            font-size: font-size-vw(map-get($container-widths, "sd"), $form-input-size);
+            font-size: vw-to-px(map-get($container-widths, "sd"), $form-input-size);
         }
     }
 }
@@ -110,12 +110,12 @@
         height: 60px;
         
         .form__inputbox .form__icon {
-            width: font-size-vw(map-get($container-widths, "sd"), $form-icon-size);
-            height: font-size-vw(map-get($container-widths, "sd"), $form-icon-size);
+            width: vw-to-px(map-get($container-widths, "sd"), $form-icon-size);
+            height: vw-to-px(map-get($container-widths, "sd"), $form-icon-size);
         }
 
         .form__note {
-            font-size: font-size-vw(map-get($container-widths, "sd"), $form-note-size);
+            font-size: vw-to-px(map-get($container-widths, "sd"), $form-note-size);
         }
     }
 }
