@@ -22,6 +22,25 @@ body {
     &.body--resize * {
         transition: none !important;
     }
+
+    a {
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    input, button {
+        cursor: pointer;
+        outline: none;
+    }
+}
+
+// Vue App fade transition.
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.25s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {

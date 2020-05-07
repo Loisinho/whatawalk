@@ -37,34 +37,28 @@ export default {
 
 .content {
     .header {
+        @include container-flex($direction: column);
         width: 100%;
         height: calc(100vh - 240px);
         min-height: 400px;
-        display: flex;
-        flex-direction: column;
 
         .header__title {
+            @include container-flex(b, column);
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
 
             .header__logo {
                 width: 100%;
             }
 
             .header__name {
+                @include container-flex(b);
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100vh;
                 transform: translateY(50%);
-                display: flex;
-                justify-content: center;
-                align-items: center;
                 overflow: hidden;
                 z-index: -1;
 
@@ -91,26 +85,10 @@ export default {
         justify-content: space-evenly;
 
         .access__link {
-            text-decoration: none;
-            -webkit-tap-highlight-color: transparent;
             font-size: $home-access-link-size;
-            text-transform: uppercase;
             font-weight: bold;
-            color: #ffffff;
 
-            &:after {
-                content: "";
-                display: block;
-                width: 0;
-                margin: 0 auto;
-                border: 1px solid rgba(#ffffff, 0);
-                transition: all 400ms ease-in-out;
-            }
-
-            &:hover:after {
-                width: 100%;
-                border-color: #ffffff;
-            }
+            @include link-border-animation;
         }
     }
 

@@ -112,17 +112,15 @@ export default {
         display: block;
         width: 100%;
         transform: translateY(-100%);
-        transition: transform 0.4s;
+        transition: transform $transition-time;
 
         a {
             display: block;
             line-height: 60px;
-            text-decoration: none;
             text-align: center;
             text-transform: uppercase;
             font-size: 24px;
             color: $nav-links-color;
-            -webkit-tap-highlight-color: transparent;
 
             &:hover {
                 background: $nav-links-hover-bg;

@@ -1,0 +1,23 @@
+// Containers mixins
+
+@mixin container-flex($center: "", $direction: row) {
+    display: flex;
+    flex-direction: $direction;
+  
+    @if $center == h {
+        @if $direction == row {
+            justify-content: center;
+        } @else {
+            align-items: center;
+        }
+    } @else if $center == v {
+        @if $direction == row {
+            align-items: center;
+        } @else {
+            justify-content: center;
+        }
+    } @else if $center == b {
+        justify-content: center;
+        align-items: center;
+    }
+}

@@ -71,15 +71,14 @@ export default {
         width: 60px;
         height: 60px;
         overflow: hidden;
-        transition: all 0.4s;
+        transition: all $transition-time;
 
         .access__element {
+            @include container-flex(h);
             position: absolute;
             top: 0;
             right: 0;
-            display: flex;
-            justify-content: center;
-            transition: all 0.4s;
+            transition: all $transition-time;
 
             > a, > .access__icon {
                 width: 40px;
@@ -87,13 +86,11 @@ export default {
                 margin: 10px;
                 border-radius: 50%;
                 line-height: 40px;
-                text-decoration: none;
                 text-align: center;
                 font-size: 23px;
                 background: $nav-links-color;
                 color: $nav-links-bg;
-                -webkit-tap-highlight-color: transparent;
-                transition: all 0.4s;
+                transition: all $transition-time;
             }
 
             > a:hover {
