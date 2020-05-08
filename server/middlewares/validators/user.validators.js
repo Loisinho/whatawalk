@@ -7,7 +7,7 @@ exports.signup = [
     body("username", "Invalid username")
         .not().isEmpty()
         .trim()
-        .isLength({min: 3})
+        .isLength({min: 3, max: 30})
         .escape()
         .custom(async function (value) {
             let user = await model.User.findOne({ username: value });
@@ -17,40 +17,29 @@ exports.signup = [
         .not().isEmpty()
         .isEmail()
         .normalizeEmail()
+        .isLength({max: 254})
         .custom(async function (value) {
             let user = await model.User.findOne({ email: value });
             if (user) throw new Error("This email is already in use");
         }),
     body("password", "Invalid password")
         .not().isEmpty()
-        .isLength({min: 6})
+        .isLength({min: 6, max: 120})
 ];
 
 exports.login = [
     oneOf([
-        body("user")
-            .not().isEmpty()
-            .trim()
-            .isLength({min: 3})
-            .escape()
-            .custom(async function (value) {
-                let user = await model.User.findOne({ username: value });
-                if (!user) throw new Error("This username does not exist");
-            }),
-        body("user")
-            .not().isEmpty()
-            .isEmail()
-            .normalizeEmail()
-            .custom(async function (value) {
-                let user = await model.User.findOne({ email: value });
-                if (!user) throw new Error("This email does not exist");
-            })
-    ], "User does not exist"),
-    body("password", "Invalid password")
-        .not().isEmpty()
-        .isLength({min: 6})
-        .custom(async function (value, { req }) {
-            let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]}); 
-            if (!await bcrypt.compare(value, user.password)) throw new Error("Incorrect password");
+        body("user").custom(async function (value) {
+            let user = await model.User.findOne({ username: value });
+            if (!user) throw new Error("This username does not exist");
+        }),
+        body("user").custom(async function (value) {
+            let user = await model.User.findOne({ email: value });
+            if (!user) throw new Error("This email does not exist");
         })
+    ], "User does not exist"),
+    body("password", "Invalid password").custom(async function (value, { req }) {
+        let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]}); 
+        if (!await bcrypt.compare(value, user.password)) throw new Error("Incorrect password");
+    })
 ];

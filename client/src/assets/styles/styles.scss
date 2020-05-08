@@ -29,8 +29,11 @@ body {
     }
 
     input, button {
-        cursor: pointer;
         outline: none;
+    }
+
+    input[type="submit"], button {
+        cursor: pointer;
     }
 }
 

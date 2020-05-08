@@ -88,12 +88,9 @@ export default {
                 line-height: 40px;
                 text-align: center;
                 font-size: 23px;
-                background: rgba($nav-links-color, 0.9);
+                background: $nav-links-color;
                 color: $nav-links-bg;
                 transition: all $transition-time;
-                box-shadow: -2px -2px 4px rgba(#fff, 0.6),
-                            inset 2px 2px 2px rgba(#fff, 0.6),
-                            2px 2px 4px rgba(#000, 0.6);
             }
 
             > a {
