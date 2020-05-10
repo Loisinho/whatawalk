@@ -6,3 +6,11 @@
 
 # Environment variables file.
 .env
+
+# Whitelist.
+/public/*
+!/public/images
+/public/images/*
+!/public/images/profile
+/public/images/profile/*
+!/public/images/profile/default_profile.png

@@ -4,10 +4,9 @@
             span.access__element.access__main
                 router-link(to="/login" v-if="!isLoggedIn")
                     font-awesome-icon(:icon="faSignInAlt")
-                span.access__icon(v-else)
-                    //- TODO: User image
+                img.access__icon(v-else :src="`https://www.whatawalk.ooguy.com/media/images/profile/${img}`")
             span.access__element(v-if="isLoggedIn")
-                router-link(to="/profile")
+                router-link(:to="`/user/${username}`")
                     font-awesome-icon(:icon="faUser")
             span.access__element(v-if="isLoggedIn")
                 router-link(to="/groups")
@@ -28,7 +27,9 @@ export default {
     name: "Access",
     computed: {
         ...mapState({
-            isLoggedIn: state => state.session.isLoggedIn
+            isLoggedIn: state => state.session.isLoggedIn,
+            username: state => state.session.username,
+            img: state => state.session.img,
         })
     },
     data: () => {

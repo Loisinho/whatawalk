@@ -3,7 +3,8 @@ import axios from "axios";
 // Initial state
 const state = {
     isLoggedIn: false,
-    username: null
+    username: null,
+    img: null
 }
 
 // Mutations
@@ -11,6 +12,7 @@ const mutations = {
     checkSession (state, payload) {
         state.isLoggedIn = payload.isLoggedIn;
         state.username = payload.username;
+        state.img = payload.img;
     }
 }
 
@@ -21,7 +23,8 @@ const actions = {
         if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,
-                username: user.data.username || null
+                username: user.data.username || null,
+                img: user.data.img
             });
         else
             context.commit("checkSession", {

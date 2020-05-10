@@ -24,6 +24,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(history());
 // client folder
 app.use(express.static(path.join(__dirname, "../client/dist/")));
+// public folder
+app.use("/media", express.static(path.join(__dirname, "public/")));
 // cookie-parser module
 app.use(cookieParser());
 
