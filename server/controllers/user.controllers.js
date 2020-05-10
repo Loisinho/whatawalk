@@ -58,7 +58,8 @@ exports.login = async function (req, res, next) {
         if (errors.isEmpty()) {
             let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]});
             req.session.user = {
-                username: user.username
+                username: user.username,
+                img: user.img
             };
             res.status(200).json("Loged in successfully!");
         } else {
@@ -75,6 +76,24 @@ exports.logout = function (req, res, next) {
         if (error) res.status(422).end("An error occurred. Please try again.");
         res.end();
     });
+}
+
+// GET profile.
+exports.profile = async function (req, res, next) {
+    try {
+        let user = await model.User.findOne({ username: req.params.username });
+        res.status(200).json({
+            username: user.username,
+            name: user.name,
+            img: user.img,
+            ubication: user.ubication,
+            description: user.description,
+            following: "10K",
+            followers: "999M",
+        });
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
 }
 
 // GET test.

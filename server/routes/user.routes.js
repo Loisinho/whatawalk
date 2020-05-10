@@ -15,6 +15,7 @@ router.get("/unique/email/:email", user.isEmailUnique);
 router.post("/signup", validator.signup, user.signup);
 router.post("/login", validator.login, user.login);
 router.get("/logout", user.logout);
+router.get("/profile/:username", user.profile);
 router.get("/test", hasAuth, user.test);
 
 

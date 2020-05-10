@@ -37,6 +37,10 @@ $alert-warning-bg: #fcca11;
 $alert-success-bg: #02df93;
 
 $profile-bg: rgba(#000000, 0.2);
+$profile-edit-bg: #eaeaea;
+$profile-edit-color: #000000;
+$profile-delete: #ff0000;
+
 
 // Typography
 @import url('https://fonts.googleapis.com/css?family=Six+Caps|Alata|Comfortaa|Montserrat&display=swap');
@@ -56,6 +60,7 @@ $alert-size: 4vw;
 
 $profile-link-size: 4vw;
 $profile-icon-size: 3vw;
+$profile-textarea-size: 3vw;
 
 // Main container minimum width breakpoints
 $breakpoints: (

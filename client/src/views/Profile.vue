@@ -3,49 +3,78 @@
         div.content
             div.profile
                 div.profile__main
-                    img.profile__img(src="" alt="Profile image")
+                    img.profile__img.profile__field(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
                     div.profile__links
                         div.profile__following
-                            span {{ following }}
+                            span {{ profile.following }}
                             router-link(to="/following") Following
                         div.profile__followers
-                            span {{ followers }}
+                            span {{ profile.followers }}
                             router-link(to="/followers") Followers
-                        button.profile__edit {{ btnValue }}
+                        button.profile__edit(v-if="status === 'edit'" @click="edit") {{ status }}
+                        button.profile__edit(v-else-if="status === 'save'" @click="save") {{ status }}
                 div.profile__data
-                    h1.profile__username @{{ username }}
-                    div.profile__group
-                        font-awesome-icon.profile__icon(:icon="faUser")
-                        h3.profile__field {{ name }}
-                    div.profile__group
-                        font-awesome-icon.profile__icon(:icon="faMapMarkerAlt")
-                        h3.profile__field {{ ubication }}
-                    div.profile__group
-                        font-awesome-icon.profile__icon(:icon="faBirthdayCake")
-                        h3.profile__field {{ birthday }}
-                    p.profile__description.profile__field {{ description }}
+                    h1.profile__username @{{ profile.username }}
+                    div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+                        font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
+                        h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
+                        input.profile__field(v-else type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
+                    div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+                        font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
+                        h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
+                        input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
+                    p.profile__description.profile__field(v-if="status !== 'save'") {{ profile.description }}
+                    textarea.profile__description.profile__field(v-else v-model="profile.description" rows="5" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
+                    button.profile__delete(v-if="status === 'save'") Delete
 </template>
 
 <script>
-import { faUser, faMapMarkerAlt, faBirthdayCake } from "@fortawesome/free-solid-svg-icons";
+import { mapState } from "vuex";
+import { faUser, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Profile",
+    computed: {
+        ...mapState({
+            username: state => state.session.username
+        })
+    },
     data: () => {
         return {
             faUser,
             faMapMarkerAlt,
-            faBirthdayCake,
-            following: "10K",
-            followers: "999M",
-            username: "lorem",
-            name: "Lorem Ipsum",
-            ubication: "Loremhood, New Lorem, Loremland",
-            birthday: "19/10/1998",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            btnValue: "edit",
-            // status: false
+            profile: {
+                username: null,
+                name: null,
+                img: null,
+                ubication: null,
+                description: null,
+                following: 0,
+                followers: 0,
+            },
+            status: "edit"
         }
+    },
+    methods: {
+        async find() {
+            try {
+                let res = await this.$http.get(`users/profile/${this.$route.params.id}`);
+                this.profile = res.data;
+            } catch (error) {
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
+                this.$store.commit("alert/alertActive");
+            }
+        },
+        edit() {
+            this.status = "save";
+        },
+        save() {
+            this.status = "edit";
+        }
+    },
+    created: function() {
+        this.find();
     }
 }
 </script>
@@ -92,20 +121,8 @@ export default {
                 }
 
                 .profile__edit {
-                    width: 100%;
-                    text-transform: uppercase;
-                    padding: 5px;
+                    @include button-alpha($alpha: 0.5);
                     font-size: $profile-link-size;
-                    font-weight: 600;
-                    background: transparent;
-                    color: rgba(#ffffff, 0.5);
-                    border: 4px solid rgba(#ffffff, 0.5);
-                    transition: all $transition-time;
-
-                    &:hover {
-                        background: #ffffff;
-                        color: $form-submit-border;
-                    }
                 }
             }
 
@@ -115,6 +132,16 @@ export default {
             .profile__username, .profile__description {
                 padding: 10px 5px;
             }
+
+            textarea {
+                width: 100%;
+                font-family: $body-font-family;
+                font-size: $profile-textarea-size;
+                background: $profile-edit-bg;
+                border: 0;
+                border-bottom: 4px solid $profile-edit-color;
+                color: $profile-edit-color;
+            }
             
             .profile__group {
                 @include container-flex(v);
@@ -123,6 +150,28 @@ export default {
                     width: $profile-icon-size;
                     margin: 0 3px;
                 }
+
+                > input {
+                    width: 100%;
+                    font-size: $profile-link-size;
+                    background: transparent;
+                    border: 0;
+                    color: $profile-edit-color;
+                }
+
+                &.profile__group--edit {
+                    background: $profile-edit-bg;
+                    border-bottom: 4px solid $profile-edit-color;
+
+                    .profile__icon {
+                        color: $profile-edit-color;
+                    }
+                }
+            }
+
+            .profile__delete {
+                @include button-alpha($profile-delete, 0.5);
+                font-size: $profile-link-size;
             }
         }
     }
@@ -136,8 +185,24 @@ export default {
             }
         }
 
-        .profile__data .profile__group .profile__icon {
-            width: vw-to-px(map-get($container-widths, "sd"), $profile-icon-size);
+        .profile__data {
+            textarea {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-textarea-size);
+            }
+
+            .profile__group {
+                .profile__icon {
+                    width: vw-to-px(map-get($container-widths, "sd"), $profile-icon-size);
+                }
+
+                > input {
+                    font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
+                }
+            }
+
+            .profile__delete {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
+            }
         }
     }
 }
@@ -150,36 +215,24 @@ export default {
             }
         }
 
-        .profile__data .profile__group .profile__icon {
-            width: vw-to-px(map-get($container-widths, "md"), $profile-icon-size);
-        }
-    }
-}
+        .profile__data {
+            textarea {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-textarea-size);
+            }
 
-@media only screen and (min-width: map-get($breakpoints, "ld")) {
-    .content .profile {
-        // .profile__main .profile__links {
-        //     .profile__following, .profile__followers, .profile__edit {
-        //         font-size: vw-to-px(map-get($container-widths, "ld"), $profile-link-size);
-        //     }
-        // }
+            .profile__group {
+                .profile__icon {
+                    width: vw-to-px(map-get($container-widths, "md"), $profile-icon-size);
+                }
 
-        .profile__data .profile__group .profile__icon {
-            width: vw-to-px(map-get($container-widths, "ld"), $profile-icon-size);
-        }
-    }
-}
-
-@media only screen and (min-width: map-get($breakpoints, "xd")) {
-    .content .profile {
-        // .profile__main .profile__links {
-        //     .profile__following, .profile__followers, .profile__edit {
-        //         font-size: vw-to-px(map-get($container-widths, "xd"), $profile-link-size);
-        //     }
-        // }
-
-        .profile__data .profile__group .profile__icon {
-            width: vw-to-px(map-get($container-widths, "xd"), $profile-icon-size);
+                > input {
+                    font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
+                }
+            }
+            
+            .profile__delete {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ let UserSchema = new mongoose.Schema ({
     email: {
         type: String,
         required: true,
-        max: 120
+        max: 254
     },
     password: {
         type: String,
@@ -20,14 +20,26 @@ let UserSchema = new mongoose.Schema ({
     name: {
         type: String,
         required: false,
-        max: 50,
-        default: ''
+        max: 40,
+        default: null
     },
-    lastname: {
+    img: {
         type: String,
         required: false,
         max: 120,
-        default: ''
+        default: "default_profile.png"
+    },
+    ubication: {
+        type: String,
+        required: false,
+        max: 40,
+        default: null
+    },
+    description: {
+        type: String,
+        required: false,
+        max: 254,
+        default: null
     }
 });
 
