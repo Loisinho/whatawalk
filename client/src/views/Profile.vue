@@ -3,7 +3,7 @@
         div.content
             div.profile
                 div.profile__main
-                    img.profile__img.profile__field(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
+                    img.profile__img(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
                     div.profile__links
                         div.profile__following
                             span {{ profile.following }}
@@ -23,8 +23,8 @@
                         font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
                         h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
                         input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
-                    p.profile__description.profile__field(v-if="status !== 'save'") {{ profile.description }}
-                    textarea.profile__description.profile__field(v-else v-model="profile.description" rows="5" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
+                    p.profile__description(v-if="status !== 'save'") {{ profile.description }}
+                    textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
                     button.profile__delete(v-if="status === 'save'") Delete
 </template>
 
@@ -106,7 +106,7 @@ export default {
                 .profile__following, .profile__followers {
                     display: flex;
                     margin-bottom: 10px;
-                    font-size: $profile-link-size;
+                    font-size: $profile-size;
                     text-transform: uppercase;
 
                     > span {
@@ -122,7 +122,7 @@ export default {
 
                 .profile__edit {
                     @include button-alpha($alpha: 0.5);
-                    font-size: $profile-link-size;
+                    font-size: $profile-size;
                 }
             }
 
@@ -130,38 +130,52 @@ export default {
 
         .profile__data {
             .profile__username, .profile__description {
-                padding: 10px 5px;
+                padding: 5px;
+            }
+
+            .profile__username {
+                font-size: $profile-size;
+            }
+
+            .profile__description {
+                font-size: $profile-data-size;
+            }
+
+            h1, h3, p {
+                word-break: break-all;
             }
 
             textarea {
                 width: 100%;
-                font-family: $body-font-family;
-                font-size: $profile-textarea-size;
-                background: $profile-edit-bg;
+                margin-bottom: 4px;
                 border: 0;
-                border-bottom: 4px solid $profile-edit-color;
+                font-family: $body-font-family;
+                background: $profile-edit-bg;
                 color: $profile-edit-color;
             }
             
             .profile__group {
                 @include container-flex(v);
+                padding: 2px 5px;
 
                 .profile__icon {
-                    width: $profile-icon-size;
-                    margin: 0 3px;
+                    width: $profile-data-size;
+                    margin-right: 2px;
+                }
+
+                .profile__field {
+                    font-size: $profile-data-size;
                 }
 
                 > input {
                     width: 100%;
-                    font-size: $profile-link-size;
                     background: transparent;
-                    border: 0;
                     color: $profile-edit-color;
                 }
 
                 &.profile__group--edit {
                     background: $profile-edit-bg;
-                    border-bottom: 4px solid $profile-edit-color;
+                    margin-bottom: 4px;
 
                     .profile__icon {
                         color: $profile-edit-color;
@@ -171,7 +185,7 @@ export default {
 
             .profile__delete {
                 @include button-alpha($profile-delete, 0.5);
-                font-size: $profile-link-size;
+                font-size: $profile-size;
             }
         }
     }
@@ -181,27 +195,31 @@ export default {
     .content .profile {
         .profile__main .profile__links {
             .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
             }
         }
 
         .profile__data {
-            textarea {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-textarea-size);
+            .profile__username {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
+            }
+
+            .profile__description {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-data-size);
             }
 
             .profile__group {
                 .profile__icon {
-                    width: vw-to-px(map-get($container-widths, "sd"), $profile-icon-size);
+                    width: vw-to-px(map-get($container-widths, "sd"), $profile-data-size);
                 }
 
-                > input {
-                    font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
+                .profile__field {
+                    font-size: vw-to-px(map-get($container-widths, "sd"), $profile-data-size);
                 }
             }
 
             .profile__delete {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-link-size);
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
             }
         }
     }
@@ -211,27 +229,31 @@ export default {
     .content .profile {
         .profile__main .profile__links {
             .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
             }
         }
 
         .profile__data {
-            textarea {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-textarea-size);
+            .profile__username {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
+            }
+
+            .profile__description {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-data-size);
             }
 
             .profile__group {
                 .profile__icon {
-                    width: vw-to-px(map-get($container-widths, "md"), $profile-icon-size);
+                    width: vw-to-px(map-get($container-widths, "md"), $profile-data-size);
                 }
 
-                > input {
-                    font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
+                .profile__field {
+                    font-size: vw-to-px(map-get($container-widths, "md"), $profile-data-size);
                 }
             }
             
             .profile__delete {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-link-size);
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
             }
         }
     }

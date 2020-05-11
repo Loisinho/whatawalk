@@ -28,7 +28,8 @@ body {
         -webkit-tap-highlight-color: transparent;
     }
 
-    input, button {
+    input, button, textarea {
+        border: 0;
         outline: none;
     }
 

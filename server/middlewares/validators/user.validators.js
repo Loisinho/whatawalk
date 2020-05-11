@@ -7,7 +7,7 @@ exports.signup = [
     body("username", "Invalid username")
         .not().isEmpty()
         .trim()
-        .isLength({min: 3, max: 30})
+        .isLength({min: 3, max: 25})
         .escape()
         .custom(async function (value) {
             let user = await model.User.findOne({ username: value });

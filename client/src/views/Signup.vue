@@ -9,7 +9,7 @@
                         div.form__group(:class="{'form__group--error': $v.username.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faUser")
-                                input.form__username(type="text" v-model.trim="$v.username.$model" placeholder="Username" maxlength="30" :disabled="status")
+                                input.form__username(type="text" v-model.trim="$v.username.$model" placeholder="Username" maxlength="25" :disabled="status")
                             span.form__note(v-if="!$v.username.required") Field is required
                             span.form__note(v-if="!$v.username.minLength") Username must have at least {{$v.username.$params.minLength.min}} letters
                             span.form__note(v-if="!$v.username.maxLength") Username must have at most {{$v.username.$params.maxLength.max}} letters
@@ -62,7 +62,7 @@ export default {
         username: {
             required,
             minLength: minLength(3),
-            maxLength: maxLength(30),
+            maxLength: maxLength(25),
             async isUnique(value) {
                 try {
                     if (value.length < 3) return true;
