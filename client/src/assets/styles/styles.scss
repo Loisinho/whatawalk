@@ -28,9 +28,10 @@ body {
         -webkit-tap-highlight-color: transparent;
     }
 
-    input, button, textarea {
+    input, button, textarea, label {
         border: 0;
         outline: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
     input[type="submit"], button {

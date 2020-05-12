@@ -3,18 +3,24 @@
         div.content
             div.profile
                 div.profile__main
-                    img.profile__img(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
-                    div.profile__links
-                        div.profile__following
-                            span {{ profile.following }}
-                            router-link(to="/following") Following
-                        div.profile__followers
-                            span {{ profile.followers }}
-                            router-link(to="/followers") Followers
-                        button.profile__edit(v-if="status === 'edit'" @click="edit") {{ status }}
+                    div.profile__img
+                        div.image__box
+                        img(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
+                        label.profile__upload(v-if="status === 'save'" for="profile__file")
+                            input#profile__file(type="file" @change="previewImage")
+                            font-awesome-icon(:icon="faArrowAltCircleUp")
+                    div.profile__action
+                        h1.profile__username @{{ profile.username }}
+                        div.profile__links
+                            div.profile__following
+                                span {{ profile.following }}
+                                router-link(to="/following") Following
+                            div.profile__followers
+                                span {{ profile.followers }}
+                                router-link(to="/followers") Followers
+                        button.profile__edit(v-if="status === 'edit'" @click="status = 'save'") {{ status }}
                         button.profile__edit(v-else-if="status === 'save'" @click="save") {{ status }}
                 div.profile__data
-                    h1.profile__username @{{ profile.username }}
                     div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
                         font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
                         h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
@@ -29,8 +35,9 @@
 </template>
 
 <script>
+import axios from "axios";
 import { mapState } from "vuex";
-import { faUser, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Profile",
@@ -43,6 +50,7 @@ export default {
         return {
             faUser,
             faMapMarkerAlt,
+            faArrowAltCircleUp,
             profile: {
                 username: null,
                 name: null,
@@ -64,16 +72,38 @@ export default {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
                 this.$store.commit("alert/alertActive");
+                this.$router.push({name: "home"});
             }
         },
-        edit() {
-            this.status = "save";
+        previewImage() {
+            let input = document.getElementById("profile__file");
+            if (input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    document.querySelector(".profile__img > img").src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
         },
-        save() {
+        async save() {
+            try {
+                let res = await this.$http
+                    .post(`users/profile/${this.$route.params.id}/edit`, {
+                        name: this.profile.name,
+                        ubication: this.profile.ubication,
+                        description: this.profile.description,
+                        img: document.getElementById("profile__file").files[0]
+                    });
+                console.log(res);
+            } catch (error) {
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
+                this.$store.commit("alert/alertActive");
+            }
             this.status = "edit";
         }
     },
-    created: function() {
+    created: function(res) {
         this.find();
     }
 }
@@ -88,35 +118,90 @@ export default {
         padding: 10px;
 
         .profile__main {
-            @include container-flex(v);
+            @include container-flex();
             margin-bottom: 20px;
 
             .profile__img {
                 position: relative;
-                top: 0;
-                left: 0;
                 width: 40%;
-                border-radius: 50%;
+                // border-radius: 50%;
+                overflow: hidden;
+
+                .image__box {
+                    width: 100%;
+                    padding-bottom: 100%;
+                    background: #ffffff;
+                }
+
+                > img {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                .profile__upload {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+
+                    > input[type="file"] {
+                        width: 0;
+                        height: 0;
+                        display: block;
+                        overflow: hidden;
+
+                        + svg {
+                            font-size: $profile-upload-size;
+                            display: block;
+                            color: $profile-upload-color;
+                            cursor: pointer;
+                            transition: all 0.4s;
+
+                            &:hover {
+                                color: darken($profile-upload-color, 20%);
+                            }
+                        }
+                    }
+                }
             }
 
-            .profile__links {
+            .profile__action {
+                @include container-flex($direction: column);
+                justify-content: space-between;
                 width: 60%;
                 padding: 0 6%;
 
-                .profile__following, .profile__followers {
-                    display: flex;
-                    margin-bottom: 10px;
+                .profile__username {
                     font-size: $profile-size;
-                    text-transform: uppercase;
+                    padding-bottom: 10px;
+                }
 
-                    > span {
-                        display: block;
-                        width: 30%;
-                        text-align: center;
-                    }
+                .profile__links {
+                    .profile__following, .profile__followers {
+                        display: flex;
+                        margin-bottom: 10px;
+                        font-size: $profile-size;
+                        text-transform: uppercase;
 
-                    > a {
-                        @include link-border-animation;
+                        > span {
+                            display: block;
+                            width: 30%;
+                            text-align: center;
+                            border: 2px solid #ffffff;
+                        }
+
+                        > a {
+                            @include link-border-animation;
+                            padding-top: 2px;
+
+                            &:after {
+                                margin: 0;
+                            }
+                        }
                     }
                 }
 
@@ -129,19 +214,12 @@ export default {
         }
 
         .profile__data {
-            .profile__username, .profile__description {
+            .profile__description {
+                font-size: $profile-data-size;
                 padding: 5px;
             }
 
-            .profile__username {
-                font-size: $profile-size;
-            }
-
-            .profile__description {
-                font-size: $profile-data-size;
-            }
-
-            h1, h3, p {
+            h3, p {
                 word-break: break-all;
             }
 
@@ -193,17 +271,25 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .content .profile {
-        .profile__main .profile__links {
-            .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
+        .profile__main {
+            .profile__img .profile__upload > input[type="file"] + svg {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-upload-size);
+            }
+
+            .profile__action {
+                .profile__username, .profile__edit {
+                    font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
+                }
+
+                .profile__links {
+                    .profile__following, .profile__followers {
+                        font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
+                    }
+                }
             }
         }
 
         .profile__data {
-            .profile__username {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
-            }
-
             .profile__description {
                 font-size: vw-to-px(map-get($container-widths, "sd"), $profile-data-size);
             }
@@ -227,17 +313,25 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     .content .profile {
-        .profile__main .profile__links {
-            .profile__following, .profile__followers, .profile__edit {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
+        .profile__main {
+            .profile__img .profile__upload > input[type="file"] + svg {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-upload-size);
+            }
+
+            .profile__action {
+                .profile__username, .profile__edit {
+                    font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
+                }
+
+                .profile__links {
+                    .profile__following, .profile__followers {
+                        font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
+                    }
+                }
             }
         }
 
         .profile__data {
-            .profile__username {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
-            }
-
             .profile__description {
                 font-size: vw-to-px(map-get($container-widths, "md"), $profile-data-size);
             }

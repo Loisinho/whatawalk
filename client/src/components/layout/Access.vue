@@ -109,6 +109,10 @@ export default {
 
             &.access__main {
                 z-index: 1;
+                
+                > img {
+                    object-fit: cover;
+                }
             }
         }
 
