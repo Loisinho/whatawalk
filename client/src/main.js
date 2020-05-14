@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 Vue.config.productionTip = false
 
 Vue.prototype.$http = Axios.create({
-    baseURL: "https://www.whatawalk.ooguy.com/"
+    baseURL: process.env.VUE_APP_URL
 })
 
 Vue.use(Vuelidate)

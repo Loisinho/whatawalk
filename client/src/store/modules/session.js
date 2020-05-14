@@ -19,7 +19,7 @@ const mutations = {
 // Actions
 const actions = {
     async checkSession (context) {
-        let user = await axios.get("https://www.whatawalk.ooguy.com/users/session");
+        let user = await axios.get(process.env.VUE_APP_URL + "users/session");
         if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,
@@ -33,7 +33,7 @@ const actions = {
             });
     },
     async checkUser ({context}, username) {
-        return await axios.get(`https://www.whatawalk.ooguy.com/users/${username}/exists/username`);
+        return await axios.get(process.env.VUE_APP_URL + `users/${username}/exists/username`);
     }
 }
 

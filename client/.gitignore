@@ -3,3 +3,6 @@
 
 # Distribution folder.
 /dist
+
+# Environment variables file.
+.env

@@ -66,7 +66,7 @@ export default {
         async find() {
             try {
                 let res = await this.$http.get(`users/${this.$route.params.id}/profile`);
-                document.querySelector(".profile__img > img").src = "https://www.whatawalk.ooguy.com/media/images/profile/" + res.data.img;
+                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.profile = res.data;
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
@@ -93,7 +93,7 @@ export default {
                 data.append("description", this.profile.description);
                 data.append("img", document.getElementById("profile__file").files[0]);
                 let res = await this.$http.post(`users/${this.$route.params.id}/profile/edit`, data);
-                document.querySelector(".profile__img > img").src = "https://www.whatawalk.ooguy.com/media/images/profile/" + res.data.img;
+                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.$store.state.session.img = res.data.img;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
