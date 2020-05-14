@@ -31,6 +31,9 @@ const actions = {
                 isLoggedIn: false,
                 username: null
             });
+    },
+    async checkUser ({context}, username) {
+        return await axios.get(`https://www.whatawalk.ooguy.com/users/${username}/exists/username`);
     }
 }
 

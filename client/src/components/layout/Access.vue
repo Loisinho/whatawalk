@@ -4,7 +4,7 @@
             span.access__element.access__main
                 router-link(to="/login" v-if="!isLoggedIn")
                     font-awesome-icon(:icon="faSignInAlt")
-                img.access__icon(v-else :src="`https://www.whatawalk.ooguy.com/media/images/profile/${img}`")
+                img.access__icon(v-else :src="`https://www.whatawalk.ooguy.com/media/images/profile/${img}`" alt="Profile image")
             span.access__element(v-if="isLoggedIn")
                 router-link(:to="`/user/${username}`")
                     font-awesome-icon(:icon="faUser")

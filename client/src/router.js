@@ -38,7 +38,8 @@ const router = new Router({
             path: "/user/:id",
             name: "profile",
             meta: {
-                requiresAuth: true
+                requiresAuth: true,
+                userExists: true
             },
             component: () => import(/* webpackChunkName: "profile" */ "./views/Profile.vue")
         },
@@ -60,12 +61,19 @@ const router = new Router({
 router.beforeEach(async (to, from, next) => {
     await store.dispatch("session/checkSession");
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        !store.state.session.isLoggedIn? next({ name: "login" }) : next();
+        if (!store.state.session.isLoggedIn) {
+            next({ name: "login" })
+        } else {
+            if (to.matched.some(record => record.meta.userExists)) {
+                let user = await store.dispatch("session/checkUser", to.params.id);
+                !user.data? next() : next({ name: "home" });
+            }
+            next();
+        }
     } else if (to.matched.some(record => record.meta.guest)) {
-        if (!store.state.session.isLoggedIn) next();
-    } else {
-        next();
+        !store.state.session.isLoggedIn? next(): next({ name: "home" });
     }
+    next();
 });
 
 export default router;

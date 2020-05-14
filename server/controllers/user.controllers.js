@@ -10,7 +10,7 @@ exports.session = function (req, res, next) {
 }
 
 // GET unique username.
-exports.isUsernameUnique = async function (req, res, next) {
+exports.usernameExists = async function (req, res, next) {
     try {
         let user = await model.User.findOne({ username: req.params.username });
         res.status(200).json(user? false : true);
@@ -20,7 +20,7 @@ exports.isUsernameUnique = async function (req, res, next) {
 }
 
 // GET unique email.
-exports.isEmailUnique = async function (req, res, next) {
+exports.emailExists = async function (req, res, next) {
     try {
         let user = await model.User.findOne({ email: req.params.email });
         res.status(200).json(user? false : true);
@@ -93,6 +93,26 @@ exports.profile = async function (req, res, next) {
         });
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// POST edit profile.
+exports.edit = async function (req, res, next) {
+    if (user.username === req.params.username) {
+        try {
+            let user = await model.User.findOne({ username: req.params.username });
+            user.name = req.body.name;
+            user.ubication = req.body.ubication;
+            user.description = req.body.description;
+            if(req.file !== undefined) {
+                user.img = req.file.filename;
+            }
+            await user.save();
+            req.session.user.img = user.img;
+            res.status(200).json({img: user.img});
+        } catch (error) {
+            res.status(422).json("Oops, an error occurred. Please try again.");
+        }
     }
 }
 

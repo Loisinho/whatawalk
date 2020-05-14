@@ -19,7 +19,7 @@
                                 font-awesome-icon.form__icon(:icon="faEnvelope")
                                 input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" maxlength="254" :disabled="status")
                             span.form__note(v-if="!$v.email.required") Field is required
-                            span.form__note(v-if="!$v.email.email || !$v.email.maxLength.max") Invalid email address
+                            span.form__note(v-if="!$v.email.email || !$v.email.maxLength") Invalid email address
                             span.form__note(v-if="!$v.email.isUnique") This email is already in use
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
@@ -66,7 +66,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (value.length < 3) return true;
-                    let res = await this.$http.get(`users/unique/username/${value}`);
+                    let res = await this.$http.get(`users/${value}/exists/username`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
@@ -82,7 +82,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (!this.$v.email.required || !this.$v.email.email) return true;
-                    let res = await this.$http.get(`users/unique/email/${value}`);
+                    let res = await this.$http.get(`users/${value}/exists/email`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";

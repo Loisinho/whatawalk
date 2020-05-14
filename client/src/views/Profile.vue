@@ -5,7 +5,7 @@
                 div.profile__main
                     div.profile__img
                         div.image__box
-                        img(:src="'https://www.whatawalk.ooguy.com/media/images/profile/' + profile.img" alt="Profile image")
+                        img(src="" alt="Profile image")
                         label.profile__upload(v-if="status === 'save'" for="profile__file")
                             input#profile__file(type="file" @change="previewImage")
                             font-awesome-icon(:icon="faArrowAltCircleUp")
@@ -54,7 +54,6 @@ export default {
             profile: {
                 username: null,
                 name: null,
-                img: null,
                 ubication: null,
                 description: null,
                 following: 0,
@@ -66,7 +65,8 @@ export default {
     methods: {
         async find() {
             try {
-                let res = await this.$http.get(`users/profile/${this.$route.params.id}`);
+                let res = await this.$http.get(`users/${this.$route.params.id}/profile`);
+                document.querySelector(".profile__img > img").src = "https://www.whatawalk.ooguy.com/media/images/profile/" + res.data.img;
                 this.profile = res.data;
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
@@ -87,15 +87,16 @@ export default {
         },
         async save() {
             try {
-                let res = await this.$http
-                    .post(`users/profile/${this.$route.params.id}/edit`, {
-                        name: this.profile.name,
-                        ubication: this.profile.ubication,
-                        description: this.profile.description,
-                        img: document.getElementById("profile__file").files[0]
-                    });
-                console.log(res);
+                let data = new FormData();
+                data.append("name", this.profile.name);
+                data.append("ubication", this.profile.ubication);
+                data.append("description", this.profile.description);
+                data.append("img", document.getElementById("profile__file").files[0]);
+                let res = await this.$http.post(`users/${this.$route.params.id}/profile/edit`, data);
+                document.querySelector(".profile__img > img").src = "https://www.whatawalk.ooguy.com/media/images/profile/" + res.data.img;
+                this.$store.state.session.img = res.data.img;
             } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
                 this.$store.commit("alert/alertActive");
@@ -103,7 +104,7 @@ export default {
             this.status = "edit";
         }
     },
-    created: function(res) {
+    created: function() {
         this.find();
     }
 }
@@ -119,7 +120,7 @@ export default {
 
         .profile__main {
             @include container-flex();
-            margin-bottom: 20px;
+            margin-bottom: 10px;
 
             .profile__img {
                 position: relative;
@@ -140,6 +141,7 @@ export default {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    color: #000000;
                 }
 
                 .profile__upload {
