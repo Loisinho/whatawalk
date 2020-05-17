@@ -19,7 +19,7 @@ const mutations = {
 // Actions
 const actions = {
     async checkSession (context) {
-        let user = await axios.get(process.env.VUE_APP_URL + "users/session");
+        let user = await axios.get(process.env.VUE_APP_URL + "users/session", {withCredentials: process.env.VUE_AXIOS_WITHCREDENTIALS? true: false});
         if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,

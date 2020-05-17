@@ -1,8 +1,11 @@
 # Node modules folder.
 /node_modules
 
+# Package-lock file.
+package-lock.json
+
 # Distribution folder.
 /dist
 
 # Environment variables file.
-.env
+.env.prod

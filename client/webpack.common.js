@@ -70,12 +70,14 @@ module.exports = {
             template: './src/assets/index.html',
             favicon: './src/assets/favicon.ico'
         }),
-        new Dotenv(),
+        new Dotenv({
+            path: `./.env.${process.env.npm_lifecycle_event === 'dev-server'? 'dev' : 'prod'}`
+        }),
         new VueLoaderPlugin()
     ],
     resolve: {
         alias: {
             vue: 'vue/dist/vue.js'
         },
-    },
+    }
 };
