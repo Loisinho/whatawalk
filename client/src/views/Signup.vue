@@ -6,6 +6,13 @@
                     h2 Sign up
                 main.signup
                     form.signup__manually(@submit.prevent="submit")
+                        div.form__group(:class="{'form__group--error': $v.email.$error}")
+                            div.form__inputbox
+                                font-awesome-icon.form__icon(:icon="faEnvelope")
+                                input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" maxlength="254" :disabled="status")
+                            span.form__note(v-if="!$v.email.required") Field is required
+                            span.form__note(v-if="!$v.email.email || !$v.email.maxLength") Invalid email address
+                            span.form__note(v-if="!$v.email.isUnique") This email is already in use
                         div.form__group(:class="{'form__group--error': $v.username.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faUser")
@@ -14,13 +21,6 @@
                             span.form__note(v-if="!$v.username.minLength") Username must have at least {{$v.username.$params.minLength.min}} letters
                             span.form__note(v-if="!$v.username.maxLength") Username must have at most {{$v.username.$params.maxLength.max}} letters
                             span.form__note(v-if="!$v.username.isUnique") This username is already in use
-                        div.form__group(:class="{'form__group--error': $v.email.$error}")
-                            div.form__inputbox
-                                font-awesome-icon.form__icon(:icon="faEnvelope")
-                                input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" maxlength="254" :disabled="status")
-                            span.form__note(v-if="!$v.email.required") Field is required
-                            span.form__note(v-if="!$v.email.email || !$v.email.maxLength") Invalid email address
-                            span.form__note(v-if="!$v.email.isUnique") This email is already in use
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
@@ -50,8 +50,8 @@ export default {
             faKey,
             faEye,
             faEyeSlash,
-            username: "",
             email: null,
+            username: "",
             password: null,
             repeatPassword: null,
             btnValue: "sign up",
@@ -59,22 +59,6 @@ export default {
         }
     },
     validations: {
-        username: {
-            required,
-            minLength: minLength(3),
-            maxLength: maxLength(25),
-            async isUnique(value) {
-                try {
-                    if (value.length < 3) return true;
-                    let res = await this.$http.get(`users/${value}/exists/username`);
-                    return Boolean(res.data);
-                } catch (error) {
-                    this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
-                    this.$store.state.alert.type = "error";
-                    this.$store.commit("alert/alertActive");
-                }
-            }
-        },
         email: {
             required,
             email,
@@ -86,6 +70,22 @@ export default {
                     return Boolean(res.data);
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";
+                    this.$store.state.alert.type = "error";
+                    this.$store.commit("alert/alertActive");
+                }
+            }
+        },
+        username: {
+            required,
+            minLength: minLength(3),
+            maxLength: maxLength(25),
+            async isUnique(value) {
+                try {
+                    if (value.length < 3) return true;
+                    let res = await this.$http.get(`users/${value}/exists/username`);
+                    return Boolean(res.data);
+                } catch (error) {
+                    this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
                     this.$store.state.alert.type = "error";
                     this.$store.commit("alert/alertActive");
                 }
@@ -108,8 +108,8 @@ export default {
                     this.status = true;
                     let res = await this.$http
                         .post("users/signup", {
-                            username: this.username,
                             email: this.email,
+                            username: this.username,
                             password: this.password
                         });
                     this.btnValue = "thank you for signing up";
@@ -124,6 +124,9 @@ export default {
                 this.status = false;
             }
         }
+    }, 
+    created: function () {
+        this.email = this.$route.params.email? this.$route.params.email : null;
     }
 };
 </script>

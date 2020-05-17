@@ -46,7 +46,7 @@ export default {
         async logout() {
             try {
                 await this.$http.get("users/logout");
-                this.$router.push({name: "home"});
+                this.$router.push({name: "login"});
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
