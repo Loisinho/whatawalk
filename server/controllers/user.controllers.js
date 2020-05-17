@@ -2,21 +2,14 @@
 const model = require("../models/");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const passport = require("passport");
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
 
 
 // GET session.
 exports.session = function (req, res, next) {
     res.status(200).json(user);
-}
-
-// GET unique username.
-exports.usernameExists = async function (req, res, next) {
-    try {
-        let user = await model.User.findOne({ username: req.params.username });
-        res.status(200).json(user? false : true);
-    } catch (error) {
-        res.status(422).json("Oops, error verifying username. Please try again.");
-    }
 }
 
 // GET unique email.
@@ -29,18 +22,28 @@ exports.emailExists = async function (req, res, next) {
     }
 }
 
+// GET unique username.
+exports.usernameExists = async function (req, res, next) {
+    try {
+        let user = await model.User.findOne({ username: req.params.username });
+        res.status(200).json(user? false : true);
+    } catch (error) {
+        res.status(422).json("Oops, error verifying username. Please try again.");
+    }
+}
+
 // POST signup.
 exports.signup = async function (req, res, next) {
     try {
         let errors = validationResult(req);
         if (errors.isEmpty()) {
             let newUser = new model.User({
-                username: req.body.username,
                 email: req.body.email,
+                username: req.body.username,
                 password: await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10))
             });
             await newUser.save();
-            res.status(200).json("ok");
+            res.status(200).json("Signed up successfully!");
         } else {
             // let msges = [];
             // errors.array().map(error => msges.push({ [error.param]: error.msg }));
@@ -57,10 +60,9 @@ exports.login = async function (req, res, next) {
         let errors = validationResult(req);
         if (errors.isEmpty()) {
             let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]});
-            req.session.user = {
-                username: user.username,
-                img: user.img
-            };
+            req.login(user, error => {
+                if (error) throw error;
+            });
             res.status(200).json("Loged in successfully!");
         } else {
             res.status(422).json(errors.errors[0].msg);
@@ -69,6 +71,26 @@ exports.login = async function (req, res, next) {
         res.status(422).json("There was an error verifying your account. Please try again.");
     }
 };
+
+// POST Signin with Google.
+exports.google = async function (req, res, next) {
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.idtoken
+        });
+        const payload = ticket.getPayload();
+        const useremail = payload['email'];
+        let user = await model.User.findOne({email: useremail});
+        if (user) {
+            req.login(user, error => {
+                if (error) throw error;
+            });
+        }
+        res.status(200).json(user? true : false);
+    } catch (error) {
+        res.status(422).json("There was an error verifying your account. Please try again.");
+    }
+}
 
 // GET logout.
 exports.logout = function (req, res, next) {
@@ -116,7 +138,12 @@ exports.edit = async function (req, res, next) {
     }
 }
 
-// GET test.
-exports.test = function (req, res, next) {
-    res.status(200).json("Hello World!");
-};
+passport.serializeUser(function(user, done) {
+    done(null, {id: user._id, username: user.username, img: user.img});
+});
+   
+passport.deserializeUser(function(user, done) {
+    model.User.findById(user.id, function (error, user) {
+        done(error, user.username);
+    });
+});

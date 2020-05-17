@@ -1,12 +1,13 @@
 // Is user logged in?
 exports.isLoggedIn = function(req, res, next) {
-    user = req.session.user || null;
+    // console.log(JSON.stringify(req.session.passport));
+    user = req.session.passport? req.session.passport.user : null;
     next();
 }
 
 // Has user authoritation?
 exports.hasAuth = function(req, res, next) {
-    user = req.session.user || null;
+    user = req.session.passport? req.session.passport.user : null;
     if (user)
         next();
     else

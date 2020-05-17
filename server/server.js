@@ -5,6 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const session = require("express-session");
+const passport = require("passport");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const http = require("http");
@@ -15,6 +16,13 @@ const userRoutes = require("./routes/user.routes");
 
 // Express module instance.
 const app = express();
+
+// Enable CORS, Development mode ONLY
+const cors = require("cors");
+app.use(cors({
+    origin: "http://localhost:8080",
+	credentials: true
+}));
 
 // Enable:
 // body parsing
@@ -38,16 +46,18 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     name: "_wawalk",
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
         path: "/",
-        maxAge: 1000 * 60 * 15, // 15 min.
+        maxAge: 1000 * 60 * 60 * 24, // 24 h.
         sameSite: true,
         // secure: true,
         // httpOnly: true
     },
-    rolling: true,
+    rolling: true
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 // routes/web.routes.js

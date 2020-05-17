@@ -1,6 +1,9 @@
 # Node modules foder.
 /node_modules
 
+# Package-lock file
+package-lock.json
+
 # Keys & certs files.
 *.pem
 

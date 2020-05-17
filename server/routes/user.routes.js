@@ -23,14 +23,14 @@ router.use(isLoggedIn);
 
 // Public Routes:
 router.get("/session", user.session);
-router.get("/:username/exists/username", user.usernameExists);
 router.get("/:email/exists/email", user.emailExists);
+router.get("/:username/exists/username", user.usernameExists);
 router.post("/signup", validator.signup, user.signup);
 router.post("/login", validator.login, user.login);
+router.post("/google", user.google);
 router.get("/logout", user.logout);
 router.get("/:username/profile", user.profile);
 router.post("/:username/profile/edit", hasAuth, upload.single('img'), user.edit);
-router.get("/test", hasAuth, user.test);
 
 
 module.exports = router;

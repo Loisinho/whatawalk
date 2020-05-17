@@ -4,15 +4,6 @@ const { body, oneOf } = require("express-validator");
 
 
 exports.signup = [
-    body("username", "Invalid username")
-        .not().isEmpty()
-        .trim()
-        .isLength({min: 3, max: 25})
-        .escape()
-        .custom(async function (value) {
-            let user = await model.User.findOne({ username: value });
-            if (user) throw new Error("This username is already in use");
-        }),
     body("email", "Invalid email")
         .not().isEmpty()
         .isEmail()
@@ -21,6 +12,15 @@ exports.signup = [
         .custom(async function (value) {
             let user = await model.User.findOne({ email: value });
             if (user) throw new Error("This email is already in use");
+        }),
+    body("username", "Invalid username")
+        .not().isEmpty()
+        .trim()
+        .isLength({min: 3, max: 25})
+        .escape()
+        .custom(async function (value) {
+            let user = await model.User.findOne({ username: value });
+            if (user) throw new Error("This username is already in use");
         }),
     body("password", "Invalid password")
         .not().isEmpty()
