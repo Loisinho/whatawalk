@@ -1,9 +1,6 @@
 # Node modules folder.
 /node_modules
 
-# Package-lock file.
-package-lock.json
-
 # Distribution folder.
 /dist
 
