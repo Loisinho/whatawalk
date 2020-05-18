@@ -31,6 +31,7 @@ router.post("/google", user.google);
 router.get("/logout", user.logout);
 router.get("/:username/profile", user.profile);
 router.post("/:username/profile/edit", hasAuth, upload.single('img'), user.edit);
+router.get("/explore/:selection/:keyword", hasAuth, user.search);
 
 
 module.exports = router;

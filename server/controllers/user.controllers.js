@@ -130,11 +130,28 @@ exports.edit = async function (req, res, next) {
                 user.img = req.file.filename;
             }
             await user.save();
-            req.session.user.img = user.img;
+            req.session.passport.user.img = user.img;
             res.status(200).json({img: user.img});
         } catch (error) {
             res.status(422).json("Oops, an error occurred. Please try again.");
         }
+    }
+}
+
+// GET search
+exports.search = async function (req, res, next) {
+    let users;
+    let re = new RegExp(req.params.keyword, "i");
+    try {
+        if (req.params.selection === "user") {
+            users = await model.User
+                .find({username: re})
+                .sort({username: "asc"})
+                .limit(10).select("username img -_id");
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
 
