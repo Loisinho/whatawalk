@@ -18,8 +18,8 @@
                             div.profile__followers
                                 span {{ profile.followers }}
                                 router-link(to="/followers") Followers
-                        button.profile__edit(v-if="status === 'edit'" @click="status = 'save'") {{ status }}
-                        button.profile__edit(v-else-if="status === 'save'" @click="save") {{ status }}
+                        button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
+                        button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
                 div.profile__data
                     div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
                         font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
@@ -31,11 +31,10 @@
                         input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
                     p.profile__description(v-if="status !== 'save'") {{ profile.description }}
                     textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
-                    button.profile__delete(v-if="status === 'save'") Delete
+                    button.profile__delete(v-if="status === 'save'" type="button") Delete
 </template>
 
 <script>
-import axios from "axios";
 import { mapState } from "vuex";
 import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
 

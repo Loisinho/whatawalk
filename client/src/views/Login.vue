@@ -64,7 +64,7 @@ export default {
                         });
                     this.btnValue = "thank you for logging in";
                     setTimeout(() => {
-                        this.$router.push({name: "explore"});
+                        this.$router.push({name: "home"});
                     }, 1000);
                 }
             } catch (error) {

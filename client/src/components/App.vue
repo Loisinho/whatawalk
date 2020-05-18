@@ -1,7 +1,7 @@
 <template lang="pug">
     div#app
         transition(name="fade" mode="out-in")
-            router-view#www
+            router-view#www(:key="$route.path")
         Alert
         Logo
         Access

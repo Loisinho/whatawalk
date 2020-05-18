@@ -11,7 +11,12 @@ const mutations = {
             state.open = payload? !state.open: false;
     },
     isClickable(state, payload) {
-        state.clickable = payload;
+        if (payload > 991 && state.clickable === true) {
+            state.clickable = false;
+            state.open = false;
+        } else if (payload < 991 && state.clickable === false) {
+            state.clickable = true;
+        }
     }
 }
 
