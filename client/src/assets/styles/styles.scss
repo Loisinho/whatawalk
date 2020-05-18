@@ -28,13 +28,13 @@ body {
         -webkit-tap-highlight-color: transparent;
     }
 
-    input, button, textarea, label {
+    input, button, textarea, label, select {
         border: 0;
         outline: none;
         -webkit-tap-highlight-color: transparent;
     }
 
-    input[type="submit"], button {
+    input[type="submit"], button, select {
         cursor: pointer;
     }
 }

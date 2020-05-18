@@ -5,23 +5,33 @@
                 div.menu__line.menu__line--first
                 div.menu__line.menu__line--second
         div#menu__links
-            ul
+            ul(v-if="!isLoggedIn")
                 li(@click="menuStatus(false)")
                     router-link(to="/") Home
-                li(@click="menuStatus(false)" v-if="isLoggedIn")
-                    router-link(to="/publications") Publications
-                li(@click="menuStatus(false)" v-if="isLoggedIn")
-                    router-link(to="/travels") Travels
-                li(@click="menuStatus(false)" v-if="isLoggedIn")
-                    router-link(to="/explore") Explore
-                li(@click="menuStatus(false)" v-if="isLoggedIn")
-                    router-link(to="/test") Test
                 li(@click="menuStatus(false)")
                     router-link(to="/about") About
+            ul(v-else)
+                li(@click="menuStatus(false)")
+                    router-link(to="/publications") Publications
+                li(@click="menuStatus(false)")
+                    router-link(to="/travels") Travels
+                li.menu__dropdown
+                    a(href="javascript:void(0)" @click="exploreOpen = !exploreOpen") Explore
+                    form.menu__explore(@submit.prevent="search" :class="{'menu__explore--active': exploreOpen}")
+                        div.menu__category(@click="optionsOpen = !optionsOpen")
+                            span.menu__select {{ selection }}
+                            font-awesome-icon(:icon="faSortDown")
+                            div.menu__options(:class="{'menu__options--active': optionsOpen}")
+                                p(@click="selection = 'user'") user
+                        input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
+                        input(type="submit" value="" :disabled="searchStatus")
+                        button.menu__search(type="button" @click="search" :disabled="searchStatus")
+                            font-awesome-icon(:icon="faSearch")
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import { faSearch, faSortDown } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Menu",
@@ -31,14 +41,43 @@ export default {
             isLoggedIn: state => state.session.isLoggedIn
         })
     },
+    data: () => {
+        return {
+            faSortDown,
+            faSearch,
+            exploreOpen: false,
+            optionsOpen: false,
+            selection: "user",
+            keyword: "",
+            searchStatus: false
+        }
+    },
     methods: {
         ...mapMutations("menu", [
             "menuStatus",
             "isClickable"
         ]),
         resizing: function() {
+            this.isClickable(window.innerWidth);
+        },
+        search: async function() {
             this.menuStatus(false);
-            this.isClickable(window.innerWidth < 991? true: false);
+            try {
+                let res = await this.$http.get(`users/explore/${this.selection}/${this.keyword}`);
+                this.$router.push({
+                    name: "explore",
+                    params: {
+                        selection: this.selection,
+                        keyword: this.keyword,
+                        items: res.data
+                    }
+                }).catch(err => {});
+            } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
+                this.$store.commit("alert/alertActive");
+            }
         }
     },
     mounted: function() {
@@ -71,6 +110,7 @@ export default {
             width: 40px;
             height: 40px;
             margin: auto 0;
+            cursor: pointer;
 
             .menu__line {
                 width: 100%;
@@ -115,20 +155,96 @@ export default {
         transition: transform $transition-time;
         box-shadow: $menu-shadow;
 
-        a {
-            display: block;
-            line-height: 60px;
-            text-align: center;
-            text-transform: uppercase;
-            font-size: 24px;
-            color: $nav-links-color;
+        li {
+            a {
+                display: block;
+                line-height: 60px;
+                text-align: center;
+                text-transform: uppercase;
+                font-size: 24px;
+                color: $nav-links-color;
+
+                &.router-link-exact-active {
+                    color: $nav-links-active-color;
+                }
+            }
 
             &:hover {
                 background: $nav-links-hover-bg;
             }
 
-            &.router-link-exact-active {
-                color: $nav-links-active-color;
+            .menu__explore {
+                height: 110px;
+                padding: 10px;
+                margin-bottom: 10px;
+                background: $nav-links-hover-bg;
+                display: none;
+
+                .menu__select, .menu__keyword, .menu__search {
+                    height: 40px;
+                    font-size: 20px;
+                    background: transparent;
+                    color: $nav-links-color;
+                }
+
+                .menu__category {
+                    position: relative;
+                    margin-bottom: 10px;
+                    cursor: pointer;
+
+                    .menu__select {
+                        display: inline-block;
+                        width: calc(100% - 40px);
+                        padding-left: 5px;
+                        line-height: 40px;
+                        text-transform: capitalize;
+                    }
+
+                    svg {
+                        width: 40px;
+                        font-size: 20px;
+                        color: $nav-links-color;
+                    }
+
+                    .menu__options {
+                        position: absolute;
+                        width: 100%;
+                        display: none;
+                        background: rgba(#000000, 0.6);
+
+                        &.menu__options--active {
+                            display: block;
+
+                            > p {
+                                font-size: 20px;
+                                line-height: 40px;
+                                padding-left: 5px;
+                                text-transform: capitalize;
+                                cursor: pointer;
+
+                                &:hover {
+                                    color: $nav-links-active-color;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .menu__keyword {
+                    width: calc(100% - 40px);
+                    padding-left: 5px;
+                }
+
+                .menu__search {
+                    width: 40px;
+                    border-radius: 50%;
+                    background: $nav-links-color;
+                    color: $nav-links-bg;
+                }
+
+                &.menu__explore--active {
+                    display: block;
+                }
             }
         }
     }

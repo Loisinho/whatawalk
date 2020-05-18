@@ -14,6 +14,11 @@ const router = new Router({
             component: Home
         },
         {
+            path: "/about",
+            name: "about",
+            component: () => import(/* webpackChunkName: "about" */ "./views/About.vue")
+        },
+        {
             path: "/signup",
             name: "signup",
             meta: {
@@ -30,9 +35,12 @@ const router = new Router({
             component: () => import(/* webpackChunkName: "login" */ "./views/Login.vue")
         },
         {
-            path: "/about",
-            name: "about",
-            component: () => import(/* webpackChunkName: "about" */ "./views/About.vue")
+            path: "/explore/:selection/:keyword",
+            name: "explore",
+            meta: {
+                requiresAuth: true
+            },
+            component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
         },
         {
             path: "/user/:id",
@@ -42,14 +50,6 @@ const router = new Router({
                 userExists: true
             },
             component: () => import(/* webpackChunkName: "profile" */ "./views/Profile.vue")
-        },
-        {
-            path: "/test",
-            name: "test",
-            meta: {
-                requiresAuth: true
-            },
-            component: () => import(/* webpackChunkName: "test" */ "./views/Test.vue")
         },
         {
             path: "*",
