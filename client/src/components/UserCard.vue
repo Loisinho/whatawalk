@@ -1,10 +1,11 @@
 <template lang="pug">
+    //- router-link.usercard(:to="{name: 'profile', params: {id: user.username}}")
     div.usercard
         img.usercard__img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
-        button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ following }}
-            font-awesome-icon(v-if="following === 'follow'" :icon="faUserPlus")
-            font-awesome-icon(v-else :icon="faUserMinus")
+        button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ following? "unfollow": "follow" }}
+            font-awesome-icon(v-if="following" :icon="faUserMinus")
+            font-awesome-icon(v-else :icon="faUserPlus")
 </template>
 
 <script>
@@ -24,13 +25,24 @@ export default {
             faUserPlus,
             faUserMinus,
             webUrl: process.env.VUE_APP_URL + "media/images/profile/",
-            following: "follow"
+            following: null
         }
     },
     methods: {
-        followAction() {
-            this.following = this.following === "follow"? "unfollow": "follow";
+        async followAction() {
+            try {
+                await this.$http.get(`users/${this.username}/follow?user=${this.user.username}&follow=${!this.following? "1": "0"}`);
+                this.following = !this.following;
+            } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
+                this.$store.commit("alert/alertActive");
+            }
         }
+    },
+    created: function () {
+        this.following = this.user.follow? true: false;
     }
 };
 </script>

@@ -66,7 +66,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (!this.$v.email.required || !this.$v.email.email) return true;
-                    let res = await this.$http.get(`users/${value}/exists/email`);
+                    let res = await this.$http.get(`users/exists?email=${value}`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";
@@ -82,7 +82,7 @@ export default {
             async isUnique(value) {
                 try {
                     if (value.length < 3) return true;
-                    let res = await this.$http.get(`users/${value}/exists/username`);
+                    let res = await this.$http.get(`users/exists?username=${value}`);
                     return Boolean(res.data);
                 } catch (error) {
                     this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";

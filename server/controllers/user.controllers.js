@@ -4,31 +4,21 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const {OAuth2Client} = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
+const gclient = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
 
 
 // GET session.
 exports.session = function (req, res, next) {
-    res.status(200).json(user);
+    res.status(200).json(client);
 }
 
-// GET unique email.
-exports.emailExists = async function (req, res, next) {
+// GET unique field.
+exports.exists = async function (req, res, next) {
     try {
-        let user = await model.User.findOne({ email: req.params.email });
+        let user = await model.User.findOne({$or: [{username: req.query.username}, {email: req.query.email}]});
         res.status(200).json(user? false : true);
     } catch (error) {
         res.status(422).json("Oops, error verifying email. Please try again.");
-    }
-}
-
-// GET unique username.
-exports.usernameExists = async function (req, res, next) {
-    try {
-        let user = await model.User.findOne({ username: req.params.username });
-        res.status(200).json(user? false : true);
-    } catch (error) {
-        res.status(422).json("Oops, error verifying username. Please try again.");
     }
 }
 
@@ -75,7 +65,7 @@ exports.login = async function (req, res, next) {
 // POST Signin with Google.
 exports.google = async function (req, res, next) {
     try {
-        const ticket = await client.verifyIdToken({
+        const ticket = await gclient.verifyIdToken({
             idToken: req.body.idtoken
         });
         const payload = ticket.getPayload();
@@ -100,7 +90,7 @@ exports.logout = function (req, res, next) {
     });
 }
 
-// GET profile.
+// GET show profile.
 exports.profile = async function (req, res, next) {
     try {
         let user = await model.User.findOne({ username: req.params.username });
@@ -110,8 +100,8 @@ exports.profile = async function (req, res, next) {
             img: user.img,
             ubication: user.ubication,
             description: user.description,
-            following: "10K",
-            followers: "999M",
+            following: user.following.length,
+            followers: user.followers.length,
         });
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -120,36 +110,85 @@ exports.profile = async function (req, res, next) {
 
 // POST edit profile.
 exports.edit = async function (req, res, next) {
-    if (user.username === req.params.username) {
-        try {
-            let user = await model.User.findOne({ username: req.params.username });
-            user.name = req.body.name;
-            user.ubication = req.body.ubication;
-            user.description = req.body.description;
-            if(req.file !== undefined) {
-                user.img = req.file.filename;
-            }
-            await user.save();
-            req.session.passport.user.img = user.img;
-            res.status(200).json({img: user.img});
-        } catch (error) {
-            res.status(422).json("Oops, an error occurred. Please try again.");
+    try {
+        let user = await model.User.findOne({ username: client.username });
+        user.name = req.body.name;
+        user.ubication = req.body.ubication;
+        user.description = req.body.description;
+        if(req.file !== undefined) {
+            user.img = req.file.filename;
         }
+        await user.save();
+        req.session.passport.user.img = user.img;
+        res.status(200).json({img: user.img});
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
 
-// GET search
-exports.search = async function (req, res, next) {
-    let users;
-    let re = new RegExp(req.params.keyword, "i");
+// GET search users
+exports.searchUsers = async function (req, res, next) {
+    let user = null;
+    let data = [];
+    let amount = 2;
+    let n = req.query.limit;
     try {
-        if (req.params.selection === "user") {
-            users = await model.User
-                .find({username: re})
-                .sort({username: "asc"})
-                .limit(10).select("username img -_id");
+        switch (req.query.op) {
+            case "following":
+                user = await model.User.findOne({ username: req.query.id }).select("following");
+                let following = user.following.splice(amount * n, amount);
+                data = await model.User
+                    .find({username: {$in: following}})
+                    .select("username img -_id")
+                    .lean();
+                data.map(i => i.follow = true);
+                break;
+            case "followers":
+                user = await model.User.findOne({ username: req.query.id }).select("following followers");
+                let followers = user.followers.splice(amount * n, amount);
+                data = await model.User
+                    .find({username: {$in: followers}})
+                    .select("username img -_id")
+                    .lean();
+                    data.map(i => user.following.includes(i.username)? i.follow = true: i);
+                break;
+            default:
+                let re = new RegExp(req.query.id, "i");
+                user = await model.User.findOne({ username: client.username }).select("following");
+                data = await model.User
+                    .find({username: re})
+                    .sort({username: "asc"})
+                    .select("username img -_id")
+                    .skip(amount * n)
+                    .limit(amount)
+                    .lean();
+                data.map(i => user.following.includes(i.username)? i.follow = true: i);
+                break;
         }
-        res.status(200).json(users);
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error)
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// GET follow.
+exports.follow = async function (req, res, next) {
+    try {
+        let userFing = await model.User.findOne({ username: client.username });
+        let userFer = await model.User.findOne({ username: req.query.user });
+        if (req.query.follow === "1") {
+            if (!userFing.following.includes(userFer.username)) {
+                userFing.following.push(userFer.username);
+                userFer.followers.push(userFing.username);
+            }
+        } else {
+            userFing.following.splice(userFing.following.indexOf(userFer.username), 1);
+            userFer.followers.splice(userFer.followers.indexOf(userFing.username), 1);
+        }
+        await userFing.save();
+        await userFer.save();
+        res.status(200).json("Ok");
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }

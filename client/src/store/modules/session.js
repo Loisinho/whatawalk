@@ -33,7 +33,7 @@ const actions = {
             });
     },
     async checkUser ({context}, username) {
-        return await axios.get(process.env.VUE_APP_URL + `users/${username}/exists/username`);
+        return await axios.get(process.env.VUE_APP_URL + `users/exists?username=${username}`);
     }
 }
 

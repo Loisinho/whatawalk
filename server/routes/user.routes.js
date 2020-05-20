@@ -16,22 +16,22 @@ const upload = multer({ storage: storage });
 
 const user = require("../controllers/user.controllers");
 const validator = require("../middlewares/validators/user.validators");
-const { isLoggedIn, hasAuth } = require('../middlewares/hasAuth.js');
+const { isLoggedIn, hasAuth, isAllowed } = require('../middlewares/hasAuth.js');
 
 router.use(isLoggedIn);
 
 
 // Public Routes:
 router.get("/session", user.session);
-router.get("/:email/exists/email", user.emailExists);
-router.get("/:username/exists/username", user.usernameExists);
+router.get("/exists", user.exists);
 router.post("/signup", validator.signup, user.signup);
 router.post("/login", validator.login, user.login);
 router.post("/google", user.google);
 router.get("/logout", user.logout);
 router.get("/:username/profile", user.profile);
-router.post("/:username/profile/edit", hasAuth, upload.single('img'), user.edit);
-router.get("/explore/:selection/:keyword", hasAuth, user.search);
+router.post("/:username/profile/edit", hasAuth, isAllowed, upload.single('img'), user.edit);
+router.get("/search/users", hasAuth, user.searchUsers);
+router.get("/:username/follow", hasAuth, isAllowed, user.follow);
 
 
 module.exports = router;
