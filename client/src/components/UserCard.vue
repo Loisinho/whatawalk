@@ -1,6 +1,5 @@
 <template lang="pug">
-    //- router-link.usercard(:to="{name: 'profile', params: {id: user.username}}")
-    div.usercard
+    div.usercard(@click.self="$router.push({name: 'profile', params: {id: user.username}})")
         img.usercard__img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
         button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ following? "unfollow": "follow" }}
@@ -33,6 +32,7 @@ export default {
             try {
                 await this.$http.get(`users/${this.username}/follow?user=${this.user.username}&follow=${!this.following? "1": "0"}`);
                 this.following = !this.following;
+                this.$emit('update-break', this.following);
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
                 this.$store.state.alert.msg = error.response.data;
@@ -56,6 +56,7 @@ export default {
     padding: 10px 5% 10px 10px;
     margin-bottom: 10px;
     background: $profile-bg;
+    cursor: pointer;
 
     .usercard__img {
         height: 100%;
@@ -78,11 +79,16 @@ export default {
         &:hover {
             background: transparent;
             color: #ffffff;
+            transform: scale(0.92);
         }
 
         > svg {
             margin-left: 5px;
         }
+    }
+
+    &:hover {
+        transform: scale(0.99);
     }
 }
 

@@ -12,18 +12,18 @@
                 div.profile__links
                     div.profile__following
                         span {{ profile.following }}
-                        router-link(:to="'/user/' + profile.username + '/following'" @click.native.prevent="search('following')") Following
+                        router-link(:to="{name: 'following', params: {pick: 'users', op: 'following'}}") Following
                     div.profile__followers
                         span {{ profile.followers }}
-                        router-link(:to="'/user/' + profile.username + '/followers'" @click.native.prevent="search('followers')") Followers
+                        router-link(:to="{name: 'followers', params: {pick: 'users', op: 'followers'}}") Followers
                 button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
                 button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
         div.profile__data
-            div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+            div.profile__group(:class="{'profile__group--edit': status === 'save'}")
                 font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
                 h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
                 input.profile__field(v-else type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
-            div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+            div.profile__group(:class="{'profile__group--edit': status === 'save'}")
                 font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
                 h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
                 input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
@@ -56,7 +56,7 @@ export default {
                 following: 0,
                 followers: 0,
             },
-            status: "edit"
+            status: null
         }
     },
     methods: {
@@ -65,6 +65,7 @@ export default {
                 let res = await this.$http.get(`users/${this.$route.params.id}/profile`);
                 document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.profile = res.data;
+                this.status = this.username === this.profile.username? "edit": null;
             } catch (error) {
                 this.$store.state.alert.msg = error.response.data;
                 this.$store.state.alert.type = "error";
@@ -99,15 +100,6 @@ export default {
                 this.$store.commit("alert/alertActive");
             }
             this.status = "edit";
-        },
-        async search(op) {
-            this.$router.push({
-                name: op,
-                params: {
-                    pick: "users",
-                    op: op
-                }
-            }).catch(err => {});
         }
     },
     created: function() {

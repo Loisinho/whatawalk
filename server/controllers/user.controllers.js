@@ -131,12 +131,12 @@ exports.searchUsers = async function (req, res, next) {
     let user = null;
     let data = [];
     let amount = 2;
-    let n = req.query.limit;
+    let b = parseInt(req.query.break);
     try {
         switch (req.query.op) {
             case "following":
                 user = await model.User.findOne({ username: req.query.id }).select("following");
-                let following = user.following.splice(amount * n, amount);
+                let following = user.following.splice(b, amount);
                 data = await model.User
                     .find({username: {$in: following}})
                     .select("username img -_id")
@@ -145,7 +145,7 @@ exports.searchUsers = async function (req, res, next) {
                 break;
             case "followers":
                 user = await model.User.findOne({ username: req.query.id }).select("following followers");
-                let followers = user.followers.splice(amount * n, amount);
+                let followers = user.followers.splice(b, amount);
                 data = await model.User
                     .find({username: {$in: followers}})
                     .select("username img -_id")
@@ -159,7 +159,7 @@ exports.searchUsers = async function (req, res, next) {
                     .find({username: re})
                     .sort({username: "asc"})
                     .select("username img -_id")
-                    .skip(amount * n)
+                    .skip(b)
                     .limit(amount)
                     .lean();
                 data.map(i => user.following.includes(i.username)? i.follow = true: i);
@@ -179,8 +179,8 @@ exports.follow = async function (req, res, next) {
         let userFer = await model.User.findOne({ username: req.query.user });
         if (req.query.follow === "1") {
             if (!userFing.following.includes(userFer.username)) {
-                userFing.following.push(userFer.username);
-                userFer.followers.push(userFing.username);
+                userFing.following.unshift(userFer.username);
+                userFer.followers.unshift(userFing.username);
             }
         } else {
             userFing.following.splice(userFing.following.indexOf(userFer.username), 1);

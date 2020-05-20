@@ -1,6 +1,6 @@
 <template lang="pug">
     div#expositor
-        UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item")
+        UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
         button.expositor__btn(v-if="status" type="button" @click="search") Load
 </template>
 
@@ -18,7 +18,7 @@ export default {
             pick: null,
             op: null,
             id: null,
-            limit: 0,
+            break: 0,
             items: []
         }
     },
@@ -27,10 +27,10 @@ export default {
             try {
                 document.removeEventListener("scroll", this.dueScroll);
                 this.status = false;
-                let res = await this.$http.get(`users/search/${this.pick}?op=${this.op}&id=${this.id}&limit=${this.limit}`);
+                let res = await this.$http.get(`users/search/${this.pick}?op=${this.op}&id=${this.id}&break=${this.break}`);
                 if (res.data.length > 0) {
                     this.items = this.items.concat(res.data);
-                    this.limit++;
+                    this.break += res.data.length;
                     document.addEventListener("scroll", this.dueScroll);
                     this.status = true;
                 }
@@ -43,6 +43,9 @@ export default {
         },
         dueScroll() {
             if (window.scrollY + window.innerHeight === document.body.scrollHeight) this.search();
+        },
+        updateBreak(following) {
+            if (this.op !== "default") !following? this.break--: this.break++;
         }
     },
     beforeDestroy: function() {
