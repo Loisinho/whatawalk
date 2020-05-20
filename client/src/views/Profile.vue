@@ -1,37 +1,35 @@
 <template lang="pug">
-    div
-        div.content
-            div.profile
-                div.profile__main
-                    div.profile__img
-                        div.image__box
-                        img(src="" alt="Profile image")
-                        label.profile__upload(v-if="status === 'save'" for="profile__file")
-                            input#profile__file(type="file" @change="previewImage")
-                            font-awesome-icon(:icon="faArrowAltCircleUp")
-                    div.profile__action
-                        h1.profile__username @{{ profile.username }}
-                        div.profile__links
-                            div.profile__following
-                                span {{ profile.following }}
-                                router-link(to="/following") Following
-                            div.profile__followers
-                                span {{ profile.followers }}
-                                router-link(to="/followers") Followers
-                        button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
-                        button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
-                div.profile__data
-                    div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
-                        font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
-                        h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
-                        input.profile__field(v-else type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
-                    div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
-                        font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
-                        h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
-                        input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
-                    p.profile__description(v-if="status !== 'save'") {{ profile.description }}
-                    textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
-                    button.profile__delete(v-if="status === 'save'" type="button") Delete
+    div.profile
+        div.profile__main
+            div.profile__img
+                div.image__box
+                img(src="" alt="Profile image")
+                label.profile__upload(v-if="status === 'save'" for="profile__file")
+                    input#profile__file(type="file" @change="previewImage")
+                    font-awesome-icon(:icon="faArrowAltCircleUp")
+            div.profile__action
+                h1.profile__username @{{ profile.username }}
+                div.profile__links
+                    div.profile__following
+                        span {{ profile.following }}
+                        router-link(:to="'/user/' + profile.username + '/following'" @click.native.prevent="search('following')") Following
+                    div.profile__followers
+                        span {{ profile.followers }}
+                        router-link(:to="'/user/' + profile.username + '/followers'" @click.native.prevent="search('followers')") Followers
+                button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
+                button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
+        div.profile__data
+            div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+                font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
+                h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
+                input.profile__field(v-else type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
+            div.profile__group(:class="{'profile__group--edit': status !== 'edit'}")
+                font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
+                h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
+                input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
+            p.profile__description(v-if="status !== 'save'") {{ profile.description }}
+            textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
+            button.profile__delete(v-if="status === 'save'" type="button") Delete
 </template>
 
 <script>
@@ -101,6 +99,15 @@ export default {
                 this.$store.commit("alert/alertActive");
             }
             this.status = "edit";
+        },
+        async search(op) {
+            this.$router.push({
+                name: op,
+                params: {
+                    pick: "users",
+                    op: op
+                }
+            }).catch(err => {});
         }
     },
     created: function() {

@@ -35,7 +35,7 @@ const router = new Router({
             component: () => import(/* webpackChunkName: "login" */ "./views/Login.vue")
         },
         {
-            path: "/explore/:selection/:keyword",
+            path: "/explore/:pick/:op/:id",
             name: "explore",
             meta: {
                 requiresAuth: true
@@ -44,12 +44,40 @@ const router = new Router({
         },
         {
             path: "/user/:id",
-            name: "profile",
             meta: {
                 requiresAuth: true,
                 userExists: true
             },
-            component: () => import(/* webpackChunkName: "profile" */ "./views/Profile.vue")
+            component: () => import(/* webpackChunkName: "user" */ "./views/Blank.vue"),
+            children: [
+                {
+                    path: "profile",
+                    name: "profile",
+                    component: () => import(/* webpackChunkName: "user" */ "./views/Profile.vue")
+                },
+                {
+                    path: ":op/:pick",
+                    name: "following",
+                    props: {
+                        pick: "users",
+                        op: "following"
+                    },
+                    component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
+                },
+                {
+                    path: ":op/:pick",
+                    name: "followers",
+                    props: {
+                        pick: "users",
+                        op: "followers"
+                    },
+                    component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
+                },
+                {
+                    path: "",
+                    component: Home
+                }
+            ]
         },
         {
             path: "*",

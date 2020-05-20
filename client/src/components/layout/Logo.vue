@@ -1,6 +1,7 @@
 <template lang="pug">
     div#logo
-        img(src="../../assets/logo.svg" alt="WhatAWalk")
+        router-link(to="/")
+            img(src="../../assets/logo.svg" alt="WhatAWalk")
 </template>
 
 <script>
@@ -19,7 +20,7 @@ export default {
     transform: translateX(-50%);
     z-index: 1;
 
-    > img {
+    img {
         height: 28px;
     }
 }

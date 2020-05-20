@@ -19,10 +19,10 @@
                     a(href="javascript:void(0)" @click="exploreOpen = !exploreOpen") Explore
                     form.menu__explore(@submit.prevent="search" :class="{'menu__explore--active': exploreOpen}")
                         div.menu__category(@click="optionsOpen = !optionsOpen")
-                            span.menu__select {{ selection }}
+                            span.menu__select {{ pick }}
                             font-awesome-icon(:icon="faSortDown")
                             div.menu__options(:class="{'menu__options--active': optionsOpen}")
-                                p(@click="selection = 'user'") user
+                                p(@click="pick = 'users'") users
                         input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
                         input(type="submit" value="" :disabled="searchStatus")
                         button.menu__search(type="button" @click="search" :disabled="searchStatus")
@@ -47,7 +47,7 @@ export default {
             faSearch,
             exploreOpen: false,
             optionsOpen: false,
-            selection: "user",
+            pick: "users",
             keyword: "",
             searchStatus: false
         }
@@ -60,24 +60,16 @@ export default {
         resizing: function() {
             this.isClickable(window.innerWidth);
         },
-        search: async function() {
+        search: function() {
             this.menuStatus(false);
-            try {
-                let res = await this.$http.get(`users/explore/${this.selection}/${this.keyword}`);
-                this.$router.push({
-                    name: "explore",
-                    params: {
-                        selection: this.selection,
-                        keyword: this.keyword,
-                        items: res.data
-                    }
-                }).catch(err => {});
-            } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
-            }
+            this.$router.push({
+                name: "explore",
+                params: {
+                    pick: this.pick,
+                    op: "default",
+                    id: this.keyword
+                }
+            }).catch(err => {});
         }
     },
     mounted: function() {

@@ -40,7 +40,9 @@ let UserSchema = new mongoose.Schema ({
         required: false,
         max: 254,
         default: null
-    }
+    },
+    following: [],
+    followers: []
 });
 
 

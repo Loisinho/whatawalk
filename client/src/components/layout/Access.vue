@@ -6,7 +6,7 @@
                     font-awesome-icon(:icon="faSignInAlt")
                 img.access__icon(v-else :src="webUrl + img" alt="Profile image")
             span.access__element(v-if="isLoggedIn")
-                router-link(:to="`/user/${username}`")
+                router-link(:to="`/user/${username}/profile`")
                     font-awesome-icon(:icon="faUser")
             span.access__element(v-if="isLoggedIn")
                 router-link(to="/groups")

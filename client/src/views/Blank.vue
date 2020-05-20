@@ -1,0 +1,13 @@
+<template lang="pug">
+    div
+        div.content
+            router-view
+</template>
+
+<script>
+export default {
+    name: "Blank"
+}
+</script>
+
+<style lang="scss" scoped></style>
