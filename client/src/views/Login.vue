@@ -19,8 +19,13 @@
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faLock")
-                                input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                                input.form__password(v-if="!peek" type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                                input.form__password(v-else type="text" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                                font-awesome-icon.form__icon.form__eye(v-if="!peek" :icon="faEye" @click="peek = !peek")
+                                font-awesome-icon.form__icon.form__eye(v-else :icon="faEyeSlash" @click="peek = !peek")
                             span.form__note(v-if="!$v.password.required") Field is required
+                        router-link(to="/forgot") Forgot password?
+                        router-link(to="/signup" style="margin-bottom: 15px;") Create new account
                         input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
 </template>
 
@@ -40,6 +45,7 @@ export default {
             user: null,
             password: null,
             btnValue: "log in",
+            peek: false,
             status: false
         }
     },
@@ -153,6 +159,16 @@ export default {
 
         .form__group {
             @include form-group;
+        }
+
+        > a {
+            padding: 5px;
+            text-align: center;
+            color: $form-submit-color;
+
+            &:hover {
+                color: rgba($form-submit-color, 0.5);
+            }
         }
 
         .form__submit {

@@ -24,7 +24,10 @@
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
-                                input.form__password(type="password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
+                                input.form__password(v-if="!peek" type="password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
+                                input.form__password(v-else type="text" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
+                                font-awesome-icon.form__icon.form__eye(v-if="!peek" :icon="faEye" @click="peek = !peek")
+                                font-awesome-icon.form__icon.form__eye(v-else :icon="faEyeSlash" @click="peek = !peek")
                             span.form__note(v-if="!$v.password.required") Field is required
                             span.form__note(v-if="!$v.password.minLength && $v.password.required") Password must contain at least {{$v.password.$params.minLength.min}} characters
                             span.form__note(v-if="!$v.password.maxLength && $v.password.required") Password must contain at most {{$v.password.$params.maxLength.max}} characters
@@ -55,6 +58,7 @@ export default {
             password: null,
             repeatPassword: null,
             btnValue: "sign up",
+            peek: false,
             status: false
         }
     },

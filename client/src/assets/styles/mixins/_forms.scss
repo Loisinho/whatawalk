@@ -64,6 +64,10 @@
             width: $form-icon-size;
             height: $form-icon-size;
             color: $form-input-color;
+
+            &.form__eye {
+                cursor: pointer;
+            }
         }
 
         input {
