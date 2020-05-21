@@ -1,6 +1,7 @@
 // App Controllers File.
 const model = require("../models/");
 const { validationResult } = require("express-validator");
+const fs = require("fs");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const {OAuth2Client} = require('google-auth-library');
@@ -115,13 +116,18 @@ exports.edit = async function (req, res, next) {
         user.name = req.body.name;
         user.ubication = req.body.ubication;
         user.description = req.body.description;
-        if(req.file !== undefined) {
+        if (req.file !== undefined) {
+            if (user.img !== "default_profile.png")
+                fs.unlink("./public/images/profile/" + user.img, error => {
+                    if (error) throw error;
+                });
             user.img = req.file.filename;
         }
         await user.save();
         req.session.passport.user.img = user.img;
         res.status(200).json({img: user.img});
     } catch (error) {
+        console.log(error)
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
@@ -167,7 +173,6 @@ exports.searchUsers = async function (req, res, next) {
         }
         res.status(200).json(data);
     } catch (error) {
-        console.log(error)
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
