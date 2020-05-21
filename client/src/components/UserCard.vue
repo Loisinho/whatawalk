@@ -1,6 +1,8 @@
 <template lang="pug">
     div.usercard(@click.self="$router.push({name: 'profile', params: {id: user.username}})")
-        img.usercard__img(:src="webUrl + user.img" alt="User image")
+        div.usercard__img
+            div.image__box
+            img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
         button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ following? "unfollow": "follow" }}
             font-awesome-icon(v-if="following" :icon="faUserMinus")
@@ -52,29 +54,48 @@ export default {
 
 .usercard {
     @include container-flex("v");
-    height: $explore-user-container-height;
     padding: 10px 5% 10px 10px;
     margin-bottom: 10px;
     background: $profile-bg;
+    border-top-left-radius: 8vw;
+    border-bottom-left-radius: 8vw;
     cursor: pointer;
 
     .usercard__img {
-        height: 100%;
+        position: relative;
+        width: $usercard-img-width;
+        border-radius: 50%;
+        overflow: hidden;
+
+        .image__box {
+            width: 100%;
+            padding-bottom: 100%;
+            background: #ffffff;
+        }
+
+        > img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            color: #000000;
+        }
     }
 
     .usercard__username {
         margin-left: 20px;
-        font-size: $explore-user-font-size;
+        font-size: $usercard-font-size;
         font-weight: 600;
     }
 
     .usercard__btn {
         @include button-alpha();
         margin-left: auto;
-        // margin-right: 10px;
         width: auto;
         text-transform: capitalize;
-        font-size: $explore-user-font-size;
+        font-size: $usercard-font-size;
 
         &:hover {
             background: transparent;
@@ -94,20 +115,24 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .usercard {
-        height: vw-to-px(map-get($container-widths, "sd"), $explore-user-container-height);
+        .usercard__img {
+            width: vw-to-px(map-get($container-widths, "sd"), $usercard-img-width);
+        }
 
         .usercard__username, .usercard__btn {
-            font-size: vw-to-px(map-get($container-widths, "sd"), $explore-user-font-size);
+            font-size: vw-to-px(map-get($container-widths, "sd"), $usercard-font-size);
         }
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     .usercard {
-        height: vw-to-px(map-get($container-widths, "md"), $explore-user-container-height);
+        .usercard__img {
+            width: vw-to-px(map-get($container-widths, "md"), $usercard-img-width);
+        }
 
         .usercard__username, .usercard__btn {
-            font-size: vw-to-px(map-get($container-widths, "md"), $explore-user-font-size);
+            font-size: vw-to-px(map-get($container-widths, "md"), $usercard-font-size);
         }
     }
 }

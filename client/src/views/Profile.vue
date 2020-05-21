@@ -11,10 +11,10 @@
                 h1.profile__username @{{ profile.username }}
                 div.profile__links
                     div.profile__following
-                        span {{ profile.following }}
+                        span.profile__amount {{ profile.following }}
                         router-link(:to="{name: 'following', params: {pick: 'users', op: 'following'}}") Following
                     div.profile__followers
-                        span {{ profile.followers }}
+                        span.profile__amount {{ profile.followers }}
                         router-link(:to="{name: 'followers', params: {pick: 'users', op: 'followers'}}") Followers
                 button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
                 button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
@@ -115,6 +115,7 @@ export default {
     .profile {
         background: $profile-bg;
         padding: 10px;
+        border-top-left-radius: $profile-border-top-left-radius;
 
         .profile__main {
             @include container-flex();
@@ -123,7 +124,7 @@ export default {
             .profile__img {
                 position: relative;
                 width: 40%;
-                // border-radius: 50%;
+                border-radius: 50%;
                 overflow: hidden;
 
                 .image__box {
@@ -187,7 +188,7 @@ export default {
                         font-size: $profile-size;
                         text-transform: uppercase;
 
-                        > span {
+                        .profile__amount {
                             display: block;
                             width: 30%;
                             text-align: center;
@@ -271,6 +272,8 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .content .profile {
+        border-top-left-radius: vw-to-px(map-get($container-widths, "sd"), $profile-border-top-left-radius);
+
         .profile__main {
             .profile__img .profile__upload > input[type="file"] + svg {
                 font-size: vw-to-px(map-get($container-widths, "sd"), $profile-upload-size);
@@ -313,6 +316,8 @@ export default {
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
     .content .profile {
+        border-top-left-radius: vw-to-px(map-get($container-widths, "md"), $profile-border-top-left-radius);
+
         .profile__main {
             .profile__img .profile__upload > input[type="file"] + svg {
                 font-size: vw-to-px(map-get($container-widths, "md"), $profile-upload-size);
@@ -350,6 +355,18 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
             }
         }
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "ld")) {
+    .content .profile {
+        border-top-left-radius: vw-to-px(map-get($container-widths, "ld"), $profile-border-top-left-radius);
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "xd")) {
+    .content .profile {
+        border-top-left-radius: vw-to-px(map-get($container-widths, "xd"), $profile-border-top-left-radius);
     }
 }
 </style>

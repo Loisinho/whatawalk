@@ -66,5 +66,7 @@ export default {
 
 .expositor__btn {
     @include button-alpha();
+    width: 20%;
+    margin: 0 40%;
 }
 </style>
