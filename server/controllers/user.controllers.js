@@ -101,8 +101,14 @@ exports.profile = async function (req, res, next) {
             img: user.img,
             ubication: user.ubication,
             description: user.description,
-            following: user.following.length,
-            followers: user.followers.length,
+            following: {
+                amount: user.following.length,
+                status: user.following.includes(client.username)? true: false
+            },
+            followers: {
+                amount: user.followers.length,
+                status: user.followers.includes(client.username)? true: false
+            }
         });
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -127,7 +133,6 @@ exports.edit = async function (req, res, next) {
         req.session.passport.user.img = user.img;
         res.status(200).json({img: user.img});
     } catch (error) {
-        console.log(error)
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
@@ -156,7 +161,7 @@ exports.searchUsers = async function (req, res, next) {
                     .find({username: {$in: followers}})
                     .select("username img -_id")
                     .lean();
-                    data.map(i => user.following.includes(i.username)? i.follow = true: i);
+                    data.map(i => i.follow = user.following.includes(i.username)? true: false);
                 break;
             default:
                 let re = new RegExp(req.query.id, "i");
@@ -168,7 +173,7 @@ exports.searchUsers = async function (req, res, next) {
                     .skip(b)
                     .limit(amount)
                     .lean();
-                data.map(i => user.following.includes(i.username)? i.follow = true: i);
+                data.map(i => i.follow = user.following.includes(i.username)? true: false);
                 break;
         }
         res.status(200).json(data);
@@ -183,18 +188,21 @@ exports.follow = async function (req, res, next) {
         let userFing = await model.User.findOne({ username: client.username });
         let userFer = await model.User.findOne({ username: req.query.user });
         if (req.query.follow === "1") {
-            if (!userFing.following.includes(userFer.username)) {
+            if (!userFing.following.includes(userFer.username))
                 userFing.following.unshift(userFer.username);
+            if (!userFer.followers.includes(userFing.username))
                 userFer.followers.unshift(userFing.username);
-            }
         } else {
-            userFing.following.splice(userFing.following.indexOf(userFer.username), 1);
-            userFer.followers.splice(userFer.followers.indexOf(userFing.username), 1);
+            var i = userFing.following.indexOf(userFer.username);
+            let j = userFer.followers.indexOf(userFing.username);
+            if (i !== -1) userFing.following.splice(i, 1);
+            if (j !== -1) userFer.followers.splice(j, 1);
         }
         await userFing.save();
         await userFer.save();
         res.status(200).json("Ok");
     } catch (error) {
+        console.log(error);
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }

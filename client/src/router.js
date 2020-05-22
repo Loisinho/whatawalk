@@ -35,8 +35,12 @@ const router = new Router({
             component: () => import(/* webpackChunkName: "login" */ "./views/Login.vue")
         },
         {
-            path: "/explore/:pick/:op/:id",
+            path: "/explore/:id",
             name: "explore",
+            props: route => ({
+                pick: route.query.pick,
+                op: route.query.op
+            }),
             meta: {
                 requiresAuth: true
             },
@@ -56,7 +60,7 @@ const router = new Router({
                     component: () => import(/* webpackChunkName: "user" */ "./views/Profile.vue")
                 },
                 {
-                    path: ":op/:pick",
+                    path: "following",
                     name: "following",
                     props: {
                         pick: "users",
@@ -65,7 +69,7 @@ const router = new Router({
                     component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
                 },
                 {
-                    path: ":op/:pick",
+                    path: "followers",
                     name: "followers",
                     props: {
                         pick: "users",

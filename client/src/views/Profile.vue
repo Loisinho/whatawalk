@@ -11,13 +11,14 @@
                 h1.profile__username @{{ profile.username }}
                 div.profile__links
                     div.profile__following
-                        span.profile__amount {{ profile.following }}
-                        router-link(:to="{name: 'following', params: {pick: 'users', op: 'following'}}") Following
+                        span.profile__amount {{ profile.following.amount }}
+                        router-link(to="following") Following
                     div.profile__followers
-                        span.profile__amount {{ profile.followers }}
-                        router-link(:to="{name: 'followers', params: {pick: 'users', op: 'followers'}}") Followers
+                        span.profile__amount {{ profile.followers.amount }}
+                        router-link(to="followers") Followers
                 button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
                 button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
+                button.profile__edit(v-else type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
         div.profile__data
             div.profile__group(:class="{'profile__group--edit': status === 'save'}")
                 font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
@@ -53,8 +54,14 @@ export default {
                 name: null,
                 ubication: null,
                 description: null,
-                following: 0,
-                followers: 0,
+                following: {
+                    amount: null,
+                    status: false
+                },
+                followers: {
+                    amount: null,
+                    status: false
+                }
             },
             status: null
         }
@@ -100,6 +107,18 @@ export default {
                 this.$store.commit("alert/alertActive");
             }
             this.status = "edit";
+        },
+        async followAction() {
+            try {
+                await this.$http.get(`users/${this.username}/follow?user=${this.profile.username}&follow=${!this.profile.followers? "1": "0"}`);
+                this.profile.followers.status = !this.profile.followers.status;
+                this.profile.followers.status? this.profile.followers.amount++: this.profile.followers.amount--;
+            } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
+                this.$store.state.alert.msg = error.response.data;
+                this.$store.state.alert.type = "error";
+                this.$store.commit("alert/alertActive");
+            }
         }
     },
     created: function() {

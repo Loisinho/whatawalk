@@ -4,8 +4,8 @@
             div.image__box
             img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
-        button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ following? "unfollow": "follow" }}
-            font-awesome-icon(v-if="following" :icon="faUserMinus")
+        button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ user.follow? "unfollow": "follow" }}
+            font-awesome-icon(v-if="user.follow" :icon="faUserMinus")
             font-awesome-icon(v-else :icon="faUserPlus")
 </template>
 
@@ -25,16 +25,15 @@ export default {
         return {
             faUserPlus,
             faUserMinus,
-            webUrl: process.env.VUE_APP_URL + "media/images/profile/",
-            following: null
+            webUrl: process.env.VUE_APP_URL + "media/images/profile/"
         }
     },
     methods: {
         async followAction() {
             try {
-                await this.$http.get(`users/${this.username}/follow?user=${this.user.username}&follow=${!this.following? "1": "0"}`);
-                this.following = !this.following;
-                this.$emit('update-break', this.following);
+                await this.$http.get(`users/${this.username}/follow?user=${this.user.username}&follow=${!this.user.follow? "1": "0"}`);
+                this.user.follow = !this.user.follow;
+                this.$emit('update-break', this.user.follow);
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
                 this.$store.state.alert.msg = error.response.data;
@@ -42,9 +41,6 @@ export default {
                 this.$store.commit("alert/alertActive");
             }
         }
-    },
-    created: function () {
-        this.following = this.user.follow? true: false;
     }
 };
 </script>

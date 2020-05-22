@@ -1,5 +1,5 @@
 <template lang="pug">
-    div#expositor
+    div
         UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
         button.expositor__btn(v-if="status" type="button" @click="search") Load
 </template>
@@ -10,13 +10,22 @@ import UserCard from "../components/UserCard.vue";
 export default {
     name: "Explore",
     components: {
-        UserCard
+        UserCard,
+        GroupCard
+    },
+    props: {
+        pick: {
+            type: String,
+            default: "users"
+        },
+        op: {
+            type: String,
+            default: "default"
+        }
     },
     data: () => {
         return {
             status: true,
-            pick: null,
-            op: null,
             id: null,
             break: 0,
             items: []
@@ -44,8 +53,8 @@ export default {
         dueScroll() {
             if (window.scrollY + window.innerHeight === document.body.scrollHeight) this.search();
         },
-        updateBreak(following) {
-            if (this.op !== "default") !following? this.break--: this.break++;
+        updateBreak(follow) {
+            if (this.op !== "default") follow? this.break++: this.break--;
         }
     },
     beforeDestroy: function() {
@@ -53,8 +62,6 @@ export default {
     },
     created: function() {
         document.addEventListener("scroll", this.dueScroll);
-        this.pick = this.$route.params.pick;
-        this.op = this.$route.params.op;
         this.id = this.$route.params.id;
         this.search();
     }

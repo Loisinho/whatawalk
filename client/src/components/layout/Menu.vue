@@ -24,8 +24,8 @@
                             div.menu__options(:class="{'menu__options--active': optionsOpen}")
                                 p(@click="pick = 'users'") users
                         input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
-                        input(type="submit" value="" :disabled="searchStatus")
-                        button.menu__search(type="button" @click="search" :disabled="searchStatus")
+                        input(type="submit" value="" :disabled="keyword === ''")
+                        button.menu__search(type="button" @click="search" :disabled="keyword === ''")
                             font-awesome-icon(:icon="faSearch")
 </template>
 
@@ -48,8 +48,7 @@ export default {
             exploreOpen: false,
             optionsOpen: false,
             pick: "users",
-            keyword: "",
-            searchStatus: false
+            keyword: ""
         }
     },
     methods: {
@@ -65,9 +64,11 @@ export default {
             this.$router.push({
                 name: "explore",
                 params: {
-                    pick: this.pick,
-                    op: "default",
                     id: this.keyword
+                },
+                query: {
+                    pick: this.pick,
+                    op: "default"
                 }
             }).catch(err => {});
         }
@@ -232,6 +233,10 @@ export default {
                     border-radius: 50%;
                     background: $nav-links-color;
                     color: $nav-links-bg;
+
+                    &:hover {
+                        transform: scale(0.92);
+                    }
                 }
 
                 &.menu__explore--active {
