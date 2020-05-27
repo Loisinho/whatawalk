@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-let UserSchema = new mongoose.Schema ({
+const UserSchema = new mongoose.Schema ({
     username: {
         type: String,
         required: true,
@@ -42,7 +42,8 @@ let UserSchema = new mongoose.Schema ({
         default: null
     },
     following: [],
-    followers: []
+    followers: [],
+    groups: []
 });
 
 

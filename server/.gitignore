@@ -14,3 +14,6 @@
 !/public/images/profile
 /public/images/profile/*
 !/public/images/profile/default_profile.png
+!/public/images/group
+/public/images/group/*
+!/public/images/group/default_group.jpg

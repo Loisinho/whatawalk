@@ -1,4 +1,4 @@
-// App Controllers File.
+// User Controllers File.
 const model = require("../models/");
 const { validationResult } = require("express-validator");
 const fs = require("fs");
@@ -138,7 +138,7 @@ exports.edit = async function (req, res, next) {
 }
 
 // GET search users
-exports.searchUsers = async function (req, res, next) {
+exports.search = async function (req, res, next) {
     let user = null;
     let data = [];
     let amount = 2;
@@ -202,7 +202,6 @@ exports.follow = async function (req, res, next) {
         await userFer.save();
         res.status(200).json("Ok");
     } catch (error) {
-        console.log(error);
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }

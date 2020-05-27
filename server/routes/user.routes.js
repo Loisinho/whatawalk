@@ -1,4 +1,4 @@
-// App Routes File.
+// User Routes File.
 const router = require("express").Router();
 const path = require("path");
 const uniquefilename = require("unique-filename");
@@ -30,7 +30,7 @@ router.post("/google", user.google);
 router.get("/logout", user.logout);
 router.get("/:username/profile", user.profile);
 router.post("/:username/profile/edit", hasAuth, isAllowed, upload.single('img'), user.edit);
-router.get("/search/users", hasAuth, user.searchUsers);
+router.get("/search", hasAuth, user.search);
 router.get("/:username/follow", hasAuth, isAllowed, user.follow);
 
 
