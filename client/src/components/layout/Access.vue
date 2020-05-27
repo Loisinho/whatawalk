@@ -97,8 +97,6 @@ export default {
 
             > a {
                 &:hover {
-                    background: $nav-links-color;
-                    color: $nav-links-bg;
                     box-shadow: inset -2px -2px 4px rgba(#fff, 0.6),
                                 inset 2px 2px 4px rgba(#000, 0.6);
                 }

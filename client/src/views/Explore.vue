@@ -1,17 +1,24 @@
 <template lang="pug">
-    div
+    div.expositor
         UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
+        GroupCard(v-if="pick === 'groups'" v-bind:key="item._id" v-for="item in items" v-bind:group="item")
+        New(v-if="pick === 'groups'" @new-group="newGroup")
+        p.expositor__empty(v-if="items.length === 0") NOTHING!!
+        p.expositor__empty(v-if="items.length === 0") This page is completely empty...
         button.expositor__btn(v-if="status" type="button" @click="search") Load
 </template>
 
 <script>
 import UserCard from "../components/UserCard.vue";
+import GroupCard from "../components/GroupCard.vue";
+import New from "../components/New.vue";
 
 export default {
     name: "Explore",
     components: {
         UserCard,
-        GroupCard
+        GroupCard,
+        New
     },
     props: {
         pick: {
@@ -23,9 +30,16 @@ export default {
             default: "default"
         }
     },
+    watch: {
+      	pick: function() {
+            this.break = 0;
+            this.items = [];
+            this.search();
+        }
+    },
     data: () => {
         return {
-            status: true,
+            status: false,
             id: null,
             break: 0,
             items: []
@@ -36,7 +50,7 @@ export default {
             try {
                 document.removeEventListener("scroll", this.dueScroll);
                 this.status = false;
-                let res = await this.$http.get(`users/search/${this.pick}?op=${this.op}&id=${this.id}&break=${this.break}`);
+                let res = await this.$http.get(`${this.pick}/search?op=${this.op}&id=${this.id}&break=${this.break}`);
                 if (res.data.length > 0) {
                     this.items = this.items.concat(res.data);
                     this.break += res.data.length;
@@ -55,6 +69,9 @@ export default {
         },
         updateBreak(follow) {
             if (this.op !== "default") follow? this.break++: this.break--;
+        },
+        newGroup(group) {
+            this.items.push(group);
         }
     },
     beforeDestroy: function() {
@@ -71,9 +88,15 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/styles/styles";
 
-.expositor__btn {
-    @include button-alpha();
-    width: 20%;
-    margin: 0 40%;
+.expositor {
+    .expositor__empty {
+        text-align: center;
+    }
+
+    .expositor__btn {
+        @include button-alpha();
+        width: 20%;
+        margin: 0 40%;
+    }
 }
 </style>

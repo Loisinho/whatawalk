@@ -58,25 +58,14 @@ export default {
     cursor: pointer;
 
     .usercard__img {
+        @include image-box;
         position: relative;
         width: $usercard-img-width;
         border-radius: 50%;
         overflow: hidden;
 
         .image__box {
-            width: 100%;
             padding-bottom: 100%;
-            background: #ffffff;
-        }
-
-        > img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            color: #000000;
         }
     }
 

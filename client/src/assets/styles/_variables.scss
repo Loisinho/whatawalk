@@ -36,12 +36,14 @@ $alert-error-bg: #ff0000;
 $alert-warning-bg: #fcca11;
 $alert-success-bg: #02df93;
 
-$profile-bg: rgba(#000000, 0.2);
+$profile-bg: darken($body-bg, 5%);
 $profile-edit-bg: #eaeaea;
 $profile-edit-color: #000000;
 $profile-delete: #ff0000;
 $profile-upload-color: #fcca11;
 
+$image-box-bg: #ffffff;
+$image-color: #000000;
 
 // Typography
 @import url('https://fonts.googleapis.com/css?family=Six+Caps|Alata|Comfortaa|Montserrat&display=swap');
@@ -67,6 +69,10 @@ $profile-upload-size: 7vw;
 
 $usercard-img-width: 12vw;
 $usercard-font-size: 3vw;
+
+$groupcard-title-size: 3vw;
+$groupcard-small-size: 2.4vw;
+$groupcard-member-size: 6vw;
 
 // Main container minimum width breakpoints
 $breakpoints: (
