@@ -19,7 +19,7 @@ exports.exists = async function (req, res, next) {
         let user = await model.User.findOne({$or: [{username: req.query.username}, {email: req.query.email}]});
         res.status(200).json(user? false : true);
     } catch (error) {
-        res.status(422).json("Oops, error verifying email. Please try again.");
+        res.status(422).json("Oops, error verifying account. Please try again.");
     }
 }
 

@@ -45,9 +45,10 @@ export default {
                         this.$emit('new-group', res.data);
                     } catch (error) {
                         if (error.response.status === 401) this.$router.push({name: "login"});
-                        this.$store.state.alert.msg = error.response.data;
-                        this.$store.state.alert.type = "error";
-                        this.$store.commit("alert/alertActive");
+                        this.$store.commit("alert/activateAlert", {
+                            msg: error.response.data,
+                            type: "error"
+                        });
                     } finally {
                         this.title = "";
                         document.getElementById("private").checked = false;

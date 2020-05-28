@@ -8,7 +8,9 @@ const state = {
 
 // Mutations
 const mutations = {
-    alertActive(state) {
+    activateAlert(state, payload) {
+        state.msg = payload.msg;
+        state.type = payload.type;
         state.active = true;
         setTimeout(() => { state.active = false; }, state.time);
     }

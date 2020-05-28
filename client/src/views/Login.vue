@@ -74,9 +74,10 @@ export default {
                     }, 1000);
                 }
             } catch (error) {
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
                 this.status = false;
             }
         },
@@ -98,9 +99,10 @@ export default {
                         this.$router.push({name: "signup", params: { email: profile.getEmail() }});
                     }
                 } catch (error) {
-                    this.$store.state.alert.msg = error.response.data;
-                    this.$store.state.alert.type = "error";
-                    this.$store.commit("alert/alertActive");
+                    this.$store.commit("alert/activateAlert", {
+                        msg: error.response.data,
+                        type: "error"
+                    });
                     this.status = false;
                 }
             });

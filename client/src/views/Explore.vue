@@ -59,9 +59,10 @@ export default {
                 }
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         },
         dueScroll() {
@@ -71,7 +72,7 @@ export default {
             if (this.op !== "default") follow? this.break++: this.break--;
         },
         newGroup(group) {
-            this.items.push(group);
+            this.items.unshift(group);
         }
     },
     beforeDestroy: function() {

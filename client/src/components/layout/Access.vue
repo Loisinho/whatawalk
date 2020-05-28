@@ -48,9 +48,10 @@ export default {
                 await this.$http.get("users/logout");
                 this.$router.push({name: "login"});
             } catch (error) {
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         }
     }

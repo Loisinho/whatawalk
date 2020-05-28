@@ -1,5 +1,5 @@
 <template lang="pug">
-    div.groupcard(@click.self="$router.push({name: 'group', params: {id: group._id}})")
+    div.groupcard(@click="$router.push({name: 'group', params: {id: group._id}})")
         div.groupcard__img
             div.image__box
             img(:src="webUrl + 'group/' + group.img" alt="Group image")
@@ -14,7 +14,7 @@
                         div.image__box
                         img(:src="webUrl + 'profile/' + member.img" alt="Member image")
                 div.groupcard__overly(v-if="group.members.length > 5") ...
-                button.groupcard__btn(v-if="group.join" @click="join") join
+                button.groupcard__btn(v-if="group.join" @click.stop="join") join
 </template>
 
 <script>
@@ -42,9 +42,10 @@ export default {
                 this.group.join = false;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         }
     }

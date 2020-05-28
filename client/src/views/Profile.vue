@@ -74,10 +74,11 @@ export default {
                 this.profile = res.data;
                 this.status = this.username === this.profile.username? "edit": null;
             } catch (error) {
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
-                this.$router.push({name: "home"});
+                this.$router.push({name: error.response.status === 401? "login": "home"});
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         },
         previewImage() {
@@ -102,9 +103,10 @@ export default {
                 this.$store.state.session.img = res.data.img;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
             this.status = "edit";
         },
@@ -115,9 +117,10 @@ export default {
                 this.profile.followers.status? this.profile.followers.amount++: this.profile.followers.amount--;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         }
     },

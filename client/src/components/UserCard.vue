@@ -1,10 +1,10 @@
 <template lang="pug">
-    div.usercard(@click.self="$router.push({name: 'profile', params: {id: user.username}})")
+    div.usercard(@click="$router.push({name: 'profile', params: {id: user.username}})")
         div.usercard__img
             div.image__box
             img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
-        button.usercard__btn(v-if="user.username !== username" type="button" @click="followAction") {{ user.follow? "unfollow": "follow" }}
+        button.usercard__btn(v-if="user.username !== username" type="button" @click.stop="followAction") {{ user.follow? "unfollow": "follow" }}
             font-awesome-icon(v-if="user.follow" :icon="faUserMinus")
             font-awesome-icon(v-else :icon="faUserPlus")
 </template>
@@ -36,9 +36,10 @@ export default {
                 this.$emit('update-break', this.user.follow);
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
             }
         }
     }

@@ -73,9 +73,10 @@ export default {
                     let res = await this.$http.get(`users/exists?email=${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.$store.state.alert.msg = "Oops, error verifying email. Please try again.";
-                    this.$store.state.alert.type = "error";
-                    this.$store.commit("alert/alertActive");
+                    this.$store.commit("alert/activateAlert", {
+                        msg: error.response.data,
+                        type: "error"
+                    });
                 }
             }
         },
@@ -89,9 +90,10 @@ export default {
                     let res = await this.$http.get(`users/exists?username=${value}`);
                     return Boolean(res.data);
                 } catch (error) {
-                    this.$store.state.alert.msg = "Oops, error verifying username. Please try again.";
-                    this.$store.state.alert.type = "error";
-                    this.$store.commit("alert/alertActive");
+                    this.$store.commit("alert/activateAlert", {
+                        msg: error.response.data,
+                        type: "error"
+                    });
                 }
             }
         },
@@ -122,9 +124,10 @@ export default {
                     }, 1000);
                 }
             } catch (error) {
-                this.$store.state.alert.msg = error.response.data;
-                this.$store.state.alert.type = "error";
-                this.$store.commit("alert/alertActive");
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
                 this.status = false;
             }
         }
