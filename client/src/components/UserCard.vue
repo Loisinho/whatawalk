@@ -31,7 +31,7 @@ export default {
     methods: {
         async followAction() {
             try {
-                await this.$http.get(`users/${this.username}/follow?user=${this.user.username}&follow=${!this.user.follow? "1": "0"}`);
+                await this.$http.get(`users/follow?user=${this.user.username}&follow=${!this.user.follow? "1": "0"}`);
                 this.user.follow = !this.user.follow;
                 this.$emit('update-break', this.user.follow);
             } catch (error) {

@@ -97,7 +97,7 @@ export default {
                 data.append("ubication", this.profile.ubication);
                 data.append("description", this.profile.description);
                 data.append("img", document.getElementById("profile__file").files[0]);
-                let res = await this.$http.post(`users/${this.$route.params.id}/profile/edit`, data);
+                let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
                 document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.$store.state.session.img = res.data.img;
             } catch (error) {

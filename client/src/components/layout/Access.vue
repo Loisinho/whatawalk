@@ -116,20 +116,14 @@ export default {
         }
 
         &:hover {
-            height: 300px; // 60px each one
+            $n: 5;
+            height: calc(#{$n} * 60px);
 
             > .access__element {
-                &:nth-child(2) {
-                    top: 60px;
-                }
-                &:nth-child(3) {
-                    top: 120px;
-                }
-                &:nth-child(4) {
-                    top: 180px;
-                }
-                &:nth-child(5) {
-                    top: 240px;
+                @for $i from 2 through $n {
+                    &:nth-child(#{$i}) {
+                        top: calc((#{$i} - 1) * 60px);
+                    }
                 }
             }
         }

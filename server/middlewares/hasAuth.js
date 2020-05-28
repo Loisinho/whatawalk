@@ -13,11 +13,3 @@ exports.hasAuth = function(req, res, next) {
     else
         res.status(401).json("You must be logged in");
 }
-
-// Is user allowed?
-exports.isAllowed = function(req, res, next) {
-    if (client.username === req.params.username)
-        next();
-    else
-        res.status(403).json("You are not allowed to do that...");
-}
