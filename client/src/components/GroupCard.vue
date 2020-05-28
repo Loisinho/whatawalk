@@ -9,12 +9,12 @@
                 font-awesome-icon(v-if="group.private" :icon="faLock")
             p.groupcard__description {{ group.description }}
             div.groupcard__membership
-                div.groupcard__members(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
-                    div.groupcard__member
+                div.groupcard__members
+                    div.groupcard__member(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
                         div.image__box
                         img(:src="webUrl + 'profile/' + member.img" alt="Member image")
                 div.groupcard__overly(v-if="group.members.length > 5") ...
-                button.groupcard__btn(v-if="group.join" @click="memberAction") join
+                button.groupcard__btn(v-if="group.join" @click="join") join
 </template>
 
 <script>
@@ -36,9 +36,9 @@ export default {
         }
     },
     methods: {
-        async memberAction() {
+        async join() {
             try {
-                await this.$http.get(`groups/join?user=${this.username}&group=${this.group._id}`);
+                await this.$http.get(`groups/join?group=${this.group._id}`);
                 this.group.join = false;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});

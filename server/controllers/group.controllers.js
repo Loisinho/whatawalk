@@ -43,7 +43,7 @@ exports.search = async function (req, res, next) {
                     user = await model.User.findOne({ username: client.username }).select("groups");
                     groups = await model.Group
                         .find({ _id: user.groups })
-                        .sort({date: "asc"})
+                        .sort({date: "desc"})
                         .select("-chat")
                         .skip(b)
                         .limit(amount)
@@ -76,8 +76,20 @@ exports.search = async function (req, res, next) {
     }
 }
 
-// TODO: GET join group
+// GET join group
 exports.join = async function (req, res, next) {
-    console.log(req.query);
-    res.status(200).json("Join done!");
+    try {
+        let group = await model.Group.findOne({ _id: req.query.group });
+        if (!group.private && !group.members.includes(client.username)) {
+            let user = await model.User.findOne({ username: client.username }).select("groups");
+            group.members.push(client.username);
+            user.groups.unshift(group._id);
+            await group.save();
+            await user.save();
+            res.status(200).json("Ok");
+        }
+        res.status(422).json("Oops, you can not join this group.");
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
 }
