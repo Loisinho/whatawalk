@@ -2,15 +2,17 @@
     div.expositor
         UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
         GroupCard(v-if="pick === 'groups'" v-bind:key="item._id" v-for="item in items" v-bind:group="item")
+        NoticeCard(v-if="pick === 'notices'" v-bind:key="item._id" v-for="item in items" v-bind:notice="item" @delete-notice="deleteNotice")
         New(v-if="pick === 'groups'" @new-group="newGroup")
         p.expositor__empty(v-if="items.length === 0") NOTHING!!
-        p.expositor__empty(v-if="items.length === 0") This page is completely empty...
+        p.expositor__empty(v-if="items.length === 0" style="margin-bottom: 10px;") This page is completely empty...
         button.expositor__btn(v-if="status" type="button" @click="search") Load
 </template>
 
 <script>
 import UserCard from "../components/UserCard.vue";
 import GroupCard from "../components/GroupCard.vue";
+import NoticeCard from "../components/NoticeCard.vue";
 import New from "../components/New.vue";
 
 export default {
@@ -18,6 +20,7 @@ export default {
     components: {
         UserCard,
         GroupCard,
+        NoticeCard,
         New
     },
     props: {
@@ -73,6 +76,11 @@ export default {
         },
         newGroup(group) {
             this.items.unshift(group);
+            this.break++;
+        },
+        deleteNotice(id) {
+            this.items.map(i => i._id === id? this.items.splice(this.items.indexOf(i), 1) : i);
+            this.break--;
         }
     },
     beforeDestroy: function() {

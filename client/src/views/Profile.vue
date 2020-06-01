@@ -31,7 +31,7 @@
                 input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
             p.profile__description(v-if="status !== 'save'") {{ profile.description }}
             textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
-            button.profile__delete(v-if="status === 'save'" type="button") Delete
+            button.profile__delete(v-if="status === 'save'" type="button") Delete Account
 </template>
 
 <script>

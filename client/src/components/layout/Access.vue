@@ -12,7 +12,7 @@
                 router-link(:to="`/user/${username}/groups`")
                     font-awesome-icon(:icon="faUsers")
             span.access__element(v-if="isLoggedIn")
-                router-link(:to="`/user/${username}/chats`")
+                router-link(:to="`/user/${username}/notices`")
                     font-awesome-icon(:icon="faCommentAlt")
             span.access__element(v-if="isLoggedIn")
                 router-link(event="" to="/logout" @click.native.prevent="logout")
