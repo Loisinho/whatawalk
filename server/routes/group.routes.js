@@ -7,9 +7,11 @@ const { isLoggedIn, hasAuth } = require('../middlewares/hasAuth.js');
 router.use(isLoggedIn);
 
 
+router.get("/:group/find", hasAuth, group.find);
 router.post("/create", hasAuth, group.create);
-router.post("/invite", hasAuth, group.invite);
 router.get("/search", hasAuth, group.search);
+router.get("/admin", hasAuth, group.admin);
+router.post("/invite", hasAuth, group.invite);
 router.get("/join", hasAuth, group.join);
 
 

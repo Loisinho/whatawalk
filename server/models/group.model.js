@@ -9,11 +9,6 @@ const GroupSchema = new mongoose.Schema ({
         required: true,
         max: 40
     },
-    date: {
-        type: Date,
-        required: false,
-        default: Date.now
-    },
     private: {
         type: Boolean,
         required: false,
@@ -25,15 +20,18 @@ const GroupSchema = new mongoose.Schema ({
         max: 120,
         default: "default_group.jpg"
     },
-    admins: [],
-    members: [],
-    travel: {
-        type: String,
-        required: false,
-        max: 120,
-        default: null
-    },
+    admins: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     chat: [ChatSchema]
+},
+{
+    timestamps: true
 });
 
 
