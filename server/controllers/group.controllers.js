@@ -128,15 +128,16 @@ exports.join = async function (req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.query.group, members: {$nin: client._id}});
         if (group) {
-            if (group.private) {
+            if (!group.private) {
                 group.members.push(client._id);
                 await group.save();
                 res.status(200).json("Ok");
             } else {
-                let notice = model.Notice.findOne({receiver: client.username, group: group._id});
+                let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
                 if (notice) {
                     group.members.push(client._id);
                     await group.save();
+                    await model.Notice.findOneAndRemove({_id: notice._id});
                     res.status(200).json("Ok");
                 } else {
                     res.status(422).json("Oops, you can not join this group.");

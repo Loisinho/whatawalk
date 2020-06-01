@@ -20,7 +20,7 @@ const NoticeSchema = new mongoose.Schema ({
     expireAt: {
         type: Date,
         default: Date.now,
-        expires: "7m"
+        expires: 60*60*24*7
     }
 });
 
