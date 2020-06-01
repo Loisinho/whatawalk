@@ -106,8 +106,8 @@ exports.profile = async function (req, res, next) {
                 status: user.following.includes(client.username)? true: false
             },
             followers: {
-                amount: user.followers.length,
-                status: user.followers.includes(client.username)? true: false
+                amount: user.followers.users.length,
+                status: user.followers.users.includes(client.username)? true: false
             }
         });
     } catch (error) {
@@ -139,44 +139,55 @@ exports.edit = async function (req, res, next) {
 
 // GET search users
 exports.search = async function (req, res, next) {
-    let user = null;
-    let data = [];
-    let amount = 2;
-    let b = parseInt(req.query.break);
     try {
+        let users = null;
+        let limit = 2;
+        let skip = parseInt(req.query.break);
         switch (req.query.op) {
             case "following":
-                user = await model.User.findOne({ username: req.query.id }).select("following");
-                let following = user.following.splice(b, amount);
-                data = await model.User
-                    .find({username: {$in: following}})
-                    .select("username img -_id")
+                users = await model.User.findOne({ username: req.query.id })
+                    .select("following")
+                    .populate({
+                        path: "following",
+                        select: "username img -_id",
+                        options: {
+                            limit: limit,
+                            skip: skip
+                        }
+                    })
                     .lean();
-                data.map(i => i.follow = true);
+                users.following.map(i => i.follow = true);
+                users = users.following;
                 break;
             case "followers":
-                user = await model.User.findOne({ username: req.query.id }).select("following followers");
-                let followers = user.followers.splice(b, amount);
-                data = await model.User
-                    .find({username: {$in: followers}})
-                    .select("username img -_id")
-                    .lean();
-                    data.map(i => i.follow = user.following.includes(i.username)? true: false);
+                users = await model.User.findOne({ username: req.query.id })
+                    .select("following followers")
+                    .populate({
+                        path: "followers.users",
+                        select: "username img",
+                        options: {
+                            limit: limit,
+                            skip: skip,
+                            lean: true
+                        }
+                    });
+                users.followers.users.map(i => i.follow = users.following.includes(i._id)? true: false);
+                users = users.followers.users;
                 break;
             default:
                 let re = new RegExp(req.query.id, "i");
-                user = await model.User.findOne({ username: client.username }).select("following");
-                data = await model.User
+                let user = await model.User.findOne({ username: client.username }).select("following");
+                users = await model.User
                     .find({username: re})
                     .sort({username: "asc"})
-                    .select("username img -_id")
-                    .skip(b)
-                    .limit(amount)
+                    .select("username img")
+                    .skip(skip)
+                    .limit(limit)
                     .lean();
-                data.map(i => i.follow = user.following.includes(i.username)? true: false);
+                users.map(i => i.follow = user.following.includes(i._id)? true: false);
                 break;
         }
-        res.status(200).json(data);
+        res.status(200).json(users);
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
@@ -188,15 +199,17 @@ exports.follow = async function (req, res, next) {
         let userFing = await model.User.findOne({ username: client.username });
         let userFer = await model.User.findOne({ username: req.query.user });
         if (req.query.follow === "1") {
-            if (!userFing.following.includes(userFer.username))
-                userFing.following.unshift(userFer.username);
-            if (!userFer.followers.includes(userFing.username))
-                userFer.followers.unshift(userFing.username);
+            if (!userFing.following.includes(userFer._id))
+                userFing.following.unshift(userFer);
+            if (!userFer.followers.users.includes(userFing._id)) {
+                userFer.followers.users.unshift(userFing);
+                userFer.followers.newest++;
+            }
         } else {
-            var i = userFing.following.indexOf(userFer.username);
-            let j = userFer.followers.indexOf(userFing.username);
+            var i = userFing.following.indexOf(userFer._id);
+            let j = userFer.followers.users.indexOf(userFing._id);
             if (i !== -1) userFing.following.splice(i, 1);
-            if (j !== -1) userFer.followers.splice(j, 1);
+            if (j !== -1) userFer.followers.users.splice(j, 1);
         }
         await userFing.save();
         await userFer.save();
@@ -207,11 +220,11 @@ exports.follow = async function (req, res, next) {
 }
 
 passport.serializeUser(function(user, done) {
-    done(null, {id: user._id, username: user.username, img: user.img});
+    done(null, {_id: user._id, username: user.username, img: user.img});
 });
    
 passport.deserializeUser(function(user, done) {
-    model.User.findById(user.id, function (error, user) {
+    model.User.findById(user._id, function (error, user) {
         done(error, user.username);
     });
 });

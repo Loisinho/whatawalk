@@ -41,9 +41,20 @@ const UserSchema = new mongoose.Schema ({
         max: 254,
         default: null
     },
-    following: [],
-    followers: [],
-    groups: []
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    followers: {
+        newest: {
+            type: Number,
+            default: 0
+        },
+        users: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }]
+    }
 });
 
 

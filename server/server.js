@@ -71,7 +71,8 @@ const mongoOptions = {
     keepAlive: 1,
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true
 };
 
 var mongoDB = process.env.MONGODB_URI;

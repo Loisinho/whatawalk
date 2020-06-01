@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema ({
     user: {
-        type: String,
-        required: true,
-        max: 40
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     text: {
         type: String,
@@ -14,10 +14,9 @@ const ChatSchema = new mongoose.Schema ({
     },
     date: {
         type: Date,
-        required: false,
         default: Date.now
     },
-    attachment: []
+    attachment: [String]
 });
 
 
