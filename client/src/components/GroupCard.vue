@@ -13,7 +13,7 @@
                     div.groupcard__member(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
                         div.image__box
                         img(:src="webUrl + 'profile/' + member.img" alt="Member image")
-                div.groupcard__overly(v-if="group.members.length > 5") ...
+                    div.groupcard__overly(v-if="group.members.length > 5") ...
                 button.groupcard__btn(v-if="group.join" @click.stop="join") join
 </template>
 
@@ -119,14 +119,14 @@ export default {
                         }
                     }
                 }
-            }
 
-            .groupcard__overly {
-                float: left;
-                margin-left: calc(#{$groupcard-member-size} / 3 * 12 - 2vw);
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-                display: flex;
-                align-items: flex-end;
+                .groupcard__overly {
+                    position: absolute;
+                    left: calc(#{$groupcard-member-size} / 3 * 12 - 2vw);
+                    height: calc(#{$groupcard-member-size} + 2px * 2);
+                    display: flex;
+                    align-items: flex-end;
+                }
             }
 
             .groupcard__btn {

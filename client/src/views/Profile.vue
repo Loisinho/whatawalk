@@ -7,7 +7,7 @@
                 label.profile__upload(v-if="status === 'save'" for="profile__file")
                     input#profile__file(type="file" @change="previewImage")
                     font-awesome-icon(:icon="faArrowAltCircleUp")
-            div.profile__action
+            div.profile__measure
                 h1.profile__username @{{ profile.username }}
                 div.profile__links
                     div.profile__following
@@ -16,9 +16,10 @@
                     div.profile__followers
                         span.profile__amount {{ profile.followers.amount }}
                         router-link(to="followers") Followers
-                button.profile__edit(v-if="status === 'edit'" type="button" @click="status = 'save'") {{ status }}
-                button.profile__edit(v-else-if="status === 'save'" type="button" @click="save") {{ status }}
-                button.profile__edit(v-else type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
+                button.profile__edit(v-if="status !== null" type="button" @click="save") {{ status }}
+                div.profile__actions(v-else)
+                    button.profile__follow(type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
+                    Invite
         div.profile__data
             div.profile__group(:class="{'profile__group--edit': status === 'save'}")
                 font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
@@ -36,9 +37,13 @@
 <script>
 import { mapState } from "vuex";
 import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
+import Invite from "../components/Invite.vue";
 
 export default {
     name: "Profile",
+    components: {
+        Invite
+    },
     computed: {
         ...mapState({
             username: state => state.session.username
@@ -81,38 +86,32 @@ export default {
                 });
             }
         },
-        previewImage() {
-            let input = document.getElementById("profile__file");
-            if (input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    document.querySelector(".profile__img > img").src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        },
         async save() {
-            try {
-                let data = new FormData();
-                data.append("name", this.profile.name);
-                data.append("ubication", this.profile.ubication);
-                data.append("description", this.profile.description);
-                data.append("img", document.getElementById("profile__file").files[0]);
-                let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
-                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
-                this.$store.state.session.img = res.data.img;
-            } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
-                this.$store.commit("alert/activateAlert", {
-                    msg: error.response.data,
-                    type: "error"
-                });
+            if (this.status === "save") {
+                try {
+                    let data = new FormData();
+                    data.append("name", this.profile.name);
+                    data.append("ubication", this.profile.ubication);
+                    data.append("description", this.profile.description);
+                    data.append("img", document.getElementById("profile__file").files[0]);
+                    let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
+                    document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+                    this.$store.state.session.img = res.data.img;
+                    this.status = "edit";
+                } catch (error) {
+                    if (error.response.status === 401) this.$router.push({name: "login"});
+                    this.$store.commit("alert/activateAlert", {
+                        msg: error.response.data,
+                        type: "error"
+                    });
+                }
+            } else {
+                this.status = "save";
             }
-            this.status = "edit";
         },
         async followAction() {
             try {
-                await this.$http.get(`users/${this.username}/follow?user=${this.profile.username}&follow=${!this.profile.followers? "1": "0"}`);
+                await this.$http.get(`users/follow?user=${this.profile.username}&follow=${!this.profile.followers.status? "1": "0"}`);
                 this.profile.followers.status = !this.profile.followers.status;
                 this.profile.followers.status? this.profile.followers.amount++: this.profile.followers.amount--;
             } catch (error) {
@@ -121,6 +120,16 @@ export default {
                     msg: error.response.data,
                     type: "error"
                 });
+            }
+        },
+        previewImage() {
+            let input = document.getElementById("profile__file");
+            if (input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    document.querySelector(".profile__img > img").src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
     },
@@ -181,7 +190,7 @@ export default {
                 }
             }
 
-            .profile__action {
+            .profile__measure {
                 @include container-flex($direction: column);
                 justify-content: space-between;
                 width: 60%;
@@ -217,12 +226,17 @@ export default {
                     }
                 }
 
-                .profile__edit {
+                .profile__edit, .profile__follow {
                     @include button-alpha($alpha: 0.5);
                     font-size: $profile-size;
                 }
-            }
 
+                .profile__actions {
+                    .profile__follow {
+                        margin-bottom: 10px;
+                    }
+                }
+            }
         }
 
         .profile__data {
@@ -232,7 +246,7 @@ export default {
             }
 
             h3, p {
-                word-break: break-all;
+                word-wrap: break-word;
             }
 
             textarea {
@@ -290,8 +304,8 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "sd"), $profile-upload-size);
             }
 
-            .profile__action {
-                .profile__username, .profile__edit {
+            .profile__measure {
+                .profile__username, .profile__edit, .profile__follow {
                     font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
                 }
 
@@ -334,8 +348,8 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "md"), $profile-upload-size);
             }
 
-            .profile__action {
-                .profile__username, .profile__edit {
+            .profile__measure {
+                .profile__username, .profile__edit, .profile__follow {
                     font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
                 }
 
@@ -372,6 +386,17 @@ export default {
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
     .content .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "ld"), $profile-border-top-left-radius);
+
+        .profile__main .profile__measure .profile__actions {
+            .profile__follow {
+                width: calc(50% - 5px);
+                margin-bottom: 0;
+            }
+
+            .profile__follow {
+                margin-right: 10px;
+            }
+        }
     }
 }
 
