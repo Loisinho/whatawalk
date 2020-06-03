@@ -19,7 +19,7 @@
     }
 }
 
-@mixin button-alpha($color: #ffffff, $alpha: 1) {
+@mixin button-alpha($color: #ffffff, $alpha: 1, $hover: true) {
     width: 100%;
     text-transform: uppercase;
     padding: 5px;
@@ -29,8 +29,10 @@
     border: 4px solid rgba($color, $alpha);
     transition: all $transition-time;
 
-    &:hover {
-        background: $color;
-        color: $form-submit-border;
+    @if $hover {
+        &:hover {
+            background: $color;
+            color: $form-submit-border;
+        }
     }
 }

@@ -87,10 +87,28 @@ const router = new Router({
                     component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
                 },
                 {
+                    path: "notices",
+                    name: "notices",
+                    props: {
+                        pick: "notices",
+                        op: "own"
+                    },
+                    component: () => import(/* webpackChunkName: "explore" */ "./views/Explore.vue")
+                },
+                {
                     path: "",
                     component: Home
                 }
             ]
+        },
+        {
+            path: "/group/:id",
+            name: "group",
+            meta: {
+                requiresAuth: true,
+                groupExists: true
+            },
+            component: () => import(/* webpackChunkName: "group" */ "./views/Group.vue")
         },
         {
             path: "*",

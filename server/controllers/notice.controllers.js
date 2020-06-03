@@ -5,14 +5,13 @@ const model = require("../models");
 // GET search notices
 exports.search = async function (req, res, next) {
     try {
-        let limit = 2;
         let skip = parseInt(req.query.break);
         let user = await model.User.findOne({_id: client._id}).select("followers");
         let notices = await model.Notice
             .find({receiver: client._id})
             .sort({expireAt: "asc"})
             .skip(skip)
-            .limit(limit)
+            .limit(parseInt(process.env.LOAD_LIMIT))
             .populate({
                 path: "sender",
                 select: "username img -_id"

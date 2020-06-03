@@ -9,12 +9,12 @@
                 font-awesome-icon(v-if="group.private" :icon="faLock")
             p.groupcard__description {{ group.description }}
             div.groupcard__membership
-                div.groupcard__members
-                    div.groupcard__member(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
+                div.chain
+                    div.chain__link(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
                         div.image__box
                         img(:src="webUrl + 'profile/' + member.img" alt="Member image")
-                    div.groupcard__overly(v-if="group.members.length > 5") ...
-                button.groupcard__btn(v-if="group.join" @click.stop="join") join
+                    div.chain__overly(v-if="group.members.length > 5") ...
+                button.chain__btn(v-if="group.join" @click.stop="join") join
 </template>
 
 <script>
@@ -86,102 +86,25 @@ export default {
         }
 
         .groupcard__description {
-            font-size: $groupcard-small-size;
+            font-size: $group-small-size;
             margin-bottom: 5px;
             word-wrap: break-word;
         }
 
         .groupcard__membership {
-            .groupcard__members {
-                @include container-flex();
-                position: relative;
-                float: left;
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-
-                .groupcard__member {
-                    @include image-box;
-                    box-sizing: content-box;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: $groupcard-member-size;
-                    border: 2px solid $profile-bg;
-                    border-radius: 50%;
-                    overflow: hidden;
-
-                    .image__box {
-                        height: $groupcard-member-size;
-                    }
-
-                    @for $i from 2 to 6 {
-                        &:nth-child(#{$i}) {
-                            left: calc(#{$groupcard-member-size} / 3 * 2 * (#{$i} - 1));
-                        }
-                    }
-                }
-
-                .groupcard__overly {
-                    position: absolute;
-                    left: calc(#{$groupcard-member-size} / 3 * 12 - 2vw);
-                    height: calc(#{$groupcard-member-size} + 2px * 2);
-                    display: flex;
-                    align-items: flex-end;
-                }
-            }
-
-            .groupcard__btn {
-                @include button-alpha();
-                float: right;
-                width: auto;
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-                padding: 0 5%;
-                font-size: $groupcard-small-size;
-                border-width: 3px;
-            }
+            @include image-chain();
         }
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
-    $groupcard-member-size: vw-to-px(map-get($container-widths, "sd"), $groupcard-member-size);
-
     .groupcard .groupcard__info {
         .groupcard__title {
             font-size: vw-to-px(map-get($container-widths, "sd"), $groupcard-title-size);
         }
 
         .groupcard__description {
-            font-size: vw-to-px(map-get($container-widths, "sd"), $groupcard-small-size);
-        }
-
-        .groupcard__membership {
-            .groupcard__members {
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-
-                .groupcard__member {
-                    width: $groupcard-member-size;
-
-                    .image__box {
-                        height: $groupcard-member-size;
-                    }
-
-                    @for $i from 2 to 6 {
-                        &:nth-child(#{$i}) {
-                            left: calc(#{$groupcard-member-size} / 3 * 2 * (#{$i} - 1));
-                        }
-                    }
-                }
-            }
-
-            .groupcard__overly {
-                margin-left: calc(#{$groupcard-member-size} / 3 * 12 - #{vw-to-px(map-get($container-widths, "sd"), 2vw)});
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-            }
-
-            .groupcard__btn {
-                height: calc(#{$groupcard-member-size} + 2px * 2);
-                font-size: vw-to-px(map-get($container-widths, "sd"), $groupcard-small-size);;
-            }
+            font-size: vw-to-px(map-get($container-widths, "sd"), $group-small-size);
         }
     }
 }
@@ -193,7 +116,7 @@ export default {
         }
 
         .groupcard__description {
-            font-size: vw-to-px(map-get($container-widths, "md"), $groupcard-small-size);
+            font-size: vw-to-px(map-get($container-widths, "md"), $group-small-size);
         }
     }
 }
@@ -217,7 +140,7 @@ export default {
             }
 
             .groupcard__description {
-                font-size: vw-to-px(map-get($container-widths, "ld"), $groupcard-small-size);
+                font-size: vw-to-px(map-get($container-widths, "ld"), $group-small-size);
             }
         }
     }

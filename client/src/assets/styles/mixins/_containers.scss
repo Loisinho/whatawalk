@@ -39,3 +39,87 @@
         }
     }
 }
+
+@mixin image-chain() {
+    .chain {
+        @include container-flex();
+        position: relative;
+        height: calc(#{$chain-size} + 2px * 2);
+        float: left;
+
+        .chain__link {
+            @include image-box;
+            box-sizing: content-box;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: $chain-size;
+            border: 2px solid $profile-bg;
+            border-radius: 50%;
+            overflow: hidden;
+
+            .image__box {
+                height: $chain-size;
+            }
+
+            @for $i from 2 to 6 {
+                &:nth-child(#{$i}) {
+                    left: calc(#{$chain-size} / 3 * 2 * (#{$i} - 1));
+                }
+            }
+        }
+
+        .chain__overly {
+            position: absolute;
+            left: calc(#{$chain-size} / 3 * 12 - 2vw);
+            height: calc(#{$chain-size} + 2px * 2);
+            display: flex;
+            align-items: flex-end;
+        }
+    }
+
+    .chain__btn {
+        @include button-alpha($hover: false);
+        float: right;
+        width: auto;
+        height: calc(#{$chain-size} + 2px * 2);
+        padding: 0 5%;
+        font-size: $group-small-size;
+        border-width: 3px;
+
+        &:hover {
+            transform: scale(0.92);
+        }
+    }
+
+    @media only screen and (min-width: map-get($breakpoints, "sd")) {
+        $chain-size: vw-to-px(map-get($container-widths, "sd"), $chain-size);
+        .chain {
+            height: calc(#{$chain-size} + 2px * 2);
+
+            .chain__link {
+                width: $chain-size;
+
+                .image__box {
+                    height: $chain-size;
+                }
+
+                @for $i from 2 to 6 {
+                    &:nth-child(#{$i}) {
+                        left: calc(#{$chain-size} / 3 * 2 *  (#{$i} - 1));
+                    }
+                }
+            }
+
+            .chain__overly {
+                left: calc(#{$chain-size} / 3 * 12 - #{vw-to-px(map-get($container-widths, "sd"), 2vw)});
+                height: calc(#{$chain-size} + 2px * 2);
+            }
+        }
+
+        .chain__btn {
+            height: calc(#{$chain-size} + 2px * 2);
+            font-size: vw-to-px(map-get($container-widths, "sd"), $group-small-size);;
+        }
+    }
+}

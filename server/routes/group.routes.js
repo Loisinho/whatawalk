@@ -8,9 +8,11 @@ router.use(isLoggedIn);
 
 
 router.get("/:group/find", hasAuth, group.find);
+router.patch("/:group/admin", hasAuth, group.admin);
+router.patch("/:group/remove", hasAuth, group.remove);
 router.post("/create", hasAuth, group.create);
 router.get("/search", hasAuth, group.search);
-router.get("/admin", hasAuth, group.admin);
+router.get("/invite", hasAuth, group.inviteTo);
 router.post("/invite", hasAuth, group.invite);
 router.get("/join", hasAuth, group.join);
 

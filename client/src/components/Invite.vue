@@ -17,7 +17,7 @@ export default {
         async open() {
             if (!this.optionsOpen) {
                 try {
-                    let res = await this.$http.get(`groups/admin?guest=${this.$route.params.id}`);
+                    let res = await this.$http.get(`groups/invite?guest=${this.$route.params.id}`);
                     this.groups = res.data;
                 } catch (error) {
                     if (error.response.status === 401) this.$router.push({name: "login"});

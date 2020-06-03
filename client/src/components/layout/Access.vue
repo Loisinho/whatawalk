@@ -2,20 +2,20 @@
     div#access
         div.access__container
             span.access__element.access__main
-                router-link(to="/login" v-if="!isLoggedIn")
+                router-link(to="/login" v-if="!isLoggedIn" title="Login")
                     font-awesome-icon(:icon="faSignInAlt")
                 img.access__icon(v-else :src="webUrl + img" alt="Profile image")
             span.access__element(v-if="isLoggedIn")
-                router-link(:to="`/user/${username}/profile`")
+                router-link(:to="`/user/${username}/profile`" title="Profile")
                     font-awesome-icon(:icon="faUser")
             span.access__element(v-if="isLoggedIn")
-                router-link(:to="`/user/${username}/groups`")
+                router-link(:to="`/user/${username}/groups`" title="Groups")
                     font-awesome-icon(:icon="faUsers")
             span.access__element(v-if="isLoggedIn")
-                router-link(:to="`/user/${username}/notices`")
+                router-link(:to="`/user/${username}/notices`" title="Notices")
                     font-awesome-icon(:icon="faCommentAlt")
             span.access__element(v-if="isLoggedIn")
-                router-link(event="" to="/logout" @click.native.prevent="logout")
+                router-link(event="" to="/logout" @click.native.prevent="logout" title="Logout")
                     font-awesome-icon(:icon="faSignOutAlt")
 </template>
 

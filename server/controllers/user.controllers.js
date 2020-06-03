@@ -141,7 +141,6 @@ exports.edit = async function (req, res, next) {
 exports.search = async function (req, res, next) {
     try {
         let users = null;
-        let limit = 2;
         let skip = parseInt(req.query.break);
         switch (req.query.op) {
             case "following":
@@ -151,7 +150,7 @@ exports.search = async function (req, res, next) {
                         path: "following",
                         select: "username img -_id",
                         options: {
-                            limit: limit,
+                            limit: parseInt(process.env.LOAD_LIMIT),
                             skip: skip
                         }
                     })
@@ -166,7 +165,7 @@ exports.search = async function (req, res, next) {
                         path: "followers.users",
                         select: "username img",
                         options: {
-                            limit: limit,
+                            limit: parseInt(process.env.LOAD_LIMIT),
                             skip: skip,
                             lean: true
                         }
@@ -182,7 +181,7 @@ exports.search = async function (req, res, next) {
                     .sort({username: "asc"})
                     .select("username img")
                     .skip(skip)
-                    .limit(limit)
+                    .limit(parseInt(process.env.LOAD_LIMIT))
                     .lean();
                 users.map(i => i.follow = user.following.includes(i._id)? true: false);
                 break;
