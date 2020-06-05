@@ -95,6 +95,10 @@ export default {
             @include image-chain();
         }
     }
+
+    &:hover {
+        transform: scale(0.96);
+    }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {

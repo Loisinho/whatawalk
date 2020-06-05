@@ -4,7 +4,7 @@
             div.profile__img
                 div.image__box
                 img(src="" alt="Profile image")
-                label.profile__upload(v-if="status === 'save'" for="profile__file")
+                label.profile__upload(v-if="status === true" for="profile__file")
                     input#profile__file(type="file" @change="previewImage")
                     font-awesome-icon(:icon="faArrowAltCircleUp")
             div.profile__measure
@@ -16,33 +16,36 @@
                     div.profile__followers
                         span.profile__amount {{ profile.followers.amount }}
                         router-link(to="followers") Followers
-                button.profile__edit(v-if="status !== null" type="button" @click="save") {{ status }}
-                div.profile__actions(v-else)
+                div.profile__actions(v-if="status === null")
                     button.profile__follow(type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
                     Invite
+                button.profile__edit(v-else-if="status === false" type="button" @click="edit") Edit
         div.profile__data
-            div.profile__group(:class="{'profile__group--edit': status === 'save'}")
-                font-awesome-icon.profile__icon(v-if="profile.name || status === 'save'" :icon="faUser")
-                h3.profile__field(v-if="status !== 'save'") {{ profile.name }}
-                input.profile__field(v-else type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
-            div.profile__group(:class="{'profile__group--edit': status === 'save'}")
-                font-awesome-icon.profile__icon(v-if="profile.ubication || status === 'save'" :icon="faMapMarkerAlt")
-                h3.profile__field(v-if="status !== 'save'") {{ profile.ubication }}
-                input.profile__field(v-else type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
-            p.profile__description(v-if="status !== 'save'") {{ profile.description }}
-            textarea.profile__description(v-else v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
-            button.profile__delete(v-if="status === 'save'" type="button") Delete Account
+            div.profile__group(:class="{'profile__group--edit': status === true}")
+                font-awesome-icon.profile__icon(v-if="profile.name || status === true" :icon="faUser")
+                input.profile__field(v-if="status === true" type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
+                h3.profile__field(v-else) {{ profile.name }}
+            div.profile__group(:class="{'profile__group--edit': status === true}")
+                font-awesome-icon.profile__icon(v-if="profile.ubication || status === true" :icon="faMapMarkerAlt")
+                input.profile__field(v-if="status === true" type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
+                h3.profile__field(v-else) {{ profile.ubication }}
+            textarea.profile__description(v-if="status === true" v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
+            p.profile__description(v-if="status === false") {{ profile.description }}
+            button.profile__delete(v-if="status === true" type="button" @click="deleteAccount") Delete Account
+        Modal(@confirm-edit="confirmEdit" @cancel-edit="cancelEdit" @confirm-decision="confirmDecision" @cancel-decision="cancelDecision")
 </template>
 
 <script>
 import { mapState } from "vuex";
 import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
 import Invite from "../components/Invite.vue";
+import Modal from "../components/Modal.vue";
 
 export default {
     name: "Profile",
     components: {
-        Invite
+        Invite,
+        Modal
     },
     computed: {
         ...mapState({
@@ -68,7 +71,8 @@ export default {
                     status: false
                 }
             },
-            status: null
+            auxProfile: {},
+            status: ""
         }
     },
     methods: {
@@ -77,36 +81,13 @@ export default {
                 let res = await this.$http.get(`users/${this.$route.params.id}/profile`);
                 document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.profile = res.data;
-                this.status = this.username === this.profile.username? "edit": null;
+                this.status = this.username === this.profile.username? false: null;
             } catch (error) {
                 this.$router.push({name: error.response.status === 401? "login": "home"});
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
                 });
-            }
-        },
-        async save() {
-            if (this.status === "save") {
-                try {
-                    let data = new FormData();
-                    data.append("name", this.profile.name);
-                    data.append("ubication", this.profile.ubication);
-                    data.append("description", this.profile.description);
-                    data.append("img", document.getElementById("profile__file").files[0]);
-                    let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
-                    document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
-                    this.$store.state.session.img = res.data.img;
-                    this.status = "edit";
-                } catch (error) {
-                    if (error.response.status === 401) this.$router.push({name: "login"});
-                    this.$store.commit("alert/activateAlert", {
-                        msg: error.response.data,
-                        type: "error"
-                    });
-                }
-            } else {
-                this.status = "save";
             }
         },
         async followAction() {
@@ -131,7 +112,58 @@ export default {
                 }
                 reader.readAsDataURL(input.files[0]);
             }
+        },
+        edit() {
+            this.status = true;
+            this.auxProfile = {
+                name: this.profile.name,
+                ubication: this.profile.ubication,
+                description: this.profile.description
+            };
+            this.$store.commit("modal/activateModal", {active: true});
+        },
+        async confirmEdit() {
+            try {
+                let data = new FormData();
+                data.append("name", this.profile.name);
+                data.append("ubication", this.profile.ubication);
+                data.append("description", this.profile.description);
+                data.append("img", document.getElementById("profile__file").files[0]);
+                let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
+                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+                this.$store.state.session.img = res.data.img;
+                this.$store.commit("modal/activateModal", {active: false});
+                this.status = false;
+            } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
+        },
+        cancelEdit() {
+            this.$store.commit("modal/activateModal", {active: false});
+            this.status = false;
+            this.profile.name = this.auxProfile.name;
+            this.profile.ubication = this.auxProfile.ubication;
+            this.profile.description = this.auxProfile.description;
+            document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${this.profile.img}`;
+        },
+        deleteAccount() {
+            this.$store.commit("modal/activateModal", {active: true, msg: "Are you sure you want to delete your account?"});
+        },
+        // TODO: 
+        async confirmDecision() {
+            console.log("ACCOUNT DELETED!");
+            this.$store.commit("modal/activateModal", {active: false});
+        },
+        cancelDecision() {
+            this.$store.commit("modal/activateModal", {active: true});
         }
+    },
+    beforeDestroy: function() {
+        this.$store.commit("modal/activateModal", {active: false});
     },
     created: function() {
         this.find();
@@ -142,161 +174,159 @@ export default {
 <style lang="scss" scoped>
 @import "../assets/styles/styles";
 
-.content {
-    .profile {
-        background: $profile-bg;
-        padding: 10px;
-        border-top-left-radius: $profile-border-top-left-radius;
+.profile {
+    background: $profile-bg;
+    padding: 10px;
+    border-top-left-radius: $profile-border-top-left-radius;
 
-        .profile__main {
-            @include container-flex();
-            margin-bottom: 10px;
+    .profile__main {
+        @include container-flex();
+        margin-bottom: 10px;
 
-            .profile__img {
-                @include image-box;
-                position: relative;
-                width: 40%;
-                border-radius: 50%;
-                overflow: hidden;
+        .profile__img {
+            @include image-box;
+            position: relative;
+            width: 40%;
+            border-radius: 50%;
+            overflow: hidden;
 
-                .image__box {
-                    padding-bottom: 100%;
-                }
-
-                .profile__upload {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-
-                    > input[type="file"] {
-                        width: 0;
-                        height: 0;
-                        display: block;
-                        overflow: hidden;
-
-                        + svg {
-                            font-size: $profile-upload-size;
-                            display: block;
-                            color: $profile-upload-color;
-                            cursor: pointer;
-                            transition: all 0.4s;
-
-                            &:hover {
-                                color: darken($profile-upload-color, 20%);
-                            }
-                        }
-                    }
-                }
+            .image__box {
+                padding-bottom: 100%;
             }
 
-            .profile__measure {
-                @include container-flex($direction: column);
-                justify-content: space-between;
-                width: 60%;
-                padding: 0 6%;
+            .profile__upload {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
 
-                .profile__username {
-                    font-size: $profile-size;
-                    padding-bottom: 10px;
-                }
+                > input[type="file"] {
+                    width: 0;
+                    height: 0;
+                    display: block;
+                    overflow: hidden;
 
-                .profile__links {
-                    .profile__following, .profile__followers {
-                        display: flex;
-                        margin-bottom: 10px;
-                        font-size: $profile-size;
-                        text-transform: uppercase;
+                    + svg {
+                        font-size: $profile-upload-size;
+                        display: block;
+                        color: $profile-upload-color;
+                        cursor: pointer;
+                        transition: all 0.4s;
 
-                        .profile__amount {
-                            display: block;
-                            width: 30%;
-                            text-align: center;
-                            border: 2px solid #ffffff;
+                        &:hover {
+                            color: darken($profile-upload-color, 20%);
                         }
-
-                        > a {
-                            @include link-border-animation;
-                            padding-top: 2px;
-
-                            &:after {
-                                margin: 0;
-                            }
-                        }
-                    }
-                }
-
-                .profile__edit, .profile__follow {
-                    @include button-alpha($alpha: 0.5);
-                    font-size: $profile-size;
-                }
-
-                .profile__actions {
-                    .profile__follow {
-                        margin-bottom: 10px;
                     }
                 }
             }
         }
 
-        .profile__data {
-            .profile__description {
-                font-size: $profile-data-size;
-                padding: 5px;
+        .profile__measure {
+            @include container-flex($direction: column);
+            justify-content: center;
+            width: 60%;
+            padding: 0 6%;
+
+            .profile__username {
+                font-size: $profile-size;
+                padding-bottom: 10px;
             }
 
-            h3, p {
-                word-wrap: break-word;
-            }
+            .profile__links {
+                .profile__following, .profile__followers {
+                    display: flex;
+                    margin-bottom: 10px;
+                    font-size: $profile-size;
+                    text-transform: uppercase;
 
-            textarea {
-                width: 100%;
-                margin-bottom: 4px;
-                border: 0;
-                font-family: $body-font-family;
-                background: $profile-edit-bg;
-                color: $profile-edit-color;
-            }
-            
-            .profile__group {
-                @include container-flex(v);
-                padding: 2px 5px;
+                    .profile__amount {
+                        display: block;
+                        width: 30%;
+                        text-align: center;
+                        border: 2px solid #ffffff;
+                    }
 
-                .profile__icon {
-                    width: $profile-data-size;
-                    margin-right: 2px;
-                }
+                    > a {
+                        @include link-border-animation;
+                        padding-top: 2px;
 
-                .profile__field {
-                    font-size: $profile-data-size;
-                }
-
-                > input {
-                    width: 100%;
-                    background: transparent;
-                    color: $profile-edit-color;
-                }
-
-                &.profile__group--edit {
-                    background: $profile-edit-bg;
-                    margin-bottom: 4px;
-
-                    .profile__icon {
-                        color: $profile-edit-color;
+                        &:after {
+                            margin: 0;
+                        }
                     }
                 }
             }
 
-            .profile__delete {
-                @include button-alpha($profile-delete, 0.5);
+            .profile__edit, .profile__follow {
+                @include button-alpha($alpha: 0.5);
                 font-size: $profile-size;
             }
+
+            .profile__actions {
+                .profile__follow {
+                    margin-bottom: 10px;
+                }
+            }
+        }
+    }
+
+    .profile__data {
+        .profile__description {
+            font-size: $profile-data-size;
+            padding: 5px;
+        }
+
+        h3, p {
+            word-wrap: break-word;
+        }
+
+        textarea {
+            width: 100%;
+            margin-bottom: 4px;
+            border: 0;
+            font-family: $body-font-family;
+            background: $profile-edit-bg;
+            color: $profile-edit-color;
+        }
+            
+        .profile__group {
+            @include container-flex(v);
+            padding: 2px 5px;
+
+            .profile__icon {
+                width: $profile-data-size;
+                margin-right: 2px;
+            }
+
+            .profile__field {
+                font-size: $profile-data-size;
+            }
+
+            > input {
+                width: 100%;
+                background: transparent;
+                color: $profile-edit-color;
+            }
+
+            &.profile__group--edit {
+                background: $profile-edit-bg;
+                margin-bottom: 4px;
+
+                .profile__icon {
+                    color: $profile-edit-color;
+                }
+            }
+        }
+
+        .profile__delete {
+            @include button-alpha($profile-delete, 0.5);
+            font-size: $profile-size;
         }
     }
 }
 
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
-    .content .profile {
+    .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "sd"), $profile-border-top-left-radius);
 
         .profile__main {
@@ -340,7 +370,7 @@ export default {
 }
 
 @media only screen and (min-width: map-get($breakpoints, "md")) {
-    .content .profile {
+    .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "md"), $profile-border-top-left-radius);
 
         .profile__main {
@@ -384,7 +414,7 @@ export default {
 }
 
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
-    .content .profile {
+    .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "ld"), $profile-border-top-left-radius);
 
         .profile__main .profile__measure .profile__actions {
@@ -401,7 +431,7 @@ export default {
 }
 
 @media only screen and (min-width: map-get($breakpoints, "xd")) {
-    .content .profile {
+    .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "xd"), $profile-border-top-left-radius);
     }
 }

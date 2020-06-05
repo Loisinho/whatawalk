@@ -32,7 +32,7 @@ export default {
     transition: max-height 0.4s;
 
     &.alert--active {
-        max-height: 100px;
+        max-height: 100vh;
     }
 
     &.alert--error {
