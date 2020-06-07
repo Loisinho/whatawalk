@@ -11,7 +11,7 @@
             span.access__element(v-if="isLoggedIn")
                 router-link(:to="`/user/${username}/groups`" title="Groups")
                     font-awesome-icon(:icon="faUsers")
-            span.access__element(v-if="isLoggedIn")
+            span.access__element(v-if="isLoggedIn" :class="{'access__element--notification': notices}")
                 router-link(:to="`/user/${username}/notices`" title="Notices")
                     font-awesome-icon(:icon="faCommentAlt")
             span.access__element(v-if="isLoggedIn")
@@ -30,6 +30,7 @@ export default {
             isLoggedIn: state => state.session.isLoggedIn,
             username: state => state.session.username,
             img: state => state.session.img,
+            notices: state => state.session.notices
         })
     },
     data: () => {
@@ -42,10 +43,16 @@ export default {
             webUrl: process.env.VUE_APP_URL + "media/images/profile/"
         }
     },
+    sockets: {
+        newNotice() {
+            this.$store.commit("session/newNotice");
+        }
+    },
     methods: {
         async logout() {
             try {
                 await this.$http.get("users/logout");
+                this.$socket.client.close();
                 this.$router.push({name: "login"});
             } catch (error) {
                 this.$store.commit("alert/activateAlert", {
@@ -112,6 +119,12 @@ export default {
                 
                 > img {
                     object-fit: cover;
+                }
+            }
+
+            &.access__element--notification {
+                > a, > .access__icon {
+                    background: red;
                 }
             }
         }

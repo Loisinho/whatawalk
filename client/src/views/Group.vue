@@ -37,7 +37,7 @@
                                     button.member__remove(type="button" @click.stop="remove(i)") Remove member
                                 span.member__functions(v-else-if="member.admin") Admin
                                     font-awesome-icon(:icon="faCrown")
-                Chat(v-bind:chat="group.chat")
+                Chat(v-bind:group="group._id" v-bind:chat="group.chat")
                 Modal(@confirm-edit="confirmEdit" @cancel-edit="cancelEdit" @confirm-decision="confirmDecision" @cancel-decision="cancelDecision")
 </template>
 
@@ -126,13 +126,13 @@ export default {
             };
             this.$store.commit("modal/activateModal", {active: true});
         },
+        // TODO:
         async confirmEdit() {
-            console.log("YEAH!! SAVED!!");
+            console.log("confirmEdit");
             this.$store.commit("modal/activateModal", {active: false});
             this.status = false;
         },
         cancelEdit() {
-            console.log("YEAH!! CANCELLED!!");
             this.$store.commit("modal/activateModal", {active: false});
             this.status = false;
             this.group.title = this.auxGroup.title;
@@ -154,12 +154,12 @@ export default {
         },
         // TODO: 
         async deleteGroup() {
-            console.log("GROUP DELETED!");
+            console.log("deleteGroup");
             this.$store.commit("modal/activateModal", {active: false});
         },
         // TODO: 
         async leaveGroup() {
-            console.log("GROUP LEFT!");
+            console.log("leaveGroup");
             this.$store.commit("modal/activateModal", {active: false});
         },
         cancelDecision() {
@@ -169,6 +169,18 @@ export default {
     beforeDestroy: function() {
         this.$store.commit("modal/activateModal", {active: false});
     },
+    // beforeRouteEnter(to, from, next) {
+    //     // called before the route that renders this component is confirmed.
+    //     // does NOT have access to `this` component instance,
+    //     // because it has not been created yet when this guard is called!
+    //     console.log("beforeRouteEnter!!!!!!!!!!!!!!!!!!!!");
+    //     let i = "helelioasdf";
+    //     next(vm => {
+    //         // access to component instance via `vm`
+    //         console.log(i);
+    //         vm.find();
+    //     })
+    // },
     created: function() {
         this.find();
     }
@@ -182,7 +194,6 @@ export default {
     margin-bottom: 45px;
 
     .group {
-        // position: relative;
         margin-bottom: 45px;
         z-index: 0;
         background: red;
@@ -379,8 +390,6 @@ export default {
             left: 0;
             width: 100%;
             max-height: calc(100vh - 200px);
-            // min-height: calc(100vh - 200px);
-            // max-height: calc(100vh - 105px);
             margin-left: 5px;
         }
     }

@@ -17,6 +17,11 @@ const NoticeSchema = new mongoose.Schema ({
         ref: "Group",
         required: true,
     },
+    seen: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
     expireAt: {
         type: Date,
         default: Date.now,

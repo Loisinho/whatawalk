@@ -32,6 +32,7 @@ export default {
         async invite(group) {
             try {
                 let res = await this.$http.post("groups/invite", {guest: this.$route.params.id, group: group});
+                this.$socket.client.emit("notify", this.$route.params.id);
                 this.$store.commit("alert/activateAlert", {
                     msg: res.data,
                     type: "success"

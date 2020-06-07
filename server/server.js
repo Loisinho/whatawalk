@@ -111,3 +111,9 @@ const httpsServer = https.createServer(certs, app);
 var server = httpsServer.listen(process.env.HTTPS_PORT, () =>
     console.log(`HTTPS server running on port ${process.env.HTTPS_PORT}`)
 );
+
+
+const io = require("socket.io")(httpServer);
+const { actions } = require("./controllers/socket.controllers");
+
+io.sockets.on("connection", actions);

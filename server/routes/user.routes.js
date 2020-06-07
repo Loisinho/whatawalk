@@ -27,7 +27,7 @@ router.post("/signup", validator.signup, user.signup);
 router.post("/login", validator.login, user.login);
 router.post("/google", user.google);
 router.get("/logout", user.logout);
-router.get("/:username/profile", user.profile);
+router.get("/:username/profile", hasAuth, user.profile);
 router.post("/:username/profile/edit", hasAuth, upload.single('img'), user.edit);
 router.get("/search", hasAuth, user.search);
 router.get("/follow", hasAuth, user.follow);

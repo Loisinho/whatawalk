@@ -70,6 +70,22 @@ exports.remove = async function(req, res, next) {
     }
 }
 
+// PATCH new group msg.
+exports.msg = async function(req, res, next) {
+    try {
+        let group = await model.Group.findOne({_id: req.params.group, members: {$in: client._id}});
+        let newMsg = new model.Chat({
+            user: client.username,
+            text: req.body.text
+        });
+        group.chat.push(newMsg);
+        await group.save();
+        res.status(200).json("Ok");
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
 // POST create group.
 exports.create = async function (req, res, next) {
     try {

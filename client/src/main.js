@@ -5,6 +5,14 @@ import store from "./store"
 import Axios from "axios"
 import Vuelidate from "vuelidate"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import VueSocketIOExt from "vue-socket.io-extended"
+import io from "socket.io-client"
+ 
+const socket = io(process.env.VUE_APP_URL, {
+    autoConnect: false
+})
+ 
+Vue.use(VueSocketIOExt, socket)
 
 Vue.config.productionTip = false
 

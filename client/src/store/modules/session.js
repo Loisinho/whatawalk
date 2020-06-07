@@ -4,16 +4,24 @@ import axios from "axios";
 const state = {
     isLoggedIn: false,
     username: null,
-    img: null
+    img: null,
+    notices: false
 }
 
 // Mutations
 const mutations = {
     checkSession (state, payload) {
+        if (!state.isLoggedIn && payload.isLoggedIn) {
+            this._vm.$socket.client.open();
+            this._vm.$socket.client.emit("storeClient", payload.username);
+        }
         state.isLoggedIn = payload.isLoggedIn;
         state.username = payload.username;
         state.img = payload.img;
-    }
+    },
+    newNotice(state, payload=true) {
+        state.notices = payload;
+    },
 }
 
 // Actions
@@ -23,7 +31,7 @@ const actions = {
         if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,
-                username: user.data.username || null,
+                username: user.data.username,
                 img: user.data.img
             });
         else

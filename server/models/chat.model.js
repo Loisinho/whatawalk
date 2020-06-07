@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema ({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        type: String,
         required: true
     },
     text: {
@@ -15,8 +14,7 @@ const ChatSchema = new mongoose.Schema ({
     date: {
         type: Date,
         default: Date.now
-    },
-    attachment: [String]
+    }
 });
 
 

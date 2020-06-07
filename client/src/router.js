@@ -131,8 +131,9 @@ router.beforeEach(async (to, from, next) => {
         }
     } else if (to.matched.some(record => record.meta.guest)) {
         !store.state.session.isLoggedIn? next(): next({ name: "home" });
+    } else {
+        next();
     }
-    next();
 });
 
 export default router;
