@@ -35,7 +35,10 @@ export default {
                 this.user.follow = !this.user.follow;
                 this.$emit('update-break', this.user.follow);
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"

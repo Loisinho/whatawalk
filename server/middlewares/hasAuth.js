@@ -6,10 +6,9 @@ exports.isLoggedIn = function(req, res, next) {
 }
 
 // Has user authoritation?
-exports.hasAuth = function(req, res, next) {
-    client = req.session.passport? req.session.passport.user : null;
-    if (client)
+exports.hasAuth = async function(req, res, next) {
+    if (client) {
         next();
-    else
+    } else
         res.status(401).json("You must be logged in");
 }

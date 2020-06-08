@@ -9,7 +9,11 @@ const gclient = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
 
 
 // GET session.
-exports.session = function (req, res, next) {
+exports.session = async function (req, res, next) {
+    if (client) {
+        let notices = await model.Notice.find({receiver: client._id});
+        client.notices = !!notices.length;
+    }
     res.status(200).json(client);
 }
 
@@ -53,8 +57,10 @@ exports.login = async function (req, res, next) {
             let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]});
             req.login(user, error => {
                 if (error) throw error;
+                model.Notice.find({receiver: user._id}).then((notices) => {
+                    res.status(200).json({username: user.username, img: user.img, notices: !!notices.length});
+                });
             });
-            res.status(200).json("Loged in successfully!");
         } else {
             res.status(422).json(errors.errors[0].msg);
         }
@@ -75,9 +81,13 @@ exports.google = async function (req, res, next) {
         if (user) {
             req.login(user, error => {
                 if (error) throw error;
+                model.Notice.find({receiver: user._id}).then((notices) => {
+                    res.status(200).json({username: user.username, img: user.img, notices: !!notices.length});
+                });
             });
+        } else {
+            res.status(200).json(null);
         }
-        res.status(200).json(user? true : false);
     } catch (error) {
         res.status(422).json("There was an error verifying your account. Please try again.");
     }
@@ -95,21 +105,25 @@ exports.logout = function (req, res, next) {
 exports.profile = async function (req, res, next) {
     try {
         let user = await model.User.findOne({ username: req.params.username });
-        res.status(200).json({
-            username: user.username,
-            name: user.name,
-            img: user.img,
-            ubication: user.ubication,
-            description: user.description,
-            following: {
-                amount: user.following.length,
-                status: user.following.includes(client.username)? true: false
-            },
-            followers: {
-                amount: user.followers.users.length,
-                status: user.followers.users.includes(client.username)? true: false
-            }
-        });
+        if (user) {
+            res.status(200).json({
+                username: user.username,
+                name: user.name,
+                img: user.img,
+                ubication: user.ubication,
+                description: user.description,
+                following: {
+                    amount: user.following.length,
+                    status: user.following.includes(client.username)? true: false
+                },
+                followers: {
+                    amount: user.followers.users.length,
+                    status: user.followers.users.includes(client.username)? true: false
+                }
+            });
+        } else {
+            res.status(422).json("User does not exists.");
+        }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }

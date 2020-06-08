@@ -53,6 +53,7 @@ export default {
             try {
                 await this.$http.get("users/logout");
                 this.$socket.client.close();
+                this.$store.commit("session/disconnect");
                 this.$router.push({name: "login"});
             } catch (error) {
                 this.$store.commit("alert/activateAlert", {

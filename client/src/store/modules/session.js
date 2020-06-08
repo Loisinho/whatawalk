@@ -1,7 +1,8 @@
-import axios from "axios";
+import axios from "../../config";
 
 // Initial state
 const state = {
+    first: true,
     isLoggedIn: false,
     username: null,
     img: null,
@@ -18,8 +19,15 @@ const mutations = {
         state.isLoggedIn = payload.isLoggedIn;
         state.username = payload.username;
         state.img = payload.img;
+        state.notices = payload.notices;
     },
-    newNotice(state, payload=true) {
+    disconnect (state) {
+        state.isLoggedIn = false;
+    },
+    firstConnection (state) {
+        state.first = false;
+    },
+    newNotice (state, payload=true) {
         state.notices = payload;
     },
 }
@@ -27,21 +35,19 @@ const mutations = {
 // Actions
 const actions = {
     async checkSession (context) {
-        let user = await axios.get(process.env.VUE_APP_URL + "users/session", {withCredentials: process.env.VUE_AXIOS_WITHCREDENTIALS? true: false});
+        let user = await axios.get("users/session");
         if (user.data)
             context.commit("checkSession", {
                 isLoggedIn: !!user.data,
                 username: user.data.username,
-                img: user.data.img
+                img: user.data.img,
+                notices: user.data.notices
             });
         else
             context.commit("checkSession", {
                 isLoggedIn: false,
                 username: null
             });
-    },
-    async checkUser ({context}, username) {
-        return await axios.get(process.env.VUE_APP_URL + `users/exists?username=${username}`);
     }
 }
 

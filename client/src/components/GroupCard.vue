@@ -41,7 +41,10 @@ export default {
                 await this.$http.get(`groups/join?group=${this.group._id}`);
                 this.group.join = false;
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"

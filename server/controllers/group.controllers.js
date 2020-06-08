@@ -168,21 +168,17 @@ exports.invite = async function (req, res, next) {
     try {
         let guest = await model.User.findOne({username: req.body.guest});
         let group = await model.Group.findOne({_id: req.body.group, members: {$nin: guest._id}});
-        if (group) { // TODO: remove this condition & test it.
-            let newNotice = new model.Notice({
-                receiver: guest._id,
-                sender: client._id,
-                group: group._id
-            });
-            let notices = await model.Notice.find({receiver: guest._id, group: group._id}).select("group -_id");
-            if (!notices.length) {
-                newNotice.save();
-                res.status(200).json("Invitation done!");
-            } else {
-                res.status(200).json("This user has already been invited");
-            }
+        let newNotice = new model.Notice({
+            receiver: guest._id,
+            sender: client._id,
+            group: group._id
+        });
+        let notices = await model.Notice.find({receiver: guest._id, group: group._id}).select("group -_id");
+        if (!notices.length) {
+            newNotice.save();
+            res.status(200).json("Invitation done!");
         } else {
-            res.status(422).json("Oops, an error occurred. Please try again.");
+            res.status(200).json("This user has already been invited");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -193,24 +189,20 @@ exports.invite = async function (req, res, next) {
 exports.join = async function (req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.query.group, members: {$nin: client._id}});
-        if (group) { // TODO: remove this condition & test it.
-            if (!group.private) {
+        if (!group.private) {
+            group.members.push(client._id);
+            await group.save();
+            res.status(200).json("Ok");
+        } else {
+            let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
+            if (notice) {
                 group.members.push(client._id);
                 await group.save();
+                await model.Notice.findOneAndRemove({_id: notice._id});
                 res.status(200).json("Ok");
             } else {
-                let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
-                if (notice) {
-                    group.members.push(client._id);
-                    await group.save();
-                    await model.Notice.findOneAndRemove({_id: notice._id});
-                    res.status(200).json("Ok");
-                } else {
-                    res.status(422).json("Oops, you can not join this group.");
-                }
+                res.status(422).json("Oops, you can not join this group.");
             }
-        } else {
-            res.status(422).json("Oops, an error occurred. Please try again.");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");

@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import axios from "../config";
+import store from "../store";
 import Modal from "../components/Modal.vue";
 import Chat from "../components/Chat.vue";
 import { mapState } from "vuex";
@@ -80,19 +82,6 @@ export default {
         }
     },
     methods: {
-        async find() {
-            try {
-                let res = await this.$http.get(`groups/${this.$route.params.id}/find`);
-                document.querySelector(".group__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
-                this.group = res.data;
-            } catch (error) {
-                this.$router.push({name: error.response.status === 401? "login": "home"});
-                this.$store.commit("alert/activateAlert", {
-                    msg: error.response.data,
-                    type: "error"
-                });
-            }
-        },
         async admin(i) {
             try {
                 await this.$http.patch(`groups/${this.$route.params.id}/admin`, {member: this.group.members[i]._id});
@@ -169,20 +158,25 @@ export default {
     beforeDestroy: function() {
         this.$store.commit("modal/activateModal", {active: false});
     },
-    // beforeRouteEnter(to, from, next) {
-    //     // called before the route that renders this component is confirmed.
-    //     // does NOT have access to `this` component instance,
-    //     // because it has not been created yet when this guard is called!
-    //     console.log("beforeRouteEnter!!!!!!!!!!!!!!!!!!!!");
-    //     let i = "helelioasdf";
-    //     next(vm => {
-    //         // access to component instance via `vm`
-    //         console.log(i);
-    //         vm.find();
-    //     })
-    // },
-    created: function() {
-        this.find();
+    beforeRouteEnter: async function(to, from, next) {
+        try {
+            let res = await axios.get(`groups/${to.params.id}/find`);
+            next(vm => {
+                vm.group = res.data;
+                document.querySelector(".group__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+            });
+        } catch (error) {
+            if (error.response.status === 401) {
+                store.commit("session/disconnect");
+                next({name: "login"});
+            } else {
+                next({name: "home"});
+            }
+            this.$store.commit("alert/activateAlert", {
+                msg: error.response.data,
+                type: "error"
+            });
+        }
     }
 }
 </script>

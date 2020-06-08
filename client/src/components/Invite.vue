@@ -20,7 +20,10 @@ export default {
                     let res = await this.$http.get(`groups/invite?guest=${this.$route.params.id}`);
                     this.groups = res.data;
                 } catch (error) {
-                    if (error.response.status === 401) this.$router.push({name: "login"});
+                    if (error.response.status === 401) {
+                        this.$store.commit("session/disconnect");
+                        this.$router.push({name: "login"});
+                    }
                     this.$store.commit("alert/activateAlert", {
                         msg: error.response.data,
                         type: "error"
@@ -38,7 +41,10 @@ export default {
                     type: "success"
                 });
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
@@ -59,6 +65,7 @@ export default {
 
     .profile__options {
         position: absolute;
+        top: 100%;
         left: -4px;
         width: 100%;
         display: none;
@@ -68,6 +75,9 @@ export default {
 
         &.profile__options--active {
             display: block;
+            max-height: 120px;
+            white-space: nowrap;
+            overflow: auto;
 
             > p {
                 font-size: 20px;

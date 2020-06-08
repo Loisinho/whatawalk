@@ -63,12 +63,18 @@ export default {
                 this.$v.$touch();
                 if (!this.$v.$invalid) {
                     this.status = true;
-                    await this.$http
+                    let user = await this.$http
                         .post("users/login", {
                             user: this.user,
                             password: this.password
                         });
                     this.btnValue = "thank you for logging in";
+                    this.$store.commit("session/checkSession", {
+                        isLoggedIn: !!user.data,
+                        username: user.data.username,
+                        img: user.data.img,
+                        notices: user.data.notices
+                    });
                     setTimeout(() => {
                         this.$router.push({name: "home"});
                     }, 1000);
@@ -86,14 +92,20 @@ export default {
                 let profile = this.auth2.currentUser.get().getBasicProfile();
                 let id_token = this.auth2.currentUser.get().getAuthResponse().id_token;
                 try {
-                    let res = await this.$http
+                    let user = await this.$http
                         .post("users/google", {
                             idtoken: id_token
                         });
-                    if (res.data) {
+                    if (user.data) {
                         this.btnValue = "thank you for logging in";
+                        this.$store.commit("session/checkSession", {
+                            isLoggedIn: !!user.data,
+                            username: user.data.username,
+                            img: user.data.img,
+                            notices: user.data.notices
+                        });
                         setTimeout(() => {
-                            this.$router.push({name: "explore"});
+                            this.$router.push({name: "home"});
                         }, 1000);
                     } else {
                         this.$router.push({name: "signup", params: { email: profile.getEmail() }});

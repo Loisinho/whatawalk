@@ -44,7 +44,10 @@ export default {
                         let res = await this.$http.post("groups/create", {title: this.title, private: this.private});
                         this.$emit('new-group', res.data);
                     } catch (error) {
-                        if (error.response.status === 401) this.$router.push({name: "login"});
+                        if (error.response.status === 401) {
+                            this.$store.commit("session/disconnect");
+                            this.$router.push({name: "login"});
+                        }
                         this.$store.commit("alert/activateAlert", {
                             msg: error.response.data,
                             type: "error"

@@ -29,7 +29,10 @@ export default {
                 await this.$http.get(`groups/join?group=${this.notice.group._id}`);
                 this.$router.push({name: "group", params: {id: this.notice.group._id}});
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
@@ -41,7 +44,10 @@ export default {
                 await this.$http.delete(`notices/cancel`, {data: {notice: this.notice._id}});
                 this.$emit('delete-notice', this.notice._id)
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"

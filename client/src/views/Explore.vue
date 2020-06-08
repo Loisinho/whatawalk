@@ -61,7 +61,10 @@ export default {
                     this.status = true;
                 }
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
@@ -104,8 +107,16 @@ export default {
 
     .expositor__btn {
         @include button-alpha();
-        width: 20%;
-        margin: 0 40%;
+        width: auto;
+        margin-left: 50%;
+        transform: translate(-50%);
+        font-size: $usercard-font-size;
+    }
+}
+
+@media only screen and (min-width: map-get($breakpoints, "sd")) {
+    .expositor .expositor__btn {
+        font-size: vw-to-px(map-get($container-widths, "sd"), $usercard-font-size);
     }
 }
 </style>

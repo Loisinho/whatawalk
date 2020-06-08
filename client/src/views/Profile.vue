@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import axios from "../config";
+import store from "../store";
 import { mapState } from "vuex";
 import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
 import Invite from "../components/Invite.vue";
@@ -76,27 +78,16 @@ export default {
         }
     },
     methods: {
-        async find() {
-            try {
-                let res = await this.$http.get(`users/${this.$route.params.id}/profile`);
-                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
-                this.profile = res.data;
-                this.status = this.username === this.profile.username? false: null;
-            } catch (error) {
-                this.$router.push({name: error.response.status === 401? "login": "home"});
-                this.$store.commit("alert/activateAlert", {
-                    msg: error.response.data,
-                    type: "error"
-                });
-            }
-        },
         async followAction() {
             try {
                 await this.$http.get(`users/follow?user=${this.profile.username}&follow=${!this.profile.followers.status? "1": "0"}`);
                 this.profile.followers.status = !this.profile.followers.status;
                 this.profile.followers.status? this.profile.followers.amount++: this.profile.followers.amount--;
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
@@ -135,7 +126,10 @@ export default {
                 this.$store.commit("modal/activateModal", {active: false});
                 this.status = false;
             } catch (error) {
-                if (error.response.status === 401) this.$router.push({name: "login"});
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"})
+                };
                 this.$store.commit("alert/activateAlert", {
                     msg: error.response.data,
                     type: "error"
@@ -165,8 +159,45 @@ export default {
     beforeDestroy: function() {
         this.$store.commit("modal/activateModal", {active: false});
     },
-    created: function() {
-        this.find();
+    beforeRouteUpdate: async function(to, from, next) {
+        try {
+            let res = await this.$http.get(`users/${to.params.id}/profile`);
+            this.profile = res.data;
+            document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+            this.status = this.username === this.profile.username? false: null;
+        } catch (error) {
+            if (error.response.status === 401) {
+                this.$store.commit("session/disconnect");
+                this.$router.push({name: "login"});
+            } else {
+                this.$router.push({name: "home"});
+            }
+            this.$store.commit("alert/activateAlert", {
+                msg: error.response.data,
+                type: "error"
+            });
+        }
+    },
+    beforeRouteEnter: async function(to, from, next) {
+        try {
+            let res = await axios.get(`users/${to.params.id}/profile`);
+            next(vm => {
+                vm.profile = res.data;
+                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+                vm.status = vm.username === vm.profile.username? false: null;
+            });
+        } catch (error) {
+            if (error.response.status === 401) {
+                store.commit("session/disconnect");
+                next({name: "login"});
+            } else {
+                next({name: "home"});
+            }
+            store.commit("alert/activateAlert", {
+                msg: error.response.data,
+                type: "error"
+            });
+        }
     }
 }
 </script>
@@ -187,6 +218,7 @@ export default {
             @include image-box;
             position: relative;
             width: 40%;
+            height: 40%;
             border-radius: 50%;
             overflow: hidden;
 

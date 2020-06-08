@@ -49,8 +49,7 @@ const router = new Router({
         {
             path: "/user/:id",
             meta: {
-                requiresAuth: true,
-                userExists: true
+                requiresAuth: true
             },
             component: () => import(/* webpackChunkName: "user" */ "./views/Blank.vue"),
             children: [
@@ -105,8 +104,7 @@ const router = new Router({
             path: "/group/:id",
             name: "group",
             meta: {
-                requiresAuth: true,
-                groupExists: true
+                requiresAuth: true
             },
             component: () => import(/* webpackChunkName: "group" */ "./views/Group.vue")
         },
@@ -118,21 +116,22 @@ const router = new Router({
 });
 
 router.beforeEach(async (to, from, next) => {
-    await store.dispatch("session/checkSession");
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (!store.state.session.isLoggedIn) {
-            next({ name: "login" })
+        if (store.state.session.first) {
+            store.commit("session/firstConnection");
+            await store.dispatch("session/checkSession");
+        }
+        store.state.session.isLoggedIn? next(): next({ name: "login" });
+    } else {
+        if (store.state.session.first) {
+            store.commit("session/firstConnection");
+            await store.dispatch("session/checkSession");
+        }
+        if (to.matched.some(record => record.meta.guest)) {
+            !store.state.session.isLoggedIn? next(): next({ name: "home" });
         } else {
-            if (to.matched.some(record => record.meta.userExists)) {
-                let user = await store.dispatch("session/checkUser", to.params.id);
-                !user.data? next() : next({ name: "home" });
-            }
             next();
         }
-    } else if (to.matched.some(record => record.meta.guest)) {
-        !store.state.session.isLoggedIn? next(): next({ name: "home" });
-    } else {
-        next();
     }
 });
 
