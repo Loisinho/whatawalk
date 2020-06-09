@@ -50,9 +50,6 @@ export default {
                 if (this.text !== "") {
                     await this.$http.patch(`groups/${this.group}/msg`, {text: this.text});
                     this.$socket.client.emit("groupMsg", {user: this.username, group: this.group, text: this.text});
-                    this.chat.push({user: this.username, text: this.text});
-                    let board = document.querySelector(".chat__board");
-                    setTimeout(() => { board.scrollTop = board.scrollHeight; }, 50);
                     this.text = "";
                 }
             } catch (error) {
@@ -70,12 +67,6 @@ export default {
     mounted: function() {
         let board = document.querySelector(".chat__board");
         setTimeout(() => { board.scrollTop = board.scrollHeight; }, 200);
-    },
-    beforeDestroy: function() {
-        this.$socket.client.emit("leaveGroup", this.group);
-    },
-    created: function() {
-        this.$socket.client.emit("joinGroup", this.$route.params.id);
     }
 }
 </script>

@@ -25,8 +25,14 @@ const GroupSchema = new mongoose.Schema ({
         ref: "User"
     }],
     members: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        accessed: {
+            type: Date,
+            default: Date.now
+        }
     }],
     chat: [ChatSchema]
 },

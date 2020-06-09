@@ -34,6 +34,11 @@ body {
         -webkit-tap-highlight-color: transparent;
     }
 
+    // Avoid IE & MS Edge reveal password eye.
+    input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear {
+        display: none;
+    }
+
     input[type="submit"], button, select {
         cursor: pointer;
     }

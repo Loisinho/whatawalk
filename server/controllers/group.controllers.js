@@ -7,16 +7,13 @@ exports.find = async function(req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.params.group})
             .populate({
-                path: "members",
+                path: "members.user",
                 select: "username img",
-                options: {
-                    sort: {username: "asc"}
-                }
             })
             .lean();
-        group.members.map(i => i.admin = group.admins.map(j => j.toString()).includes(i._id.toString())? true : false);
+        group.members.map(i => i.admin = group.admins.map(j => j.toString()).includes(i.user._id.toString())? true : false);
         group.admin = group.admins.map(i => i.toString()).includes(client._id)? true : false;
-        if (group.members.map(i => i._id.toString()).includes(client._id))
+        if (group.members.map(i => i.user._id.toString()).includes(client._id))
             res.status(200).json(group);
         else
             res.status(403).json("You are not allowed to do that...");
@@ -29,7 +26,7 @@ exports.find = async function(req, res, next) {
 exports.admin = async function(req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.params.group, admins: {$in: client._id}});
-        if (group.members.includes(req.body.member) && req.body.member !== client._id) {
+        if (group.members.map(i => i.user.toString()).includes(req.body.member) && req.body.member !== client._id) {
             if (!group.admins.includes(req.body.member)) group.admins.push(req.body.member);
             else group.admins.splice(group.admins.indexOf(req.body.member), 1);
             await group.save();
@@ -42,12 +39,18 @@ exports.admin = async function(req, res, next) {
     }
 }
 
-// PATCH remove member from group.
+// PATCH remove user from group.
 exports.remove = async function(req, res, next) {
     try {
-        let group = await model.Group.findOne({_id: req.params.group, admins: {$in: client._id}});
-        let adminIndex = group.admins.indexOf(req.body.member);
-        let memberIndex = group.members.indexOf(req.body.member);
+        if (req.body.member) {
+            var group = await model.Group.findOne({_id: req.params.group, admins: {$in: client._id}});
+            var adminIndex = group.admins.indexOf(req.body.member);
+            var memberIndex = group.members.map(i => i.user.toString()).indexOf(req.body.member);
+        } else {
+            var group = await model.Group.findOne({_id: req.params.group, "members.user": {$in: client._id}});
+            var adminIndex = group.admins.indexOf(client._id);
+            var memberIndex = group.members.map(i => i.user.toString()).indexOf(client._id);
+        }
         if (adminIndex !== -1) {
             if (group.admins.length > 1) {
                 group.admins.splice(adminIndex, 1);
@@ -73,16 +76,30 @@ exports.remove = async function(req, res, next) {
 // PATCH new group msg.
 exports.msg = async function(req, res, next) {
     try {
-        let group = await model.Group.findOne({_id: req.params.group, members: {$in: client._id}});
-        let newMsg = new model.Chat({
-            user: client.username,
-            text: req.body.text
-        });
-        group.chat.push(newMsg);
-        await group.save();
+        let group = await model.Group.findOne({_id: req.params.group, "members.user": {$in: client._id}});
+        if (req.body.text) {
+            let newMsg = new model.Chat({
+                user: client.username,
+                text: req.body.text
+            });
+            group.chat.push(newMsg);
+            await group.save();
+        }
         res.status(200).json("Ok");
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// GET group accessed.
+exports.accessed = async function (req, res, next) {
+    try {
+        let group = await model.Group.findOne({_id: req.params.group, "members.user": {$in: client._id}});
+        group.members.map(i => { if (i.user.toString() === client._id) i.accessed = Date.now(); });
+        await group.save();
+        res.status(200).json("Ok");
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred.");
     }
 }
 
@@ -93,10 +110,10 @@ exports.create = async function (req, res, next) {
             title: req.body.title,
             private: req.body.private,
             admins: [client._id],
-            members: [client._id]
+            members: [{user: client._id}]
         });
         newGroup = (await newGroup.save()).toObject();
-        newGroup.members = [{username: client._id, img: client.img}];
+        newGroup.members[0].user = {username: client._id, img: client.img};
         newGroup.member = true;
         newGroup.img = "default_group.jpg";
         res.status(200).json(newGroup);
@@ -113,13 +130,13 @@ exports.search = async function (req, res, next) {
         switch (req.query.op) {
             case "member":
                 groups = await model.Group
-                    .find({members: {$in: client._id}})
+                    .find({"members.user": {$in: client._id}})
                     .sort({updatedAt: "desc"})
                     .select("-chat")
                     .skip(skip)
                     .limit(parseInt(process.env.LOAD_LIMIT))
                     .populate({
-                        path: "members",
+                        path: "members.user",
                         select: "username img -_id",
                         options: {
                             limit: 5
@@ -135,11 +152,13 @@ exports.search = async function (req, res, next) {
                     .skip(skip)
                     .limit(parseInt(process.env.LOAD_LIMIT))
                     .lean();
-                groups.map(i => i.join = i.members.map(j => j.toString()).includes(client._id)? false : true);
+                groups.map(i => i.join = i.members.map(j => j.user.toString()).includes(client._id)? false : true);
                 await Promise.all(groups.map(async i => {
-                    i.members = await model.User
-                        .find({_id: {$in: i.members.splice(0, 5)}})
-                        .select("username img -_id");
+                    await Promise.all(i.members.slice(0, 5).map(async j => {
+                        j.user = await model.User
+                            .findOne({_id: j.user})
+                            .select("username img -_id");
+                    }));
                 }));
                 break;
         }
@@ -154,7 +173,7 @@ exports.inviteTo = async function (req, res, next) {
     try {
         let guest = await model.User.findOne({username: req.query.guest});
         let groups = await model.Group
-            .find({admins: client._id, members: {$nin: guest._id}})
+            .find({admins: client._id, "members.user": {$nin: guest._id}})
             .sort({updatedAt: "desc"})
             .select("title");
         res.status(200).json(groups);
@@ -167,7 +186,7 @@ exports.inviteTo = async function (req, res, next) {
 exports.invite = async function (req, res, next) {
     try {
         let guest = await model.User.findOne({username: req.body.guest});
-        let group = await model.Group.findOne({_id: req.body.group, members: {$nin: guest._id}});
+        let group = await model.Group.findOne({_id: req.body.group, "members.user": {$nin: guest._id}});
         let newNotice = new model.Notice({
             receiver: guest._id,
             sender: client._id,
@@ -188,15 +207,15 @@ exports.invite = async function (req, res, next) {
 // GET join group
 exports.join = async function (req, res, next) {
     try {
-        let group = await model.Group.findOne({_id: req.query.group, members: {$nin: client._id}});
+        let group = await model.Group.findOne({_id: req.query.group, "members.user": {$nin: client._id}});
         if (!group.private) {
-            group.members.push(client._id);
+            group.members.push({user: client._id});
             await group.save();
             res.status(200).json("Ok");
         } else {
             let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
             if (notice) {
-                group.members.push(client._id);
+                group.members.push({user: client._id});
                 await group.save();
                 await model.Notice.findOneAndRemove({_id: notice._id});
                 res.status(200).json("Ok");

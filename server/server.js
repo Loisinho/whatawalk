@@ -114,6 +114,55 @@ var server = httpsServer.listen(process.env.HTTPS_PORT, () =>
 
 
 const io = require("socket.io")(httpServer);
-const { actions } = require("./controllers/socket.controllers");
 
-io.sockets.on("connection", actions);
+var socketClients = [];
+
+io.sockets.on("connection", function(socket) {
+    // Store connected user.
+    socket.on("storeClient", user => {
+        socketClients.push({
+            client: user,
+            id: socket.id
+        });
+    });
+
+    // Notify user.
+    socket.on("notify", user => {
+        socketClients.map(i => i.client === user? socket.broadcast.to(i.id).emit('newNotice') : i);
+    });
+
+    // Join room/s.
+    socket.on("joinGroups", groups => {
+        groups.map(i => socket.join(i));
+    });
+
+    // Kick user from room or leave room.
+    socket.on("leaveGroup", data => {
+        if (data.user) {
+            for (i = 0; i < socketClients.length; ++i) {
+                if (socketClients[i].client === data.user) {
+                    io.sockets.connected[socketClients[i].id].leave(data.group);
+                    io.to(socketClients[i].id).emit("kickOut");
+                    break;
+                }
+            }
+        } else {
+            socket.leave(data.group);
+        }
+    });
+
+    // Group message.
+    socket.on("groupMsg", data => {
+        io.in(data.group).emit("newMsg", {group: data.group, user: data.user, text: data.text});
+    });
+
+    // Disconnect.
+    socket.on('disconnect', () => {
+        for (i = 0; i < socketClients.length; ++i) {
+            if (socketClients[i].id === socket.id) {
+                socketClients.splice(i, 1);
+                break;
+            }
+        }
+    });
+});

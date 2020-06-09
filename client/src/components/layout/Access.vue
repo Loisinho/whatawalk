@@ -1,14 +1,14 @@
 <template lang="pug">
     div#access
         div.access__container
-            span.access__element.access__main
+            span.access__element.access__main(:class="{'access__element--notification': groups.length || notices}")
                 router-link(to="/login" v-if="!isLoggedIn" title="Login")
                     font-awesome-icon(:icon="faSignInAlt")
                 img.access__icon(v-else :src="webUrl + img" alt="Profile image")
             span.access__element(v-if="isLoggedIn")
                 router-link(:to="`/user/${username}/profile`" title="Profile")
                     font-awesome-icon(:icon="faUser")
-            span.access__element(v-if="isLoggedIn")
+            span.access__element(v-if="isLoggedIn" :class="{'access__element--notification': groups.length}")
                 router-link(:to="`/user/${username}/groups`" title="Groups")
                     font-awesome-icon(:icon="faUsers")
             span.access__element(v-if="isLoggedIn" :class="{'access__element--notification': notices}")
@@ -30,7 +30,8 @@ export default {
             isLoggedIn: state => state.session.isLoggedIn,
             username: state => state.session.username,
             img: state => state.session.img,
-            notices: state => state.session.notices
+            notices: state => state.session.notices,
+            groups: state => state.session.groups
         })
     },
     data: () => {
@@ -46,11 +47,17 @@ export default {
     sockets: {
         newNotice() {
             this.$store.commit("session/newNotice");
+        },
+        newMsg(data) {
+            if (this.$route.path !== `/group/${data.group}`)
+                this.$store.commit("session/newGroupMsg", data.group);
         }
     },
     methods: {
         async logout() {
             try {
+                if (this.$route.name === "group")
+                    await this.$http.get(`groups/${this.$route.params.id}/accessed`);
                 await this.$http.get("users/logout");
                 this.$socket.client.close();
                 this.$store.commit("session/disconnect");
@@ -125,7 +132,13 @@ export default {
 
             &.access__element--notification {
                 > a, > .access__icon {
-                    background: red;
+                    > svg {
+                        animation: notify 1s ease alternate infinite;
+                    }
+                }
+
+                &.access__main > img {
+                    animation: mainNotify 1s ease alternate infinite;
                 }
             }
         }
@@ -142,6 +155,24 @@ export default {
                 }
             }
         }
+    }
+}
+
+@keyframes mainNotify {
+    0% {
+        box-shadow: 0 0 0 4px $body-bg;
+    }
+    100% {
+        box-shadow: 0 0 0 4px $alert-success-bg;
+    }
+}
+
+@keyframes notify {
+    0% {
+        color: $nav-links-bg;
+    }
+    100% {
+        color: $alert-success-bg;
     }
 }
 </style>

@@ -59,6 +59,8 @@ export default {
                     this.break += res.data.length;
                     document.addEventListener("scroll", this.dueScroll);
                     this.status = true;
+                } else {
+                    this.$store.commit("session/newNotice", false);
                 }
             } catch (error) {
                 if (error.response.status === 401) {

@@ -25,6 +25,12 @@ exports.search = async function (req, res, next) {
             await user.updateOne({$set: {followers: {newest: 0, users: user.followers.users}}});
         }
         res.status(200).json(notices);
+        if (user.followers.newest !== 0) notices.shift();
+        await Promise.all(notices.map(async i => {
+            i.depopulate("sender group");
+            i.seen = true;
+            await i.save();
+        }));
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }

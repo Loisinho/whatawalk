@@ -10,11 +10,26 @@ const gclient = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
 
 // GET session.
 exports.session = async function (req, res, next) {
-    if (client) {
-        let notices = await model.Notice.find({receiver: client._id});
-        client.notices = !!notices.length;
+    try {
+        if (client) {
+            let notices = await model.Notice.find({receiver: client._id, seen: false});
+            client.notices = !!notices.length;
+            let groups = await model.Group.find({"members.user": {$in: client._id}}).select("members chat");
+            client.groups = [];
+            groups.map(i => {
+                let lastMsg = i.chat[i.chat.length - 1];
+                let clientIndex = i.members.map(j => j.user.toString()).indexOf(client._id);
+                let notify = lastMsg? i.members[clientIndex].accessed < lastMsg.date : false;
+                client.groups.push({
+                    group: i._id,
+                    notify: notify
+                });
+            });
+        }
+        res.status(200).json(client);
+    } catch (error) {
+        res.status(200).json(null);
     }
-    res.status(200).json(client);
 }
 
 // GET unique field.
@@ -57,10 +72,8 @@ exports.login = async function (req, res, next) {
             let user = await model.User.findOne({$or: [{username: req.body.user}, {email: req.body.user}]});
             req.login(user, error => {
                 if (error) throw error;
-                model.Notice.find({receiver: user._id}).then((notices) => {
-                    res.status(200).json({username: user.username, img: user.img, notices: !!notices.length});
-                });
             });
+            res.status(200).json(await sessionData(user));
         } else {
             res.status(422).json(errors.errors[0].msg);
         }
@@ -81,10 +94,8 @@ exports.google = async function (req, res, next) {
         if (user) {
             req.login(user, error => {
                 if (error) throw error;
-                model.Notice.find({receiver: user._id}).then((notices) => {
-                    res.status(200).json({username: user.username, img: user.img, notices: !!notices.length});
-                });
             });
+            res.status(200).json(await sessionData(user));
         } else {
             res.status(200).json(null);
         }
@@ -241,3 +252,28 @@ passport.deserializeUser(function(user, done) {
         done(error, user.username);
     });
 });
+
+async function sessionData(user) {
+    try {
+        let notices = await model.Notice.find({receiver: user._id, seen: false});
+        let groups = await model.Group.find({"members.user": {$in: user._id}}).select("members chat");
+        let groupsNotify = [];
+        groups.map(i => {
+            let lastMsg = i.chat[i.chat.length - 1];
+            let clientIndex = i.members.map(j => j.user.toString()).indexOf(user._id);
+            let notify = lastMsg? i.members[clientIndex].accessed < lastMsg.date : false;
+            groupsNotify.push({
+                group: i._id,
+                notify: notify
+            });
+        });
+        return {
+            username: user.username,
+            img: user.img,
+            notices: !!notices.length,
+            groups: groupsNotify
+        };
+    } catch (error) {
+        throw error;
+    }
+}

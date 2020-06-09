@@ -73,7 +73,8 @@ export default {
                         isLoggedIn: !!user.data,
                         username: user.data.username,
                         img: user.data.img,
-                        notices: user.data.notices
+                        notices: user.data.notices,
+                        groups: user.data.groups
                     });
                     setTimeout(() => {
                         this.$router.push({name: "home"});
@@ -102,7 +103,8 @@ export default {
                             isLoggedIn: !!user.data,
                             username: user.data.username,
                             img: user.data.img,
-                            notices: user.data.notices
+                            notices: user.data.notices,
+                            groups: user.data.groups
                         });
                         setTimeout(() => {
                             this.$router.push({name: "home"});

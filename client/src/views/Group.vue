@@ -5,11 +5,11 @@
                 div.group__info
                     div.group__header
                         h1.group__title {{ group.title }}
-                        div.group__options(v-if="group.admin" @click="openOptions = !openOptions")
+                        div.group__options(@click="openOptions = !openOptions")
                             font-awesome-icon(:icon="faEllipsisV")
                             div.options__box(v-if="openOptions")
-                                p(@click="editGroup") Edit group
-                                p(@click="makeDecision('delete')") Delete group
+                                p(v-if="group.admin" @click="editGroup") Edit group
+                                p(v-if="group.admin" @click="makeDecision('delete')") Delete group
                                 p(@click="makeDecision('leave')") Leave group
                     div.group__main
                         div.group__img
@@ -21,18 +21,18 @@
                             p {{ group.travel }}
                         div.group__membership
                             div.chain
-                                div.chain__link(v-bind:key="member.username" v-for="member in group.members.slice(0, 5)" v-bind:member="member")
+                                div.chain__link(v-bind:key="member.user.username" v-for="member in group.members.slice(0, 5)" v-bind:member="member")
                                     div.image__box
-                                    img(:src="webUrl + 'profile/' + member.img" alt="Member image")
+                                    img(:src="webUrl + 'profile/' + member.user.img" alt="Member image")
                                 div.chain__overly(v-if="group.members.length > 5") ...
                             button.chain__btn(@click="showMembers = !showMembers") {{ showMembers? "Hide " : "Show " }} members
                         div.group__members(v-if="showMembers")
-                            div.group__member(v-bind:key="member.username" v-for="(member, i) in group.members" v-bind:member="member" @click="$router.push({name: 'profile', params: {id: member.username}})")
+                            div.group__member(v-bind:key="member.user.username" v-for="(member, i) in group.members" v-bind:member="member" @click="$router.push({name: 'profile', params: {id: member.user.username}})")
                                 div.member__img
                                     div.image__box
-                                    img(:src="webUrl + 'profile/' + member.img" alt="User image")
-                                span.member__username @{{ member.username }}
-                                div.member__functions(v-if="group.admin && member.username !== username")
+                                    img(:src="webUrl + 'profile/' + member.user.img" alt="User image")
+                                span.member__username @{{ member.user.username }}
+                                div.member__functions(v-if="group.admin && member.user.username !== username")
                                     button.member__admin(type="button" @click.stop="admin(i)") {{ member.admin? "Dismiss as admin" : "Make group admin" }}
                                     button.member__remove(type="button" @click.stop="remove(i)") Remove member
                                 span.member__functions(v-else-if="member.admin") Admin
@@ -81,10 +81,21 @@ export default {
             status: ""
         }
     },
+    sockets: {
+        kickOut() {
+            window.removeEventListener("beforeunload", this.accessed);
+            this.$store.commit("session/removeGroup", this.$route.params.id);
+            this.$store.commit("alert/activateAlert", {
+                msg: "You have been kicked out of the group.",
+                type: "warning"
+            });
+            this.$router.push({name: "home"});
+        }
+    },
     methods: {
         async admin(i) {
             try {
-                await this.$http.patch(`groups/${this.$route.params.id}/admin`, {member: this.group.members[i]._id});
+                await this.$http.patch(`groups/${this.$route.params.id}/admin`, {member: this.group.members[i].user._id});
                 this.group.members[i].admin = !this.group.members[i].admin;
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
@@ -96,7 +107,8 @@ export default {
         },
         async remove(i) {
             try {
-                await this.$http.patch(`groups/${this.$route.params.id}/remove`, {member: this.group.members[i]._id});
+                await this.$http.patch(`groups/${this.$route.params.id}/remove`, {member: this.group.members[i].user._id});
+                this.$socket.client.emit("leaveGroup", {group: this.$route.params.id, user: this.group.members[i].user.username});
                 this.group.members.splice(i, 1);
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
@@ -117,7 +129,7 @@ export default {
         },
         // TODO:
         async confirmEdit() {
-            console.log("confirmEdit");
+            console.log("GROUP EDITED!");
             this.$store.commit("modal/activateModal", {active: false});
             this.status = false;
         },
@@ -143,27 +155,56 @@ export default {
         },
         // TODO: 
         async deleteGroup() {
-            console.log("deleteGroup");
+            console.log("GROUP DELETED!");
             this.$store.commit("modal/activateModal", {active: false});
         },
-        // TODO: 
         async leaveGroup() {
-            console.log("leaveGroup");
-            this.$store.commit("modal/activateModal", {active: false});
+            try {
+                this.$store.commit("modal/activateModal", {active: false});
+                await this.$http.patch(`groups/${this.$route.params.id}/remove`);
+                this.$socket.client.emit("leaveGroup", {group: this.$route.params.id});
+                this.$store.commit("alert/activateAlert", {
+                    msg: "You left the group.",
+                    type: "success"
+                });
+                this.$router.push({name: "home"});
+            } catch (error) {
+                if (error.response.status === 401) this.$router.push({name: "login"});
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
         },
         cancelDecision() {
             this.$store.commit("modal/activateModal", {active: false});
+        },
+        async accessed() {
+            if(!this.$store.state.alert.active && this.$store.state.session.isLoggedIn) {
+                try {
+                    await this.$http.get(`groups/${this.group._id}/accessed`);
+                } catch (error) {
+                    if (error.response.status === 401) this.$router.push({name: "login"});
+                }
+            }
         }
     },
-    beforeDestroy: function() {
+    async beforeDestroy() {
+        window.removeEventListener("beforeunload", this.accessed);
         this.$store.commit("modal/activateModal", {active: false});
+        this.accessed();
     },
     beforeRouteEnter: async function(to, from, next) {
         try {
             let res = await axios.get(`groups/${to.params.id}/find`);
+            res.data.members.sort(function(a, b) { 
+                return a.user.username.localeCompare(b.user.username);
+            });
             next(vm => {
                 vm.group = res.data;
                 document.querySelector(".group__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+                window.addEventListener("beforeunload", vm.accessed);
+                vm.$store.commit("session/removeGroup", to.params.id);
             });
         } catch (error) {
             if (error.response.status === 401) {
@@ -172,7 +213,7 @@ export default {
             } else {
                 next({name: "home"});
             }
-            this.$store.commit("alert/activateAlert", {
+            store.commit("alert/activateAlert", {
                 msg: error.response.data,
                 type: "error"
             });

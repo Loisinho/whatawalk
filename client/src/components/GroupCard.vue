@@ -1,5 +1,5 @@
 <template lang="pug">
-    div.groupcard(@click="$router.push({name: 'group', params: {id: group._id}})")
+    div.groupcard(@click="$router.push({name: 'group', params: {id: group._id}})" :class="{'groupcard--notification': groups.includes(group._id)}")
         div.groupcard__img
             div.image__box
             img(:src="webUrl + 'group/' + group.img" alt="Group image")
@@ -10,9 +10,9 @@
             p.groupcard__description {{ group.description }}
             div.groupcard__membership
                 div.chain
-                    div.chain__link(v-bind:key="member.username" v-for="member in group.members" v-bind:member="member")
+                    div.chain__link(v-bind:key="member.user.username" v-for="member in group.members" v-bind:member="member")
                         div.image__box
-                        img(:src="webUrl + 'profile/' + member.img" alt="Member image")
+                        img(:src="webUrl + 'profile/' + member.user.img" alt="Member image")
                     div.chain__overly(v-if="group.members.length > 5") ...
                 button.chain__btn(v-if="group.join" @click.stop="join") join
 </template>
@@ -26,7 +26,8 @@ export default {
     props: ["group"],
     computed: {
         ...mapState({
-            username: state => state.session.username
+            username: state => state.session.username,
+            groups: state => state.session.groups
         })
     },
     data: () => {
@@ -39,6 +40,7 @@ export default {
         async join() {
             try {
                 await this.$http.get(`groups/join?group=${this.group._id}`);
+                this.$store.commit("session/newGroup", this.group._id);
                 this.group.join = false;
             } catch (error) {
                 if (error.response.status === 401) {
@@ -99,6 +101,12 @@ export default {
         }
     }
 
+    &.groupcard--notification {
+        .groupcard__info .groupcard__title {
+            animation: notify 1s ease-out alternate infinite;
+        }
+    }
+
     &:hover {
         transform: scale(0.96);
     }
@@ -150,6 +158,15 @@ export default {
                 font-size: vw-to-px(map-get($container-widths, "ld"), $group-small-size);
             }
         }
+    }
+}
+
+@keyframes notify {
+    0% {
+        color: $body-color;
+    }
+    100% {
+        color: $alert-success-bg;
     }
 }
 </style>
