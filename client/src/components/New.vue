@@ -144,31 +144,7 @@ export default {
             }
 
             .new__checkbox {
-                @include container-flex("b");
-                width: 40%;
-                font-weight: bold;
-                cursor: pointer;
-
-                input[type="checkbox"] {
-                    visibility: hidden;
-
-                    &:checked {
-                        ~ span {
-                            border-color: $form-success-color;
-                            box-shadow: inset 0 0 0 16px $form-success-color;
-                        }
-                    }
-                }
-
-                span {
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    margin-right: 5px;
-                    border: 2px solid $form-success-color;
-                    box-shadow: inset 0 0 0 0 $form-success-color;
-                    transition: all 2s cubic-bezier(0, 1.05, 0.72, 1.07);
-                }
+                @include custom-checkbox($form-success-color, "b");
             }
         }
 

@@ -18,7 +18,7 @@
                         router-link(to="followers") Followers
                 div.profile__actions(v-if="status === null")
                     button.profile__follow(type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
-                    Invite
+                    Selector(@select-group="invite" v-bind:title="'Invite to'")
                 button.profile__edit(v-else-if="status === false" type="button" @click="edit") Edit
         div.profile__data
             div.profile__group(:class="{'profile__group--edit': status === true}")
@@ -40,13 +40,13 @@ import axios from "../config";
 import store from "../store";
 import { mapState } from "vuex";
 import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
-import Invite from "../components/Invite.vue";
+import Selector from "../components/Selector.vue";
 import Modal from "../components/Modal.vue";
 
 export default {
     name: "Profile",
     components: {
-        Invite,
+        Selector,
         Modal
     },
     computed: {
@@ -83,6 +83,25 @@ export default {
                 await this.$http.get(`users/follow?user=${this.profile.username}&follow=${!this.profile.followers.status? "1": "0"}`);
                 this.profile.followers.status = !this.profile.followers.status;
                 this.profile.followers.status? this.profile.followers.amount++: this.profile.followers.amount--;
+            } catch (error) {
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
+        },
+        async invite(group) {
+            try {
+                let res = await this.$http.post("groups/invite", {guest: this.$route.params.id, group: group});
+                this.$socket.client.emit("notify", this.$route.params.id);
+                this.$store.commit("alert/activateAlert", {
+                    msg: res.data,
+                    type: "success"
+                });
             } catch (error) {
                 if (error.response.status === 401) {
                     this.$store.commit("session/disconnect");

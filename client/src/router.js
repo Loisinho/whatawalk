@@ -109,6 +109,14 @@ const router = new Router({
             component: () => import(/* webpackChunkName: "group" */ "./views/Group.vue")
         },
         {
+            path: "/travels",
+            name: "travels",
+            meta: {
+                requiresAuth: true
+            },
+            component: () => import(/* webpackChunkName: "travels" */ "./views/Travel.vue")
+        },
+        {
             path: "*",
             component: Home
         }

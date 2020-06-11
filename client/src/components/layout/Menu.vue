@@ -19,9 +19,9 @@
                     a(href="javascript:void(0)" @click="exploreOpen = !exploreOpen") Explore
                     form.menu__explore(@submit.prevent="search" :class="{'menu__explore--active': exploreOpen}")
                         div.menu__category(@click="optionsOpen = !optionsOpen")
-                            span.menu__select {{ pick }}
+                            span.custom__select {{ pick }}
                             font-awesome-icon(:icon="faSortDown")
-                            div.menu__options(:class="{'menu__options--active': optionsOpen}")
+                            div.custom__options(:class="{'custom__options--active': optionsOpen}")
                                 p(@click="pick = 'users'") users
                                 p(@click="pick = 'groups'") groups
                         input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
@@ -174,7 +174,7 @@ export default {
                 background: $nav-links-hover-bg;
                 display: none;
 
-                .menu__select, .menu__keyword, .menu__search {
+                .custom__select, .menu__keyword, .menu__search {
                     height: 40px;
                     font-size: 20px;
                     background: transparent;
@@ -182,45 +182,11 @@ export default {
                 }
 
                 .menu__category {
-                    position: relative;
+                    @include custom-select();
                     margin-bottom: 10px;
-                    cursor: pointer;
-
-                    .menu__select {
-                        display: inline-block;
-                        width: calc(100% - 40px);
-                        padding-left: 5px;
-                        line-height: 40px;
-                        text-transform: capitalize;
-                    }
 
                     svg {
-                        width: 40px;
                         font-size: 20px;
-                        color: $nav-links-color;
-                    }
-
-                    .menu__options {
-                        position: absolute;
-                        width: 100%;
-                        display: none;
-                        background: rgba(#000000, 0.6);
-
-                        &.menu__options--active {
-                            display: block;
-
-                            > p {
-                                font-size: 20px;
-                                line-height: 40px;
-                                padding-left: 5px;
-                                text-transform: capitalize;
-                                cursor: pointer;
-
-                                &:hover {
-                                    color: $nav-links-active-color;
-                                }
-                            }
-                        }
                     }
                 }
 
