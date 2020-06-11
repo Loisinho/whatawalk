@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const ChatSchema = require("./chat.model");
+// const TravelSchema = require("./travel.model");
 
 
 const GroupSchema = new mongoose.Schema ({
@@ -34,6 +35,7 @@ const GroupSchema = new mongoose.Schema ({
             default: Date.now
         }
     }],
+    // travel: TravelSchema,
     chat: [ChatSchema]
 },
 {

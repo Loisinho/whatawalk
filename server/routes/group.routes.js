@@ -14,9 +14,10 @@ router.patch("/:group/msg", hasAuth, group.msg);
 router.get("/:group/accessed", hasAuth, group.accessed);
 router.post("/create", hasAuth, group.create);
 router.get("/search", hasAuth, group.search);
-router.get("/invite", hasAuth, group.inviteTo);
+router.get("/groupadmin", hasAuth, group.groupAdmin);
 router.post("/invite", hasAuth, group.invite);
 router.get("/join", hasAuth, group.join);
+router.post("/travel", hasAuth, group.travel);
 
 
 module.exports = router;

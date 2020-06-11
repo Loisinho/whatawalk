@@ -14,6 +14,7 @@ const https = require("https");
 const userRoutes = require("./routes/user.routes");
 const groupRoutes = require("./routes/group.routes");
 const noticeRoutes = require("./routes/notice.routes");
+const travelRoutes = require("./routes/travel.routes");
 
 
 // Express module instance.
@@ -66,6 +67,7 @@ app.use(passport.session());
 app.use("/users/", userRoutes);
 app.use("/groups/", groupRoutes);
 app.use("/notices/", noticeRoutes);
+app.use("/travels/", travelRoutes);
 
 
 // mongoose module & connection.

@@ -169,13 +169,21 @@ exports.search = async function (req, res, next) {
 }
 
 // GET search groups where user is admin.
-exports.inviteTo = async function (req, res, next) {
+exports.groupAdmin = async function (req, res, next) {
     try {
-        let guest = await model.User.findOne({username: req.query.guest});
-        let groups = await model.Group
-            .find({admins: client._id, "members.user": {$nin: guest._id}})
-            .sort({updatedAt: "desc"})
-            .select("title");
+        let groups = [];
+        if (req.query.guest && req.query.guest !== "undefined") {
+            let guest = await model.User.findOne({username: req.query.guest});
+            groups = await model.Group
+                .find({admins: client._id, "members.user": {$nin: guest._id}})
+                .sort({updatedAt: "desc"})
+                .select("title");
+        } else {
+            groups = await model.Group
+                .find({admins: client._id})
+                .sort({updatedAt: "desc"})
+                .select("title");
+        }
         res.status(200).json(groups);
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -224,6 +232,17 @@ exports.join = async function (req, res, next) {
             }
         }
     } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// POST Save travel in group.
+exports.travel = async function(req, res, next) {
+    try {
+        console.log(req.body);
+		res.status(200).json("Ok");
+    } catch (error) {
+        console.log(error);
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
