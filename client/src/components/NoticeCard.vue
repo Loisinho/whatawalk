@@ -43,7 +43,7 @@ export default {
         async cancel() {
             try {
                 await this.$http.delete(`notices/cancel`, {data: {notice: this.notice._id}});
-                this.$emit('delete-notice', this.notice._id)
+                this.$emit('delete-notice', this.notice._id);
             } catch (error) {
                 if (error.response.status === 401) {
                     this.$store.commit("session/disconnect");

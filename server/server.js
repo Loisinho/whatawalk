@@ -115,6 +115,7 @@ var server = httpsServer.listen(process.env.HTTPS_PORT, () =>
 );
 
 
+// SocketIO module.
 const io = require("socket.io")(httpServer);
 
 var socketClients = [];
@@ -146,6 +147,14 @@ io.sockets.on("connection", function(socket) {
                     io.sockets.connected[socketClients[i].id].leave(data.group);
                     io.to(socketClients[i].id).emit("kickOut");
                     break;
+                }
+            }
+        } else if (data.all) {
+            let users = data.all.map(i => i = i.user.username);
+            for (i = 0; i < socketClients.length; ++i) {
+                if (users.includes(socketClients[i].client)) {
+                    io.sockets.connected[socketClients[i].id].leave(data.group);
+                    io.to(socketClients[i].id).emit("groupDeleted");
                 }
             }
         } else {

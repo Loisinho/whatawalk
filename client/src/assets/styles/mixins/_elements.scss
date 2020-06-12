@@ -110,3 +110,9 @@
         }
     }
 }
+
+@mixin field-edit() {
+    border-radius: 5px;
+    background: $profile-edit-bg;
+    color: $profile-edit-color;
+}

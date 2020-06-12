@@ -42,6 +42,7 @@ export default {
                 await this.$http.get(`groups/join?group=${this.group._id}`);
                 this.$store.commit("session/newGroup", this.group._id);
                 this.group.join = false;
+                this.$router.push({name: "group", params: {id: this.group._id}});
             } catch (error) {
                 if (error.response.status === 401) {
                     this.$store.commit("session/disconnect");

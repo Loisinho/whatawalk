@@ -4,7 +4,8 @@
             div.group
                 div.group__info
                     div.group__header
-                        h1.group__title {{ group.title }}
+                        input.group__title(v-if="status" type="text" v-model.trim="group.title" maxlength="40" placeholder="Title")
+                        h1.group__title(v-else) {{ group.title }}
                         div.group__options(@click="openOptions = !openOptions")
                             font-awesome-icon(:icon="faEllipsisV")
                             div.options__box(v-if="openOptions")
@@ -12,21 +13,21 @@
                                 p(v-if="group.admin" @click="makeDecision('delete')") Delete group
                                 p(@click="makeDecision('leave')") Leave group
                     div.group__main
-                        div.group__img
+                        div.main__img
                             div.image__box
                             img(src="" alt="Group image")
-                        div.group__description
-                            p {{ group.description }}
-                        div.group__travel(v-if="group.travel" @click="$router.push({name: 'travels', params: {location: group.travel.location, list: group.travel.itinerary}})")
+                            ImageUpload(v-if="status")
+                        div.group__travel(:class="{'group__travel--edit': status}")
                             font-awesome-icon(:icon="faRoute")
-                            p Trip to {{ group.travel.location }}
+                            p(v-if="group.travel" @click="$router.push({name: 'travels', params: {location: group.travel.location, list: group.travel.itinerary}})") Trip to {{ group.travel.location }}
+                            p(v-else @click="$router.push({name: 'travels'})") Plan a trip
+                            font-awesome-icon.travel__remove(v-if="status && group.travel" :icon="faTrashAlt" @click="group.travel = null")
                         div.group__membership
-                            div.chain
-                                div.chain__link(v-bind:key="member.user.username" v-for="member in group.members.slice(0, 5)" v-bind:member="member")
-                                    div.image__box
-                                    img(:src="webUrl + 'profile/' + member.user.img" alt="Member image")
-                                div.chain__overly(v-if="group.members.length > 5") ...
-                            button.chain__btn(@click="showMembers = !showMembers") {{ showMembers? "Hide " : "Show " }} members
+                            div.group__private(@click="group.private = status? !group.private : group.private" :class="{'group__private--edit': status}")
+                                font-awesome-icon(v-if="group.private" :icon="faLock")
+                                font-awesome-icon(v-else :icon="faUnlock")
+                                p {{ group.private? "Private" : "Public" }}
+                            button.members__btn(@click="showMembers = !showMembers") {{ showMembers? "Hide " : "Show " }} members
                         div.group__members(v-if="showMembers")
                             div.group__member(v-bind:key="member.user.username" v-for="(member, i) in group.members" v-bind:member="member" @click="$router.push({name: 'profile', params: {id: member.user.username}})")
                                 div.member__img
@@ -47,14 +48,16 @@ import axios from "../config";
 import store from "../store";
 import Modal from "../components/Modal.vue";
 import Chat from "../components/Chat.vue";
+import ImageUpload from "../components/ImageUpload.vue";
 import { mapState } from "vuex";
-import { faEllipsisV, faCrown, faRoute } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faCrown, faRoute, faTrashAlt, faLock, faUnlock, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Group",
     components: {
         Modal,
-        Chat
+        Chat,
+        ImageUpload
     },
     computed: {
         ...mapState({
@@ -66,11 +69,15 @@ export default {
             faEllipsisV,
             faCrown,
             faRoute,
+            faTrashAlt,
+            faLock,
+            faUnlock,
+            faArrowAltCircleUp,
             group: {
                 title: null,
                 img: null,
-                description: null,
                 travel: null,
+                private: null,
                 admins: [],
                 members: [],
                 chat: []
@@ -80,7 +87,7 @@ export default {
             openOptions: false,
             showMembers: false,
             confirmDecision: function() {},
-            status: ""
+            status: false
         }
     },
     sockets: {
@@ -89,6 +96,15 @@ export default {
             this.$store.commit("session/removeGroup", this.$route.params.id);
             this.$store.commit("alert/activateAlert", {
                 msg: "You have been kicked out of the group.",
+                type: "warning"
+            });
+            this.$router.push({name: "home"});
+        },
+        groupDeleted() {
+            window.removeEventListener("beforeunload", this.accessed);
+            this.$store.commit("session/removeGroup", this.$route.params.id);
+            this.$store.commit("alert/activateAlert", {
+                msg: "This group has been deleted.",
                 type: "warning"
             });
             this.$router.push({name: "home"});
@@ -121,27 +137,46 @@ export default {
             }
         },
         editGroup() {
-            this.status = true;
-            this.auxGroup = {
-                title: this.group.title,
-                description: this.group.description,
-                travel: this.group.travel
-            };
-            this.$store.commit("modal/activateModal", {active: true});
+            if (!this.status) {
+                this.status = true;
+                this.auxGroup = {
+                    title: this.group.title,
+                    img: this.group.img,
+                    travel: this.group.travel,
+                    private: this.group.private
+                };
+                this.$store.commit("modal/activateModal", {active: true});
+            }
         },
-        // TODO:
         async confirmEdit() {
-            console.log("GROUP EDITED!");
-            this.$store.commit("modal/activateModal", {active: false});
-            this.status = false;
+            try {
+                let data = new FormData();
+                data.append("title", this.group.title);
+                data.append("travel", this.group.travel);
+                data.append("private", this.group.private);
+                data.append("img", document.getElementById("image__file").files[0]);
+                let res = await this.$http.post(`groups/${this.$route.params.id}/edit`, data);
+                document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+                this.$store.commit("modal/activateModal", {active: false});
+                this.status = false;
+            } catch (error) {
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"})
+                };
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
         },
         cancelEdit() {
             this.$store.commit("modal/activateModal", {active: false});
             this.status = false;
             this.group.title = this.auxGroup.title;
-            this.group.description = this.auxGroup.description;
             this.group.travel = this.auxGroup.travel;
-            document.querySelector(".group__img > img").src = process.env.VUE_APP_URL + `media/images/group/${this.group.img}`;
+            this.group.private = this.auxGroup.private;
+            document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/group/${this.group.img}`;
         },
         makeDecision(decision) {
             switch(decision) {
@@ -155,10 +190,25 @@ export default {
                     break;
             }
         },
-        // TODO: 
         async deleteGroup() {
-            console.log("GROUP DELETED!");
-            this.$store.commit("modal/activateModal", {active: false});
+            try {
+                let res = await this.$http.delete(`groups/${this.$route.params.id}/delete`);
+                this.$socket.client.emit("leaveGroup", {group: this.$route.params.id, all: res.data});
+                this.$store.commit("alert/activateAlert", {
+                    msg: "Group deleted successfully.",
+                    type: "success"
+                });
+                this.$router.push({name: "groups"});
+            } catch (error) {
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
         },
         async leaveGroup() {
             try {
@@ -204,7 +254,7 @@ export default {
             });
             next(vm => {
                 vm.group = res.data;
-                document.querySelector(".group__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+                document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
                 window.addEventListener("beforeunload", vm.accessed);
                 vm.$store.commit("session/removeGroup", to.params.id);
             });
@@ -238,6 +288,13 @@ export default {
         .group__info {
             .group__header {
                 @include container-flex();
+
+                input.group__title {
+                    @include field-edit();
+                    height: 30px;
+                    margin: 5px 0;
+                    font-size: 18px;
+                }
                 
                 .group__title {
                     width: calc(100% - 40px);
@@ -297,7 +354,7 @@ export default {
             }
 
             .group__main {
-                .group__img {
+                .main__img {
                     @include image-box;
                     position: relative;
                     width: 100%;
@@ -309,26 +366,64 @@ export default {
 
                 .group__travel {
                     @include container-flex();
-                    padding: 5px 5px 0;
+                    margin: 5px 5px 0;
+                    padding: 5px 5px 5px;
                     color: $alert-warning-bg;
-                    cursor: pointer;
 
                     > p {
                         padding-left: 5px;
+                        cursor: pointer;
+
+                        &:hover {
+                            font-weight: bold;
+                        }
                     }
 
-                    &:hover {
-                        font-weight: bold;
+                    .travel__remove {
+                        margin-left: auto;
+                        color: $alert-error-bg;
+                        cursor: pointer;
+
+                        &:hover {
+                            transform: scale(0.92);
+                        }
+                    }
+
+                    &.group__travel--edit {
+                        @include field-edit();
                     }
                 }
 
                 .group__membership {
-                    @include image-chain();
-                    padding: 10px;
-                    overflow: hidden;
+                    @include container-flex("v");
+                    padding: 5px;
 
-                    .chain .chain__link {
-                        border-color: $profile-bg;
+                    .group__private {
+                        padding: 5px;
+
+                        * {
+                            float: left;
+                        }
+
+                        > p {
+                            padding-left: 5px;
+                        }
+
+                        &.group__private--edit {
+                            @include field-edit();
+                            cursor: pointer;
+                        }
+                    }
+
+                    .members__btn {
+                        @include button-alpha($hover: false);
+                        width: auto;
+                        margin-left: auto;
+                        border-width: 3px;
+
+                        &:hover {
+                            transform: scale(0.92);
+                        }
                     }
                 }
 

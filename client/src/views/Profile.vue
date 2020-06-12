@@ -1,12 +1,10 @@
 <template lang="pug">
     div.profile
         div.profile__main
-            div.profile__img
+            div.main__img
                 div.image__box
                 img(src="" alt="Profile image")
-                label.profile__upload(v-if="status === true" for="profile__file")
-                    input#profile__file(type="file" @change="previewImage")
-                    font-awesome-icon(:icon="faArrowAltCircleUp")
+                ImageUpload(v-if="status === true")
             div.profile__measure
                 h1.profile__username @{{ profile.username }}
                 div.profile__links
@@ -39,15 +37,17 @@
 import axios from "../config";
 import store from "../store";
 import { mapState } from "vuex";
-import { faUser, faMapMarkerAlt, faArrowAltCircleUp } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Selector from "../components/Selector.vue";
 import Modal from "../components/Modal.vue";
+import ImageUpload from "../components/ImageUpload.vue";
 
 export default {
     name: "Profile",
     components: {
         Selector,
-        Modal
+        Modal,
+        ImageUpload
     },
     computed: {
         ...mapState({
@@ -58,7 +58,6 @@ export default {
         return {
             faUser,
             faMapMarkerAlt,
-            faArrowAltCircleUp,
             profile: {
                 username: null,
                 name: null,
@@ -113,16 +112,6 @@ export default {
                 });
             }
         },
-        previewImage() {
-            let input = document.getElementById("profile__file");
-            if (input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    document.querySelector(".profile__img > img").src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        },
         edit() {
             this.status = true;
             this.auxProfile = {
@@ -138,9 +127,9 @@ export default {
                 data.append("name", this.profile.name);
                 data.append("ubication", this.profile.ubication);
                 data.append("description", this.profile.description);
-                data.append("img", document.getElementById("profile__file").files[0]);
+                data.append("img", document.getElementById("image__file").files[0]);
                 let res = await this.$http.post(`users/${this.username}/profile/edit`, data);
-                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+                document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 this.$store.state.session.img = res.data.img;
                 this.$store.commit("modal/activateModal", {active: false});
                 this.status = false;
@@ -161,7 +150,7 @@ export default {
             this.profile.name = this.auxProfile.name;
             this.profile.ubication = this.auxProfile.ubication;
             this.profile.description = this.auxProfile.description;
-            document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${this.profile.img}`;
+            document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${this.profile.img}`;
         },
         deleteAccount() {
             this.$store.commit("modal/activateModal", {active: true, msg: "Are you sure you want to delete your account?"});
@@ -182,7 +171,7 @@ export default {
         try {
             let res = await this.$http.get(`users/${to.params.id}/profile`);
             this.profile = res.data;
-            document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+            document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
             this.status = this.username === this.profile.username? false: null;
         } catch (error) {
             if (error.response.status === 401) {
@@ -202,7 +191,7 @@ export default {
             let res = await axios.get(`users/${to.params.id}/profile`);
             next(vm => {
                 vm.profile = res.data;
-                document.querySelector(".profile__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
+                document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 vm.status = vm.username === vm.profile.username? false: null;
             });
         } catch (error) {
@@ -233,7 +222,7 @@ export default {
         @include container-flex();
         margin-bottom: 10px;
 
-        .profile__img {
+        .main__img {
             @include image-box;
             position: relative;
             width: 40%;
@@ -243,32 +232,6 @@ export default {
 
             .image__box {
                 padding-bottom: 100%;
-            }
-
-            .profile__upload {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-
-                > input[type="file"] {
-                    width: 0;
-                    height: 0;
-                    display: block;
-                    overflow: hidden;
-
-                    + svg {
-                        font-size: $profile-upload-size;
-                        display: block;
-                        color: $profile-upload-color;
-                        cursor: pointer;
-                        transition: all 0.4s;
-
-                        &:hover {
-                            color: darken($profile-upload-color, 20%);
-                        }
-                    }
-                }
             }
         }
 
@@ -325,6 +288,7 @@ export default {
         .profile__description {
             font-size: $profile-data-size;
             padding: 5px;
+            border-radius: 5px;
         }
 
         h3, p {
@@ -356,16 +320,12 @@ export default {
             > input {
                 width: 100%;
                 background: transparent;
-                color: $profile-edit-color;
             }
 
             &.profile__group--edit {
-                background: $profile-edit-bg;
-                margin-bottom: 4px;
-
-                .profile__icon {
-                    color: $profile-edit-color;
-                }
+                @include field-edit();
+                margin-bottom: 5px;
+                padding: 5px;
             }
         }
 
@@ -380,20 +340,14 @@ export default {
     .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "sd"), $profile-border-top-left-radius);
 
-        .profile__main {
-            .profile__img .profile__upload > input[type="file"] + svg {
-                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-upload-size);
+        .profile__main .profile__measure {
+            .profile__username, .profile__edit, .profile__follow {
+                font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
             }
 
-            .profile__measure {
-                .profile__username, .profile__edit, .profile__follow {
+            .profile__links {
+                .profile__following, .profile__followers {
                     font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
-                }
-
-                .profile__links {
-                    .profile__following, .profile__followers {
-                        font-size: vw-to-px(map-get($container-widths, "sd"), $profile-size);
-                    }
                 }
             }
         }
@@ -424,20 +378,14 @@ export default {
     .profile {
         border-top-left-radius: vw-to-px(map-get($container-widths, "md"), $profile-border-top-left-radius);
 
-        .profile__main {
-            .profile__img .profile__upload > input[type="file"] + svg {
-                font-size: vw-to-px(map-get($container-widths, "md"), $profile-upload-size);
+        .profile__main .profile__measure {
+            .profile__username, .profile__edit, .profile__follow {
+                font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
             }
-
-            .profile__measure {
-                .profile__username, .profile__edit, .profile__follow {
+            
+            .profile__links {
+                .profile__following, .profile__followers {
                     font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
-                }
-
-                .profile__links {
-                    .profile__following, .profile__followers {
-                        font-size: vw-to-px(map-get($container-widths, "md"), $profile-size);
-                    }
                 }
             }
         }

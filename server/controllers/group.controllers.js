@@ -1,5 +1,6 @@
 // Group Controllers File.
 const model = require("../models");
+const fs = require("fs");
 
 
 // GET find group.
@@ -10,6 +11,9 @@ exports.find = async function(req, res, next) {
                 path: "members.user",
                 select: "username img",
             })
+            .populate({
+                path: "travel"
+            })
             .lean();
         group.members.map(i => i.admin = group.admins.map(j => j.toString()).includes(i.user._id.toString())? true : false);
         group.admin = group.admins.map(i => i.toString()).includes(client._id)? true : false;
@@ -17,6 +21,50 @@ exports.find = async function(req, res, next) {
             res.status(200).json(group);
         else
             res.status(403).json("You are not allowed to do that...");
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// GET edit group.
+exports.edit = async function(req, res, next) {
+    try {
+        let group = await model.Group.findOne({_id: req.params.group, admins: client._id});
+        group.title = req.body.title;
+        if (req.body.travel === "null") {
+            await model.Travel.findOneAndRemove({_id: group.travel});
+            group.travel = undefined;
+        }
+        group.private = req.body.private;
+        if (req.file !== undefined) {
+            if (group.img !== "default_group.jpg")
+                fs.unlink("./public/images/group/" + group.img, error => {
+                    if (error) throw error;
+                });
+            group.img = req.file.filename;
+        }
+        await group.save();
+        res.status(200).json({img: group.img});
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// GET delete group.
+exports.delete = async function(req, res, next) {
+    try {
+        let group = await model.Group.findOneAndDelete({_id: req.params.group, admins: client._id})
+            .select("img members")
+            .populate({
+                path: "members.user",
+                select: "username -_id",
+            });
+        await model.Travel.findOneAndDelete({_id: group.travel});
+        if (group.img !== "default_group.jpg")
+            fs.unlink("./public/images/group/" + group.img, error => {
+                if (error) throw error;
+            });
+        res.status(200).json(group.members);
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
@@ -216,12 +264,12 @@ exports.invite = async function (req, res, next) {
 exports.join = async function (req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.query.group, "members.user": {$nin: client._id}});
-        if (!group.private) {
+        let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
+        if (!group.private && !notice) {
             group.members.push({user: client._id});
             await group.save();
             res.status(200).json("Ok");
         } else {
-            let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
             if (notice) {
                 group.members.push({user: client._id});
                 await group.save();
@@ -244,7 +292,8 @@ exports.travel = async function(req, res, next) {
             location: req.body.location,
             itinerary: req.body.list
         });
-        group.travel = newTravel;
+        group.travel = newTravel._id;
+        await newTravel.save();
         await group.save();
 		res.status(200).json("Ok");
     } catch (error) {
