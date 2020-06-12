@@ -239,10 +239,15 @@ exports.join = async function (req, res, next) {
 // POST Save travel in group.
 exports.travel = async function(req, res, next) {
     try {
-        console.log(req.body);
+        let group = await model.Group.findOne({_id: req.body.group, admins: client._id});
+        let newTravel = new model.Travel({
+            location: req.body.location,
+            itinerary: req.body.list
+        });
+        group.travel = newTravel;
+        await group.save();
 		res.status(200).json("Ok");
     } catch (error) {
-        console.log(error);
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }

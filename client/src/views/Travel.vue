@@ -10,7 +10,7 @@
                         font-awesome-icon(:icon="faTimes" @click="list.splice(i, 1)")
                     Selector(@select-group="save" v-bind:title="'Save in'")
                 form.travel__search(@submit.prevent="submitMethod")
-                    input.travel__location(type="text" v-model.trim="location.name" placeholder="Location.." :disabled="status")
+                    input.travel__location(type="text" v-model.trim="location.name" placeholder="Location.." :disabled="location.id")
                     div.travel__tags(v-if="location.id" @click="tagsOpen = !tagsOpen")
                         span.custom__select(:class="{'custom__select--none': !tag}") {{ tag? tag : "select a tag.." }}
                         font-awesome-icon(:icon="faSortDown")
@@ -24,9 +24,10 @@
                             p(@click="tag = 'nightlife'") nightlife
                             p(@click="tag = 'practicalities'") practicalities
                     div.travel__buttons
-                        button.travel__btn(type="submit" :disabled="location.name === '' || !tag")
-                            font-awesome-icon(:icon="faSearch")
-                        button.travel__btn(type="reset" @click="reset")
+                        button.travel__btn(type="submit" :disabled="location.name === '' || !tag" style="margin-top: 4px;")
+                            font-awesome-icon(v-if="!status" :icon="faSearch")
+                            font-awesome-icon.travel__loading(v-else :icon="faCompass")
+                        button.travel__btn(type="reset" @click="reset" style="margin-top: 4px; margin-left: 4px;")
                             font-awesome-icon(:icon="faTrashAlt")
                 div.travel__results(v-if="location.id && !auxTag")
                     h1.travel__title {{ location.name }}
@@ -40,11 +41,13 @@
                             h3 {{ poi.name }}
                             p {{ poi.intro }}
                             button.travel__btn(type="button" @click="add(poi)") Add
-                    button.travel__btn.trave__more(v-if="more" @click="submitMethod") More
+                    button.travel__btn.trave__more(v-if="more" @click="submitMethod")
+                        span(v-if="!status") More
+                        font-awesome-icon.travel__loading(v-else :icon="faCompass")
 </template>
 
 <script>
-import { faSearch, faTrashAlt, faSortDown, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faTrashAlt, faSortDown, faTimes, faCompass } from "@fortawesome/free-solid-svg-icons";
 import Selector from "../components/Selector.vue";
 import "leaflet/dist/leaflet.css";
 import leaflet from "leaflet";
@@ -69,6 +72,7 @@ export default {
             faTrashAlt,
             faSortDown,
             faTimes,
+            faCompass,
             map: null,
             marker: null,
             auxMarker: {},
@@ -98,8 +102,8 @@ export default {
         },
         async searchLocation() {
             try {
-                this.tag = false;
                 this.status = true;
+                this.tag = false;
                 let res = await this.$http.get(`travels/location?id=${this.location.name}`);
                 this.location = res.data.results[0];
                 this.marker = L.marker([this.location.coordinates.latitude, this.location.coordinates.longitude])
@@ -113,10 +117,13 @@ export default {
                     msg: error.response.data,
                     type: "error"
                 });
+            } finally {
+                this.status = false;
             }
         },
         async searchPoi() {
             try {
+                this.status = true;
                 let lat = this.marker.getLatLng().lat;
                 let lng = this.marker.getLatLng().lng;
                 if (this.tag !== this.auxTag || this.auxMarker.lat !== lat || this.auxMarker.lng !== lng) {
@@ -154,6 +161,8 @@ export default {
                     msg: error.response.data,
                     type: "error"
                 });
+            } finally {
+                this.status = false;
             }
         },
         createMarker(e) {
@@ -161,7 +170,8 @@ export default {
             this.marker = new L.marker(e.latlng).addTo(this.map);
         },
         submitMethod() {
-            this.tag === true? this.searchLocation() : this.searchPoi();
+            if (!this.status)
+                this.tag === true? this.searchLocation() : this.searchPoi();
         },
         reset() {
             if (this.marker) {
@@ -212,6 +222,14 @@ export default {
     },
     mounted: function() {
         this.mapInit();
+        if (this.$route.params.location) {
+            this.location.name = this.$route.params.location;
+            this.searchLocation();
+            this.list = this.$route.params.list;
+            this.$route.params.list.map(i => {
+                this.poisMarkers.push(new L.marker([i.coords.lat, i.coords.lng]).addTo(this.map).bindPopup(i.name));
+            });
+        }
     }
 }
 </script>
@@ -361,6 +379,19 @@ export default {
                 color: $nav-links-bg;
             }
         }
+
+        .travel__loading {
+            animation: loading 2s linear infinite;
+        }
+    }
+}
+
+@keyframes loading {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
     }
 }
 

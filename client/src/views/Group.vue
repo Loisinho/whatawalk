@@ -17,8 +17,9 @@
                             img(src="" alt="Group image")
                         div.group__description
                             p {{ group.description }}
-                        div.group__travel
-                            p {{ group.travel }}
+                        div.group__travel(v-if="group.travel" @click="$router.push({name: 'travels', params: {location: group.travel.location, list: group.travel.itinerary}})")
+                            font-awesome-icon(:icon="faRoute")
+                            p Trip to {{ group.travel.location }}
                         div.group__membership
                             div.chain
                                 div.chain__link(v-bind:key="member.user.username" v-for="member in group.members.slice(0, 5)" v-bind:member="member")
@@ -47,7 +48,7 @@ import store from "../store";
 import Modal from "../components/Modal.vue";
 import Chat from "../components/Chat.vue";
 import { mapState } from "vuex";
-import { faEllipsisV, faCrown } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faCrown, faRoute } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "Group",
@@ -64,6 +65,7 @@ export default {
         return {
             faEllipsisV,
             faCrown,
+            faRoute,
             group: {
                 title: null,
                 img: null,
@@ -231,7 +233,7 @@ export default {
     .group {
         margin-bottom: 45px;
         z-index: 0;
-        background: red;
+        background: $profile-bg;
 
         .group__info {
             .group__header {
@@ -240,6 +242,7 @@ export default {
                 .group__title {
                     width: calc(100% - 40px);
                     line-height: 40px;
+                    padding-left: 5px;
                     font-size: 22px;
                     word-wrap: break-word;
                 }
@@ -304,13 +307,28 @@ export default {
                     }
                 }
 
+                .group__travel {
+                    @include container-flex();
+                    padding: 5px 5px 0;
+                    color: $alert-warning-bg;
+                    cursor: pointer;
+
+                    > p {
+                        padding-left: 5px;
+                    }
+
+                    &:hover {
+                        font-weight: bold;
+                    }
+                }
+
                 .group__membership {
                     @include image-chain();
                     padding: 10px;
                     overflow: hidden;
 
                     .chain .chain__link {
-                        border-color: red;
+                        border-color: $profile-bg;
                     }
                 }
 
@@ -370,11 +388,11 @@ export default {
                         }
 
                         &:nth-child(odd) {
-                            background: darken(red, 25%);
+                            background: darken($profile-bg, 25%);
                         }
 
                         &:nth-child(even) {
-                            background: darken(red, 18%);
+                            background: darken($profile-bg, 18%);
                         }
 
                         &:hover {
@@ -417,6 +435,7 @@ export default {
         .group__info {
             width: 100%;
             height: 400vh;
+            padding: 0 5px;
         }
 
         .chat {
@@ -425,7 +444,6 @@ export default {
             left: 0;
             width: 100%;
             max-height: calc(100vh - 200px);
-            margin-left: 5px;
         }
     }
 }
