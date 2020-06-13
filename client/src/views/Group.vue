@@ -434,15 +434,7 @@ export default {
                         cursor: pointer;
 
                         .member__img {
-                            @include image-box;
-                            position: relative;
-                            width: $chain-size;
-                            border-radius: 50%;
-                            overflow: hidden;
-
-                            .image__box {
-                                padding-bottom: 100%;
-                            }
+                            @include rounded-img;
                         }
 
                         .member__username {
@@ -504,10 +496,6 @@ export default {
 @media only screen and (min-width: map-get($breakpoints, "sd")) {
     .content .group {
         .group__info .group__main .group__members .group__member {
-            .member__img {
-                width: vw-to-px(map-get($container-widths, "sd"), $chain-size);
-            }
-
             .member__username {
                 font-size: vw-to-px(map-get($container-widths, "sd"), $groupcard-title-size);
             }

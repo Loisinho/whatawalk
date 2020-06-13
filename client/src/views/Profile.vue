@@ -30,6 +30,9 @@
             textarea.profile__description(v-if="status === true" v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
             p.profile__description(v-if="status === false") {{ profile.description }}
             button.profile__delete(v-if="status === true" type="button" @click="deleteAccount") Delete Account
+        PublicationCard(v-bind:key="publication._id" v-for="publication in profile.publications" v-bind:publication="publication" v-bind:status="status" @delete-publication="deletePublication")
+        LoadMore(v-if="more" @search-more="searchPublications")
+        NewPublication(@new-publication="newPublication")
         Modal(@confirm-edit="confirmEdit" @cancel-edit="cancelEdit" @confirm-decision="confirmDecision" @cancel-decision="cancelDecision")
 </template>
 
@@ -41,13 +44,19 @@ import { faUser, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Selector from "../components/Selector.vue";
 import Modal from "../components/Modal.vue";
 import ImageUpload from "../components/ImageUpload.vue";
+import PublicationCard from "../components/PublicationCard.vue";
+import NewPublication from "../components/NewPublication.vue";
+import LoadMore from "../components/LoadMore.vue";
 
 export default {
     name: "Profile",
     components: {
         Selector,
         Modal,
-        ImageUpload
+        ImageUpload,
+        PublicationCard,
+        NewPublication,
+        LoadMore
     },
     computed: {
         ...mapState({
@@ -70,9 +79,12 @@ export default {
                 followers: {
                     amount: null,
                     status: false
-                }
+                },
+                publications: []
             },
             auxProfile: {},
+            break: 0,
+            more: false,
             status: ""
         }
     },
@@ -162,6 +174,37 @@ export default {
         },
         cancelDecision() {
             this.$store.commit("modal/activateModal", {active: true});
+        },
+        async searchPublications() {
+            try {
+                this.more = false;
+                let res = await this.$http.get(`publications/search?op=own&break=${this.break}`);
+                if (res.data.length > 0) {
+                    this.profile.publications = this.profile.publications.concat(res.data);
+                    this.break += res.data.length;
+                    document.addEventListener("scroll", this.dueScroll);
+                    this.more = true;
+                }
+            } catch (error) {
+                if (error.response.status === 401) {
+                    this.$store.commit("session/disconnect");
+                    this.$router.push({name: "login"});
+                }
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
+        },
+        newPublication(publication) {
+            this.profile.publications.unshift(publication);
+            this.break++;
+        },
+        deletePublication(id) {
+            this.profile.publications.map(i => {
+                i._id === id? this.profile.publications.splice(this.profile.publications.indexOf(i), 1) : i;
+            });
+            this.break--;
         }
     },
     beforeDestroy: function() {
@@ -171,6 +214,8 @@ export default {
         try {
             let res = await this.$http.get(`users/${to.params.id}/profile`);
             this.profile = res.data;
+            this.break = res.data.publications.length;
+            if (this.break) this.more = true;
             document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
             this.status = this.username === this.profile.username? false: null;
         } catch (error) {
@@ -191,6 +236,8 @@ export default {
             let res = await axios.get(`users/${to.params.id}/profile`);
             next(vm => {
                 vm.profile = res.data;
+                vm.break = res.data.publications.length;
+                if (vm.break) vm.more = true;
                 document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/profile/${res.data.img}`;
                 vm.status = vm.username === vm.profile.username? false: null;
             });

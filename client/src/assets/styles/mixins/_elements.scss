@@ -116,3 +116,19 @@
     background: $profile-edit-bg;
     color: $profile-edit-color;
 }
+
+@mixin rounded-img() {
+    @include image-box;
+    position: relative;
+    width: $chain-size;
+    border-radius: 50%;
+    overflow: hidden;
+
+    .image__box {
+        padding-bottom: 100%;
+    }
+
+    @media only screen and (min-width: map-get($breakpoints, "sd")) {
+        width: vw-to-px(map-get($container-widths, "sd"), $chain-size);
+    }
+}

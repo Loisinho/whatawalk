@@ -3,17 +3,19 @@
         UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
         GroupCard(v-if="pick === 'groups'" v-bind:key="item._id" v-for="item in items" v-bind:group="item")
         NoticeCard(v-if="pick === 'notices'" v-bind:key="item._id" v-for="item in items" v-bind:notice="item" @delete-notice="deleteNotice")
-        New(v-if="pick === 'groups'" @new-group="newGroup")
+        PublicationCard(v-if="pick === 'publications'" v-bind:key="item._id" v-for="item in items" v-bind:publication="item")
         p.expositor__empty(v-if="items.length === 0") NOTHING!!
         p.expositor__empty(v-if="items.length === 0" style="margin-bottom: 10px;") This page is completely empty...
-        button.expositor__btn(v-if="status" type="button" @click="search") Load
+        LoadMore(v-if="status" @search-more="search")
 </template>
 
 <script>
 import UserCard from "../components/UserCard.vue";
 import GroupCard from "../components/GroupCard.vue";
 import NoticeCard from "../components/NoticeCard.vue";
-import New from "../components/New.vue";
+import PublicationCard from "../components/PublicationCard.vue";
+import LoadMore from "../components/LoadMore.vue";
+
 
 export default {
     name: "Explore",
@@ -21,7 +23,8 @@ export default {
         UserCard,
         GroupCard,
         NoticeCard,
-        New
+        PublicationCard,
+        LoadMore
     },
     props: {
         pick: {
@@ -51,7 +54,6 @@ export default {
     methods: {
         async search() {
             try {
-                document.removeEventListener("scroll", this.dueScroll);
                 this.status = false;
                 let res = await this.$http.get(`${this.pick}/search?op=${this.op}&id=${this.id}&break=${this.break}`);
                 if (res.data.length > 0) {
@@ -73,9 +75,6 @@ export default {
                 });
             }
         },
-        dueScroll() {
-            if (window.scrollY + window.innerHeight === document.body.scrollHeight) this.search();
-        },
         updateBreak(follow) {
             if (this.op !== "default") follow? this.break++: this.break--;
         },
@@ -88,11 +87,7 @@ export default {
             this.break--;
         }
     },
-    beforeDestroy: function() {
-        document.removeEventListener("scroll", this.dueScroll);
-    },
     created: function() {
-        document.addEventListener("scroll", this.dueScroll);
         this.id = this.$route.params.id;
         this.search();
     }
@@ -105,20 +100,6 @@ export default {
 .expositor {
     .expositor__empty {
         text-align: center;
-    }
-
-    .expositor__btn {
-        @include button-alpha();
-        width: auto;
-        margin-left: 50%;
-        transform: translate(-50%);
-        font-size: $usercard-font-size;
-    }
-}
-
-@media only screen and (min-width: map-get($breakpoints, "sd")) {
-    .expositor .expositor__btn {
-        font-size: vw-to-px(map-get($container-widths, "sd"), $usercard-font-size);
     }
 }
 </style>

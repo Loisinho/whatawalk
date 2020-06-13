@@ -14,16 +14,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import { faPlus, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default {
-    name: "New",
-    computed: {
-        ...mapState({
-            username: state => state.session.username
-        })
-    },
+    name: "NewGroup",
     data: () => {
         return {
             faPlus,
@@ -62,7 +56,10 @@ export default {
             }
         },
         outside(e) {
-            if (e.target.contains(document.getElementById("new"))) this.open = false;
+            if (e.target.contains(document.getElementById("new"))) {
+                this.open = false;
+                this.title = "";
+            }
         }
     },
     beforeDestroy: function() {
@@ -89,6 +86,7 @@ export default {
         width: 40px;
         height: 40px;
         border-radius: 20px;
+        box-shadow: -2px 2px 8px #000000;
         overflow: hidden;
         background: #ffffff;
         transition: all $transition-time;
@@ -162,11 +160,11 @@ export default {
 @media only screen and (min-width: map-get($breakpoints, "ld")) {
     #new .new__container {
         .new__form {
-            width: calc(60vw - 80px);
+            width: calc(60vw - 100px);
         }
 
         &.new__container--open {
-            width: calc(60vw - 20px);
+            width: calc(60vw - 40px);
         }
     }
 }

@@ -24,6 +24,7 @@
                             div.custom__options(:class="{'custom__options--active': optionsOpen}")
                                 p(@click="pick = 'users'") users
                                 p(@click="pick = 'groups'") groups
+                                p(@click="pick = 'publications'") publications
                         input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
                         input(type="submit" value="" :disabled="keyword === ''")
                         button.menu__search(type="button" @click="search" :disabled="keyword === ''")
