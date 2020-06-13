@@ -116,8 +116,16 @@ exports.logout = function (req, res, next) {
 exports.profile = async function (req, res, next) {
     try {
         let user = await model.User.findOne({ username: req.params.username });
+        let publications = await model.Publication.find({ user: user._id })
+            .sort({date: "desc"})
+            .limit(parseInt(process.env.LOAD_LIMIT))
+            .populate({
+                path: "user",
+                select: "username img -_id"
+            });
         if (user) {
             res.status(200).json({
+                _id: user._id,
                 username: user.username,
                 name: user.name,
                 img: user.img,
@@ -130,7 +138,8 @@ exports.profile = async function (req, res, next) {
                 followers: {
                     amount: user.followers.users.length,
                     status: user.followers.users.includes(client.username)? true: false
-                }
+                },
+                publications: publications
             });
         } else {
             res.status(422).json("User does not exists.");

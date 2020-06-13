@@ -15,6 +15,7 @@ const userRoutes = require("./routes/user.routes");
 const groupRoutes = require("./routes/group.routes");
 const noticeRoutes = require("./routes/notice.routes");
 const travelRoutes = require("./routes/travel.routes");
+const publicationRoutes = require("./routes/publication.routes");
 
 
 // Express module instance.
@@ -68,6 +69,7 @@ app.use("/users/", userRoutes);
 app.use("/groups/", groupRoutes);
 app.use("/notices/", noticeRoutes);
 app.use("/travels/", travelRoutes);
+app.use("/publications/", publicationRoutes);
 
 
 // mongoose module & connection.

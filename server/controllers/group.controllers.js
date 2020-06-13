@@ -6,7 +6,7 @@ const fs = require("fs");
 // GET find group.
 exports.find = async function(req, res, next) {
     try {
-        let group = await model.Group.findOne({_id: req.params.group})
+        let group = await model.Group.findOne({_id: req.params.group, admins: client._id})
             .populate({
                 path: "members.user",
                 select: "username img",
@@ -17,16 +17,13 @@ exports.find = async function(req, res, next) {
             .lean();
         group.members.map(i => i.admin = group.admins.map(j => j.toString()).includes(i.user._id.toString())? true : false);
         group.admin = group.admins.map(i => i.toString()).includes(client._id)? true : false;
-        if (group.members.map(i => i.user._id.toString()).includes(client._id))
-            res.status(200).json(group);
-        else
-            res.status(403).json("You are not allowed to do that...");
+        res.status(200).json(group);
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
 
-// GET edit group.
+// POST edit group.
 exports.edit = async function(req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.params.group, admins: client._id});
@@ -50,7 +47,7 @@ exports.edit = async function(req, res, next) {
     }
 }
 
-// GET delete group.
+// DELETE delete group.
 exports.delete = async function(req, res, next) {
     try {
         let group = await model.Group.findOneAndDelete({_id: req.params.group, admins: client._id})
@@ -242,7 +239,7 @@ exports.groupAdmin = async function (req, res, next) {
 exports.invite = async function (req, res, next) {
     try {
         let guest = await model.User.findOne({username: req.body.guest});
-        let group = await model.Group.findOne({_id: req.body.group, "members.user": {$nin: guest._id}});
+        let group = await model.Group.findOne({_id: req.body.group, admins: client._id, "members.user": {$nin: guest._id}});
         let newNotice = new model.Notice({
             receiver: guest._id,
             sender: client._id,

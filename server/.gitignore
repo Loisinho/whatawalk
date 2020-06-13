@@ -17,3 +17,5 @@
 !/public/images/group
 /public/images/group/*
 !/public/images/group/default_group.jpg
+!/public/images/publication
+/public/images/publication/*
