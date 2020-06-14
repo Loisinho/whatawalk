@@ -19,6 +19,11 @@ const router = new Router({
             component: () => import(/* webpackChunkName: "about" */ "./views/About.vue")
         },
         {
+            path: "/privacy",
+            name: "privacy",
+            component: () => import(/* webpackChunkName: "privacy" */ "./views/Privacy.vue")
+        },
+        {
             path: "/signup",
             name: "signup",
             meta: {
@@ -33,6 +38,26 @@ const router = new Router({
                 guest: true
             },
             component: () => import(/* webpackChunkName: "login" */ "./views/Login.vue")
+        },
+        {
+            path: "/forgot",
+            name: "forgot",
+            meta: {
+                guest: true
+            },
+            component: () => import(/* webpackChunkName: "forgot" */ "./views/Forgot.vue")
+        },
+        {
+            path: "/reset",
+            name: "reset",
+            props: route => ({
+                email: route.query.email,
+                token: route.query.token
+            }),
+            meta: {
+                guest: true
+            },
+            component: () => import(/* webpackChunkName: "reset" */ "./views/Reset.vue")
         },
         {
             path: "/explore/:id",

@@ -6,6 +6,17 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const {OAuth2Client} = require('google-auth-library');
 const gclient = new OAuth2Client(process.env.GOOGLE_OAUTH_ID);
+const nodemailer = require('nodemailer');
+
+// NOTE: Configure nodemailer options.
+const nodemailerOptions = {
+    service: "gmail",
+    auth: {
+        user: "",
+        pass: ""
+    }
+}
+const transporter = nodemailer.createTransport(nodemailerOptions);
 
 
 // GET session.
@@ -167,6 +178,7 @@ exports.edit = async function (req, res, next) {
         req.session.passport.user.img = user.img;
         res.status(200).json({img: user.img});
     } catch (error) {
+        if (req.file) fs.unlink("./public/images/profile/" + req.file.filename, error => {});
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
@@ -252,8 +264,113 @@ exports.follow = async function (req, res, next) {
     }
 }
 
+// POST recovery request.
+exports.recovery = async function (req, res, next) {
+    try {
+        let user = await model.User.findOneAndUpdate({ email: req.body.email });
+        if (user) {
+            await model.Token.findOneAndDelete({ email: req.body.email });
+            let newToken = new model.Token({
+                email: req.body.email
+            });
+            await newToken.save();
+            let mailOptions = {
+                from: nodemailerOptions.auth.user,
+                to: user.email,
+                subject: "WhatAWalk new password.",
+                html: "<div style='text-align: center;'><h1>Hi " + user.username + ",</h1><p>We\'ve received a request to reset your password. If you didn\'t make the request, just ignore this email. Otherwise, you can use the link below to reset your password:</p><br><a href='" + process.env.WEB_URL + "/reset?email=" + newToken.email + "&token=" + newToken._id + "' style='padding: 10px; background: #5551f7; border-radius: 5px; color: #eaeaea;'>Click here to reset your password</a><br><br><p><i>This link is available 24 hours and can only be used once.</i></p><br><p>Thanks,<br>The <a href='" + process.env.WEB_URL + "' style='color: #5551f7;'>WhatAWalk</a> team.</p></div>"
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) throw error;
+                // else console.log('Email sent: ' + info.response);
+            });
+            res.status(200).json("Ok");
+        } else {
+            res.status(422).json("Email does not exists.");
+        }
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred. Please try again.");
+    }
+}
+
+// POST reset password.
+exports.reset = async function (req, res, next) {
+    try {
+        let user = await model.User.findOneAndUpdate({ email: req.body.email });
+        if (user) {
+            let token = await model.Token.findOneAndDelete({ _id: req.body.token });
+            if (token) {
+                user.password = await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10));
+                await user.save();
+                res.status(200).json("Ok");
+            } else {
+                res.status(422).json("Oops, an error occurred.");
+            }
+        } else {
+            res.status(422).json("Oops, an error occurred.");
+        }
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred.");
+    }
+}
+
+// GET delete account.
+exports.deleteAccount = async function (req, res, next) {
+    try {
+        await model.Token.deleteMany({ email: client.email });
+        await model.Notice.deleteMany({$or: [{ receiver: client._id }, { sender: client._id }]});
+        let publications = await model.Publication.find({ user: client._id });
+        await model.Publication.deleteMany({ user: client._id });
+        for (let i = 0; i < publications.length; i++)
+            if (publications[i].img)
+                fs.unlink("./public/images/publication/" + publication[i].img, error => {
+                    if (error) throw error;
+                });
+
+        await model.Group.updateMany({
+                admins: {$nin: client._id},
+                "members.user": {$in: client._id}
+            }, {
+                $pull: {members: {user: client._id}}
+            });
+        let isAdmin = await model.Group.find({admins: {$in: client._id}});
+        for (let i = 0; i < isAdmin.length; i++) {
+            if (isAdmin[i].members.length <= 1) {
+                await isAdmin[i].delete();
+                if (isAdmin[i].img !== "default_group.jpg")
+                    fs.unlink("./public/images/group/" + isAdmin[i].img, error => {
+                        if (error) throw error;
+                    });
+            } else {
+                let memberIndex = isAdmin[i].members.map(i => i.user.toString()).indexOf(client._id);
+                let adminIndex = isAdmin[i].admins.indexOf(client._id);
+                if (adminIndex !== -1) isAdmin[i].members.splice(memberIndex, 1);
+                if (adminIndex !== -1) isAdmin[i].admins.splice(adminIndex, 1);
+                if (isAdmin[i].admins.length === 0) isAdmin[i].admins.push(isAdmin[i].members[0].user);
+                await isAdmin[i].save();
+            }
+        }
+
+        let user = await model.User.findOneAndDelete({ _id: client._id });
+        await model.User.updateMany({_id: {$in: user.following}}, {$pull: {"followers.users": client._id}});
+        await model.User.updateMany({_id: {$in: user.followers.users}}, {$pull: {following: client._id}});
+        if (user.img !== "default_profile.png")
+            fs.unlink("./public/images/profile/" + user.img, error => {
+                if (error) throw error;
+            });
+
+        req.session.destroy( error => {
+            if (error) res.status(422).end("An error occurred. Please try again.");
+            res.end();
+        });
+    } catch (error) {
+        res.status(422).json("Oops, an error occurred.");
+    }
+}
+
+// Passport functions.
 passport.serializeUser(function(user, done) {
-    done(null, {_id: user._id, username: user.username, img: user.img});
+    done(null, {_id: user._id, username: user.username, email: user.email, img: user.img});
 });
    
 passport.deserializeUser(function(user, done) {

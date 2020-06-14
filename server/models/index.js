@@ -6,6 +6,7 @@ const GroupSchema = require("./group.model");
 const ChatSchema = require("./chat.model");
 const TravelSchema = require("./travel.model");
 const PublicationSchema = require("./publication.model");
+const TokenSchema = require("./token.model");
 
 
 module.exports = {
@@ -14,5 +15,6 @@ module.exports = {
     Group: mongoose.model("Group", GroupSchema),
     Chat: mongoose.model("Chat", ChatSchema),
     Travel: mongoose.model("Travel", TravelSchema),
-    Publication: mongoose.model("Publication", PublicationSchema)
+    Publication: mongoose.model("Publication", PublicationSchema),
+    Token: mongoose.model("Token", TokenSchema)
 }
