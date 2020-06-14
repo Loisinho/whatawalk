@@ -12,7 +12,15 @@ const storage = multer.diskStorage({
         cb(null, uniquefilename("") + "-" + Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        let ext = path.extname(file.originalname);
+        if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg")
+            return callback(new Error("This file extension is not allowed."))
+        cb(null, true);
+    }
+});
 
 const group = require("../controllers/group.controllers");
 const { isLoggedIn, hasAuth } = require("../middlewares/hasAuth.js");

@@ -1,5 +1,5 @@
 <template lang="pug">
-    div.groupcard(@click="$router.push({name: 'group', params: {id: group._id}})" :class="{'groupcard--notification': groups.includes(group._id)}")
+    div.groupcard(@click="goIn" :class="{'groupcard--notification': groups.includes(group._id)}")
         div.groupcard__img
             div.image__box
             img(:src="webUrl + 'group/' + group.img" alt="Group image")
@@ -53,6 +53,9 @@ export default {
                     type: "error"
                 });
             }
+        },
+        goIn() {
+            if (!this.group.join) this.$router.push({name: "group", params: {id: this.group._id}});
         }
     }
 };

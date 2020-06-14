@@ -3,6 +3,7 @@
         UserCard(v-if="pick === 'users'" v-bind:key="item.username" v-for="item in items" v-bind:user="item" @update-break="updateBreak")
         GroupCard(v-if="pick === 'groups'" v-bind:key="item._id" v-for="item in items" v-bind:group="item")
         NoticeCard(v-if="pick === 'notices'" v-bind:key="item._id" v-for="item in items" v-bind:notice="item" @delete-notice="deleteNotice")
+        NewGroup(v-if="pick === 'groups'" @new-group="newGroup")
         PublicationCard(v-if="pick === 'publications'" v-bind:key="item._id" v-for="item in items" v-bind:publication="item")
         p.expositor__empty(v-if="items.length === 0") NOTHING!!
         p.expositor__empty(v-if="items.length === 0" style="margin-bottom: 10px;") This page is completely empty...
@@ -13,6 +14,7 @@
 import UserCard from "../components/UserCard.vue";
 import GroupCard from "../components/GroupCard.vue";
 import NoticeCard from "../components/NoticeCard.vue";
+import NewGroup from "../components/NewGroup.vue";
 import PublicationCard from "../components/PublicationCard.vue";
 import LoadMore from "../components/LoadMore.vue";
 
@@ -23,6 +25,7 @@ export default {
         UserCard,
         GroupCard,
         NoticeCard,
+        NewGroup,
         PublicationCard,
         LoadMore
     },

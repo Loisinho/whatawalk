@@ -6,7 +6,7 @@ const fs = require("fs");
 // GET find group.
 exports.find = async function(req, res, next) {
     try {
-        let group = await model.Group.findOne({_id: req.params.group, admins: client._id})
+        let group = await model.Group.findOne({_id: req.params.group, "members.user": {$in: client._id}})
             .populate({
                 path: "members.user",
                 select: "username img",
@@ -43,6 +43,7 @@ exports.edit = async function(req, res, next) {
         await group.save();
         res.status(200).json({img: group.img});
     } catch (error) {
+        if (req.file) fs.unlink("./public/images/group/" + req.file.filename, error => {});
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 }
@@ -240,17 +241,21 @@ exports.invite = async function (req, res, next) {
     try {
         let guest = await model.User.findOne({username: req.body.guest});
         let group = await model.Group.findOne({_id: req.body.group, admins: client._id, "members.user": {$nin: guest._id}});
-        let newNotice = new model.Notice({
-            receiver: guest._id,
-            sender: client._id,
-            group: group._id
-        });
-        let notices = await model.Notice.find({receiver: guest._id, group: group._id}).select("group -_id");
-        if (!notices.length) {
-            newNotice.save();
-            res.status(200).json("Invitation done!");
+        if (group.members.length < 64) {
+            let notices = await model.Notice.find({receiver: guest._id, group: group._id}).select("group -_id");
+            if (!notices.length) {
+                let newNotice = new model.Notice({
+                    receiver: guest._id,
+                    sender: client._id,
+                    group: group._id
+                });
+                newNotice.save();
+                res.status(200).json("Invitation done!");
+            } else {
+                res.status(200).json("This user has already been invited");
+            }
         } else {
-            res.status(200).json("This user has already been invited");
+            res.status(200).json("This group is complete");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -262,19 +267,23 @@ exports.join = async function (req, res, next) {
     try {
         let group = await model.Group.findOne({_id: req.query.group, "members.user": {$nin: client._id}});
         let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
-        if (!group.private && !notice) {
-            group.members.push({user: client._id});
-            await group.save();
-            res.status(200).json("Ok");
-        } else {
-            if (notice) {
+        if (group.members.length < 64) {
+            if (!group.private && !notice) {
                 group.members.push({user: client._id});
                 await group.save();
-                await model.Notice.findOneAndRemove({_id: notice._id});
                 res.status(200).json("Ok");
             } else {
-                res.status(422).json("Oops, you can not join this group.");
+                if (notice) {
+                    group.members.push({user: client._id});
+                    await group.save();
+                    await model.Notice.findOneAndRemove({_id: notice._id});
+                    res.status(200).json("Ok");
+                } else {
+                    res.status(422).json("Oops, you can not join this group.");
+                }
             }
+        } else {
+            res.status(200).json("This group is complete");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");

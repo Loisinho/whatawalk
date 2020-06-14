@@ -5,9 +5,8 @@
                 p.msg__user(v-if="msg.user !== username") {{ msg.user }}
                 p.msg__text {{ msg.text }}
         form.chat__send(@submit.prevent="send" style="position: absolute; bottom: 0;")
-            input.chat__text(type="text" v-model="text" maxlength="254" placeholder="...")
-            input(type="submit" value="" style="display: none;")
-            button.chat__btn(type="button" @click="send")
+            textarea.chat__text(v-model="text" rows="2" maxlength="254" placeholder="...") {{ text }}
+            button.chat__btn(type="submit")
                 font-awesome-icon(:icon="faPen")
 </template>
 
@@ -79,17 +78,16 @@ export default {
     width: 100%;
     min-height: 200px;
     height: calc(100vh - 200px);
-    background: yellowgreen;
 
     .chat__board {
         @include container-flex($direction: column);
         width: 100%;
         height: calc(100% - 40px);
         overflow-y: auto;
-        background: blueviolet;
+        background: $nav-links-active-color;
 
         .chat__msg {
-            background: black;
+            background: $body-bg;
             max-width: 75%;
             margin: 5px auto 5px 5px;
             padding: 5px;
@@ -98,7 +96,7 @@ export default {
 
             .msg__user {
                 font-size: 14px;
-                color: red;
+                color: $nav-links-bg;
             }
 
             &.chat__msg--right {
@@ -119,7 +117,8 @@ export default {
         }
 
         .chat__text {
-            width: calc(100% - 40px);
+            min-width: calc(100% - 40px);
+            max-width: calc(100% - 40px);
             padding-left: 5px;
         }
 

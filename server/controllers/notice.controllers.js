@@ -39,7 +39,7 @@ exports.search = async function (req, res, next) {
 // DELETE notice
 exports.cancel = async function(req, res, next) {
     try {
-        await model.Notice.findOneAndRemove({_id: req.body.notice});
+        await model.Notice.findOneAndDelete({_id: req.body.notice});
         res.status(200).json("Ok");
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");

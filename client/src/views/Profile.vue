@@ -69,15 +69,15 @@ export default {
             faMapMarkerAlt,
             profile: {
                 username: null,
-                name: null,
-                ubication: null,
-                description: null,
+                name: "",
+                ubication: "",
+                description: "",
                 following: {
-                    amount: null,
+                    amount: 0,
                     status: false
                 },
                 followers: {
-                    amount: null,
+                    amount: 0,
                     status: false
                 },
                 publications: []
@@ -167,10 +167,18 @@ export default {
         deleteAccount() {
             this.$store.commit("modal/activateModal", {active: true, msg: "Are you sure you want to delete your account?"});
         },
-        // TODO: 
         async confirmDecision() {
-            console.log("ACCOUNT DELETED!");
-            this.$store.commit("modal/activateModal", {active: false});
+            try {
+                await this.$http.get("users/deleteaccount");
+                this.$socket.client.close();
+                this.$store.commit("session/disconnect");
+                this.$router.push({name: "home"});
+            } catch (error) {
+                this.$store.commit("alert/activateAlert", {
+                    msg: error.response.data,
+                    type: "error"
+                });
+            }
         },
         cancelDecision() {
             this.$store.commit("modal/activateModal", {active: true});

@@ -16,6 +16,7 @@ exports.create = async function (req, res, next) {
         newPublication.user = {username: client.username, img: client.img};
         res.status(200).json(newPublication);
     } catch (error) {
+        if (req.file) fs.unlink("./public/images/publication/" + req.file.filename, error => {});
         res.status(422).json("Oops, an error occurred. Please try again.");
     }
 };
@@ -71,7 +72,11 @@ exports.search = async function (req, res, next) {
 // DELETE delete publication.
 exports.delete = async function(req, res, next) {
     try {
-        await model.Publication.findOneAndDelete({_id: req.body.publication, user: client._id});
+        let publication = await model.Publication.findOneAndDelete({_id: req.body.publication, user: client._id});
+        if (publication.img)
+            fs.unlink("./public/images/publication/" + publication.img, error => {
+                if (error) throw error;
+            });
         res.status(200).json("Ok");
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");

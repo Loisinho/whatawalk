@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema ({
         type: String,
         required: false,
         max: 40,
-        default: null
+        default: ""
     },
     img: {
         type: String,
@@ -33,13 +33,13 @@ const UserSchema = new mongoose.Schema ({
         type: String,
         required: false,
         max: 40,
-        default: null
+        default: ""
     },
     description: {
         type: String,
         required: false,
         max: 254,
-        default: null
+        default: ""
     },
     following: [{
         type: mongoose.Schema.Types.ObjectId,
