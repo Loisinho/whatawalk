@@ -119,7 +119,7 @@ exports.google = async function (req, res, next) {
 exports.logout = function (req, res, next) {
     req.session.destroy( error => {
         if (error) res.status(422).end("An error occurred. Please try again.");
-        res.end();
+        res.status(200).end();
     });
 }
 
@@ -361,7 +361,7 @@ exports.deleteAccount = async function (req, res, next) {
 
         req.session.destroy( error => {
             if (error) res.status(422).end("An error occurred. Please try again.");
-            res.end();
+            res.status(200).end();
         });
     } catch (error) {
         res.status(422).json("Oops, an error occurred.");

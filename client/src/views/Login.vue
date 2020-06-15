@@ -77,7 +77,7 @@ export default {
                         groups: user.data.groups
                     });
                     setTimeout(() => {
-                        this.$router.push({name: "home"});
+                        this.$router.push({name: "publications"});
                     }, 1000);
                 }
             } catch (error) {
@@ -107,7 +107,7 @@ export default {
                             groups: user.data.groups
                         });
                         setTimeout(() => {
-                            this.$router.push({name: "home"});
+                            this.$router.push({name: "publications"});
                         }, 1000);
                     } else {
                         this.$router.push({name: "signup", params: { email: profile.getEmail() }});

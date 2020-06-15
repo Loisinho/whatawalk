@@ -13,11 +13,17 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export default {
     name: "NoticeCard",
     props: ["notice"],
+    computed: {
+        ...mapState({
+            username: state => state.session.username
+        })
+    },
     data: () => {
         return {
             faTimes
@@ -26,9 +32,10 @@ export default {
     methods: {
         async confirm() {
             try {
-                await this.$http.get(`groups/join?group=${this.notice.group._id}`);
-                this.$router.push({name: "group", params: {id: this.notice.group._id}});
+                let res = await this.$http.get(`groups/join?group=${this.notice.group._id}`);
                 this.$store.commit("session/newGroup", this.notice.group._id);
+                this.$socket.client.emit("groupMsg", {user: this.username, group: this.notice.group._id, text: res.data, general: true});
+                this.$router.push({name: "group", params: {id: this.notice.group._id}});
             } catch (error) {
                 if (error.response.status === 401) {
                     this.$store.commit("session/disconnect");

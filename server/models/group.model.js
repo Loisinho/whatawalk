@@ -38,10 +38,14 @@ const GroupSchema = new mongoose.Schema ({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Travel"
     },
-    chat: [ChatSchema]
+    chat: [ChatSchema],
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
 },
 {
-    timestamps: true
+    // timestamps: true
 });
 
 

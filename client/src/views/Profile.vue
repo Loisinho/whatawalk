@@ -9,10 +9,10 @@
                 h1.profile__username @{{ profile.username }}
                 div.profile__links
                     div.profile__following
-                        span.profile__amount {{ profile.following.amount }}
+                        span.profile__amount(:title="profile.following.amount") {{ amountFormat(profile.following.amount) }}
                         router-link(to="following") Following
                     div.profile__followers
-                        span.profile__amount {{ profile.followers.amount }}
+                        span.profile__amount(:title="profile.followers.amount") {{ amountFormat(profile.followers.amount) }}
                         router-link(to="followers") Followers
                 div.profile__actions(v-if="status === null")
                     button.profile__follow(type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
@@ -213,6 +213,21 @@ export default {
                 i._id === id? this.profile.publications.splice(this.profile.publications.indexOf(i), 1) : i;
             });
             this.break--;
+        },
+        amountFormat(amount) {
+            let suf = "";
+            let n = parseInt(amount / 1000);
+            if (n >= 1000) {
+                n = parseInt(n / 1000);
+                suf = "M";
+                if (n >= 1000) {
+                    n = parseInt(n / 1000);
+                    suf = "B";
+                }
+            } else if (n >= 1) {
+                suf = "K";
+            }
+            return n + suf;
         }
     },
     beforeDestroy: function() {

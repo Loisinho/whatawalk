@@ -1,8 +1,8 @@
 <template lang="pug">
     div.chat
         div.chat__board
-            div.chat__msg(v-bind:key="chat._id"  v-for="msg in chat" :class="{'chat__msg--right': msg.user === username}")
-                p.msg__user(v-if="msg.user !== username") {{ msg.user }}
+            div.chat__msg(v-bind:key="chat._id"  v-for="msg in chat" :class="{'chat__msg--right': msg.user === username && !msg.general, 'chat__msg--general': msg.general}")
+                p.msg__user(v-if="msg.user !== username && !msg.general") {{ msg.user }}
                 p.msg__text {{ msg.text }}
         form.chat__send(@submit.prevent="send" style="position: absolute; bottom: 0;")
             textarea.chat__text(v-model="text" rows="2" maxlength="254" placeholder="...") {{ text }}
@@ -38,7 +38,7 @@ export default {
     },
     sockets: {
         newMsg(data) {
-            this.chat.push({user: data.user, text: data.text});
+            this.chat.push({user: data.user, text: data.text, general: data.general});
             let board = document.querySelector(".chat__board");
             setTimeout(() => { board.scrollTop = board.scrollHeight; }, 50);
         }
@@ -48,7 +48,7 @@ export default {
             try {
                 if (this.text !== "") {
                     await this.$http.patch(`groups/${this.group}/msg`, {text: this.text});
-                    this.$socket.client.emit("groupMsg", {user: this.username, group: this.group, text: this.text});
+                    this.$socket.client.emit("groupMsg", {user: this.username, group: this.group, text: this.text, general: false});
                     this.text = "";
                 }
             } catch (error) {
@@ -96,11 +96,17 @@ export default {
 
             .msg__user {
                 font-size: 14px;
+                font-weight: bold;
                 color: $nav-links-bg;
             }
 
             &.chat__msg--right {
                 margin: 5px 5px 5px auto;
+            }
+
+            &.chat__msg--general {
+                margin: 5px auto;
+                background: $nav-links-bg;
             }
         }
     }

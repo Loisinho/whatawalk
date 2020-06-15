@@ -84,6 +84,7 @@ export default {
         newGroup(group) {
             this.items.unshift(group);
             this.break++;
+            this.$store.commit("session/newGroup", group._id);
         },
         deleteNotice(id) {
             this.items.map(i => i._id === id? this.items.splice(this.items.indexOf(i), 1) : i);

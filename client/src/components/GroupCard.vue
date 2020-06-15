@@ -39,9 +39,10 @@ export default {
     methods: {
         async join() {
             try {
-                await this.$http.get(`groups/join?group=${this.group._id}`);
-                this.$store.commit("session/newGroup", this.group._id);
+                let res = await this.$http.get(`groups/join?group=${this.group._id}`);
                 this.group.join = false;
+                this.$store.commit("session/newGroup", this.group._id);
+                this.$socket.client.emit("groupMsg", {user: this.username, group: this.group._id, text: res.data, general: true});
                 this.$router.push({name: "group", params: {id: this.group._id}});
             } catch (error) {
                 if (error.response.status === 401) {

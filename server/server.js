@@ -166,7 +166,7 @@ io.sockets.on("connection", function(socket) {
 
     // Group message.
     socket.on("groupMsg", data => {
-        io.in(data.group).emit("newMsg", {group: data.group, user: data.user, text: data.text});
+        io.in(data.group).emit("newMsg", {group: data.group, user: data.user, text: data.text, general: data.general});
     });
 
     // Disconnect.

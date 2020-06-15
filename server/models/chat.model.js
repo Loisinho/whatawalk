@@ -11,6 +11,11 @@ const ChatSchema = new mongoose.Schema ({
         required: true,
         max: 254
     },
+    general: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
     date: {
         type: Date,
         default: Date.now

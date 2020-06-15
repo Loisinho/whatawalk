@@ -40,8 +40,16 @@ exports.edit = async function(req, res, next) {
                 });
             group.img = req.file.filename;
         }
+        let text = client.username + " edited the group";
+        let newMsg = new model.Chat({
+            user: client.username,
+            text: text,
+            general: true
+        });
+        group.chat.push(newMsg);
+        group.updatedAt = newMsg.date;
         await group.save();
-        res.status(200).json({img: group.img});
+        res.status(200).json({img: group.img, text: text});
     } catch (error) {
         if (req.file) fs.unlink("./public/images/group/" + req.file.filename, error => {});
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -90,29 +98,45 @@ exports.remove = async function(req, res, next) {
     try {
         if (req.body.member) {
             var group = await model.Group.findOne({_id: req.params.group, admins: {$in: client._id}});
-            var adminIndex = group.admins.indexOf(req.body.member);
-            var memberIndex = group.members.map(i => i.user.toString()).indexOf(req.body.member);
+            var adminIndex = group.admins.indexOf(req.body.member.id);
+            var memberIndex = group.members.map(i => i.user.toString()).indexOf(req.body.member.id);
+            var text = client.username + " removed " + req.body.member.username;
         } else {
             var group = await model.Group.findOne({_id: req.params.group, "members.user": {$in: client._id}});
             var adminIndex = group.admins.indexOf(client._id);
             var memberIndex = group.members.map(i => i.user.toString()).indexOf(client._id);
+            var text = client.username + " left the group.";
         }
         if (adminIndex !== -1) {
             if (group.admins.length > 1) {
                 group.admins.splice(adminIndex, 1);
                 if (memberIndex !== -1)
                     group.members.splice(memberIndex, 1);
+                let newMsg = new model.Chat({
+                    user: client.username,
+                    text: text,
+                    general: true
+                });
+                group.chat.push(newMsg);
+                group.updatedAt = newMsg.date;
                 await group.save();
-                res.status(200).json("Ok");
+                res.status(200).json(text);
             } else {
                 res.status(422).json("Oops, this user can not be removed.");
             }
+        } else if (memberIndex !== -1) {
+            group.members.splice(memberIndex, 1);
+            let newMsg = new model.Chat({
+                user: client.username,
+                text: text,
+                general: true
+            });
+            group.chat.push(newMsg);
+            group.updatedAt = newMsg.date;
+            await group.save();
+            res.status(200).json(text);
         } else {
-            if (memberIndex !== -1) {
-                group.members.splice(memberIndex, 1);
-                await group.save();
-            }
-            res.status(200).json("Ok");
+            res.status(422).json("Oops, something bad happened.");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");
@@ -129,6 +153,7 @@ exports.msg = async function(req, res, next) {
                 text: req.body.text
             });
             group.chat.push(newMsg);
+            group.updatedAt = newMsg.date;
             await group.save();
         }
         res.status(200).json("Ok");
@@ -268,22 +293,35 @@ exports.join = async function (req, res, next) {
         let group = await model.Group.findOne({_id: req.query.group, "members.user": {$nin: client._id}});
         let notice = await model.Notice.findOne({receiver: client._id, group: group._id});
         if (group.members.length < 64) {
+            let text = client.username + " joined the group";
             if (!group.private && !notice) {
                 group.members.push({user: client._id});
+                let newMsg = new model.Chat({
+                    user: client.username,
+                    text: text,
+                    general: true
+                });
+                group.chat.push(newMsg);
+                group.updatedAt = newMsg.date;
                 await group.save();
-                res.status(200).json("Ok");
+                res.status(200).json(text);
+            } else if (notice) {
+                group.members.push({user: client._id});
+                let newMsg = new model.Chat({
+                    user: client.username,
+                    text: text,
+                    general: true
+                });
+                group.chat.push(newMsg);
+                group.updatedAt = newMsg.date;
+                await group.save();
+                await model.Notice.findOneAndRemove({_id: notice._id});
+                res.status(200).json(text);
             } else {
-                if (notice) {
-                    group.members.push({user: client._id});
-                    await group.save();
-                    await model.Notice.findOneAndRemove({_id: notice._id});
-                    res.status(200).json("Ok");
-                } else {
-                    res.status(422).json("Oops, you can not join this group.");
-                }
+                res.status(422).json("Oops, you can not join this group.");
             }
         } else {
-            res.status(200).json("This group is complete");
+            res.status(422).json("This group is complete");
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred. Please try again.");

@@ -125,8 +125,10 @@ export default {
         },
         async remove(i) {
             try {
-                await this.$http.patch(`groups/${this.$route.params.id}/remove`, {member: this.group.members[i].user._id});
+                let res = await this.$http.patch(`groups/${this.$route.params.id}/remove`,
+                    {member: {id: this.group.members[i].user._id, username: this.group.members[i].user.username}});
                 this.$socket.client.emit("leaveGroup", {group: this.$route.params.id, user: this.group.members[i].user.username});
+                this.$socket.client.emit("groupMsg", {user: this.username, group: this.$route.params.id, text: res.data, general: true});
                 this.group.members.splice(i, 1);
             } catch (error) {
                 if (error.response.status === 401) this.$router.push({name: "login"});
@@ -150,13 +152,17 @@ export default {
         },
         async confirmEdit() {
             try {
-                let data = new FormData();
-                data.append("title", this.group.title);
-                data.append("travel", this.group.travel);
-                data.append("private", this.group.private);
-                data.append("img", document.getElementById("image__file").files[0]);
-                let res = await this.$http.post(`groups/${this.$route.params.id}/edit`, data);
-                document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+                if (this.group.title !== this.auxGroup.title || this.group.travel !== this.auxGroup.travel || this.group.private !== this.auxGroup.private || document.getElementById("image__file").files[0] !== undefined) {
+                    let data = new FormData();
+                    data.append("title", this.group.title);
+                    data.append("travel", this.group.travel);
+                    data.append("private", this.group.private);
+                    data.append("img", document.getElementById("image__file").files[0]);
+                    let res = await this.$http.post(`groups/${this.$route.params.id}/edit`, data);
+                    document.querySelector(".main__img > img").src = process.env.VUE_APP_URL + `media/images/group/${res.data.img}`;
+                    if (res.data.text)
+                        this.$socket.client.emit("groupMsg", {user: this.username, group: this.$route.params.id, text: res.data.text, general: true});
+                }
                 this.$store.commit("modal/activateModal", {active: false});
                 this.status = false;
             } catch (error) {
@@ -213,8 +219,9 @@ export default {
         async leaveGroup() {
             try {
                 this.$store.commit("modal/activateModal", {active: false});
-                await this.$http.patch(`groups/${this.$route.params.id}/remove`);
+                let res = await this.$http.patch(`groups/${this.$route.params.id}/remove`);
                 this.$socket.client.emit("leaveGroup", {group: this.$route.params.id});
+                this.$socket.client.emit("groupMsg", {user: this.username, group: this.$route.params.id, text: res.data, general: true});
                 this.$store.commit("alert/activateAlert", {
                     msg: "You left the group.",
                     type: "success"
