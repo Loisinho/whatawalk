@@ -9,8 +9,8 @@
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
-                                input.form__password(v-if="!peek" type="password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
-                                input.form__password(v-else type="text" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
+                                input.form__password(v-if="!peek" type="password" aria-label="New password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status" aria-required="true")
+                                input.form__password(v-else type="text" aria-label="New password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
                                 font-awesome-icon.form__icon.form__eye(v-if="!peek" :icon="faEye" @click="peek = !peek")
                                 font-awesome-icon.form__icon.form__eye(v-else :icon="faEyeSlash" @click="peek = !peek")
                             span.form__note(v-if="!$v.password.required") Field is required
@@ -19,9 +19,9 @@
                         div.form__group(:class="{'form__group--error': $v.repeatPassword.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
-                                input.form__password(type="password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status")
+                                input.form__password(type="password" aria-label="Repeat new password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.repeatPassword.sameAsPassword") Passwords must be identical
-                        input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'save'}" :disabled="status")
+                        input.form__submit(type="submit" aria-label="Save" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'save'}" :disabled="status")
 </template>
 
 <script>

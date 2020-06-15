@@ -8,7 +8,7 @@
             span.noticecard__sender(@click="$router.push({name: 'profile', params: {id: notice.sender.username}})") @{{ notice.sender.username }}
             |  invites you to join
             span.noticecard__group(@click="confirm")  {{ notice.group.title }}
-        button.noticecard__cancel(type="button" @click="cancel")
+        button.noticecard__cancel(type="button" aria-label="Discard" @click="cancel")
             font-awesome-icon(:icon="faTimes")
 </template>
 

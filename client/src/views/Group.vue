@@ -4,7 +4,7 @@
             div.group
                 div.group__info
                     div.group__header
-                        input.group__title(v-if="status" type="text" v-model.trim="group.title" maxlength="40" placeholder="Title")
+                        input.group__title(v-if="status" type="text" aria-label="Title" v-model.trim="group.title" maxlength="40" placeholder="Title")
                         h1.group__title(v-else) {{ group.title }}
                         div.group__options(@click="openOptions = !openOptions")
                             font-awesome-icon(:icon="faEllipsisV")
@@ -27,7 +27,7 @@
                                 font-awesome-icon(v-if="group.private" :icon="faLock")
                                 font-awesome-icon(v-else :icon="faUnlock")
                                 p {{ group.private? "Private" : "Public" }}
-                            button.members__btn(@click="showMembers = !showMembers") {{ showMembers? "Hide " : "Show " }} members
+                            button.members__btn(type="button" :aria-label="showMembers?'Hide members':'Show members'" @click="showMembers = !showMembers") {{ showMembers? "Hide " : "Show " }} members
                         div.group__members(v-if="showMembers")
                             div.group__member(v-bind:key="member.user.username" v-for="(member, i) in group.members" v-bind:member="member" @click="$router.push({name: 'profile', params: {id: member.user.username}})")
                                 div.member__img
@@ -35,8 +35,8 @@
                                     img(:src="webUrl + 'profile/' + member.user.img" alt="User image")
                                 span.member__username @{{ member.user.username }}
                                 div.member__functions(v-if="group.admin && member.user.username !== username")
-                                    button.member__admin(type="button" @click.stop="admin(i)") {{ member.admin? "Dismiss as admin" : "Make group admin" }}
-                                    button.member__remove(type="button" @click.stop="remove(i)") Remove member
+                                    button.member__admin(type="button" :aria-label="member.admin?'Dismiss as admin':'Make group admin'" @click.stop="admin(i)") {{ member.admin? "Dismiss as admin" : "Make group admin" }}
+                                    button.member__remove(type="button" aria-label="Remove member" @click.stop="remove(i)") Remove member
                                 span.member__functions(v-else-if="member.admin") Admin
                                     font-awesome-icon(:icon="faCrown")
                 Chat(v-bind:group="group._id" v-bind:chat="group.chat")

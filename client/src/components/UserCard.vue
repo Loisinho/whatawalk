@@ -4,7 +4,7 @@
             div.image__box
             img(:src="webUrl + user.img" alt="User image")
         span.usercard__username @{{ user.username }}
-        button.usercard__btn(v-if="user.username !== username" type="button" @click.stop="followAction") {{ user.follow? "unfollow": "follow" }}
+        button.usercard__btn(v-if="user.username !== username" type="button" :aria-label="user.follow?'Unfollow':'Follow'" @click.stop="followAction") {{ user.follow? "unfollow": "follow" }}
             font-awesome-icon(v-if="user.follow" :icon="faUserMinus")
             font-awesome-icon(v-else :icon="faUserPlus")
 </template>

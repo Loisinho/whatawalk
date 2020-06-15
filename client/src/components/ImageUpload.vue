@@ -1,6 +1,6 @@
 <template lang="pug">
     label.image__upload(for="image__file")
-        input#image__file(type="file" @change="previewImage")
+        input#image__file(type="file" aria-label="Upload image" @change="previewImage")
         font-awesome-icon(:icon="faArrowAltCircleUp")
 </template>
 

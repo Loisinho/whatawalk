@@ -1,13 +1,13 @@
 <template lang="pug">
     div#new
         form.new__container(@submit.prevent="add" :class="{'new__container--open': open}")
-            div.new__icon(@click="add")
+            div.new__icon(aria-label="Create new group" @click="add")
                 font-awesome-icon(v-if="title === ''" :icon="faPlus" :class="{'new__icon--close': open}")
                 font-awesome-icon(v-else :icon="faSave")
             div.new__form
-                input(type="text" v-model.trim="title" placeholder="Group title" maxlength="40")
+                input(type="text" aria-label="Title" v-model.trim="title" placeholder="Group title" maxlength="40")
                 label.new__checkbox(for="private")
-                    input#private(type="checkbox" @click="private = !private")
+                    input#private(type="checkbox" aria-label="Private?" aria-checked="false" @click="private = !private")
                     span
                     | Private
             input(type="submit" value="" style="display: none;" :disabled="title === ''")

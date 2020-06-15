@@ -10,7 +10,7 @@
                         font-awesome-icon(:icon="faTimes" @click="list.splice(i, 1)")
                     Selector(@select-group="save" v-bind:title="'Save in'")
                 form.travel__search(@submit.prevent="submitMethod")
-                    input.travel__location(type="text" v-model.trim="location.name" placeholder="Location.." :disabled="location.id")
+                    input.travel__location(type="text" aria-label="Location" v-model.trim="location.name" placeholder="Location.." :disabled="location.id" aria-required="true")
                     div.travel__tags(v-if="location.id" @click="tagsOpen = !tagsOpen")
                         span.custom__select(:class="{'custom__select--none': !tag}") {{ tag? tag : "select a tag.." }}
                         font-awesome-icon(:icon="faSortDown")
@@ -24,10 +24,10 @@
                             p(@click="tag = 'nightlife'") nightlife
                             p(@click="tag = 'practicalities'") practicalities
                     div.travel__buttons
-                        button.travel__btn(type="submit" :disabled="location.name === '' || !tag" style="margin-top: 4px;")
+                        button.travel__btn(type="submit" aria-label="Search" :disabled="location.name === '' || !tag" style="margin-top: 4px;")
                             font-awesome-icon(v-if="!status" :icon="faSearch")
                             font-awesome-icon.travel__loading(v-else :icon="faCompass")
-                        button.travel__btn(type="reset" @click="reset" style="margin-top: 4px; margin-left: 4px;")
+                        button.travel__btn(type="reset" aria-label="Reset" @click="reset" style="margin-top: 4px; margin-left: 4px;")
                             font-awesome-icon(:icon="faTrashAlt")
                 div.travel__results(v-if="location.id && !auxTag")
                     h1.travel__title {{ location.name }}
@@ -40,8 +40,8 @@
                         div
                             h3 {{ poi.name }}
                             p {{ poi.intro }}
-                            button.travel__btn(type="button" @click="add(poi)") Add
-                    button.travel__btn.trave__more(v-if="more" @click="submitMethod")
+                            button.travel__btn(type="button" aria-label="Add" @click="add(poi)") Add
+                    button.travel__btn.trave__more(v-if="more" type="button" aria-label="Search more" @click="submitMethod")
                         span(v-if="!status") More
                         font-awesome-icon.travel__loading(v-else :icon="faCompass")
 </template>

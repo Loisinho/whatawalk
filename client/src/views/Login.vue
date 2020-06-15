@@ -6,7 +6,7 @@
                     h2 Log in
                 main.login
                     div.login__google
-                        button.g-signin2(type="button" @click="googleOAuth")
+                        button.g-signin2(type="button" aria-label="Google Authentication" @click="googleOAuth")
                             img.icon(src="../assets/google_btn.svg" alt="Google Authentication")
                             span.text Sign in with Google
                         p or
@@ -14,19 +14,19 @@
                         div.form__group(:class="{'form__group--error': $v.user.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faUser")
-                                input.form__user(type="text" v-model.trim="$v.user.$model" placeholder="Username or email" :disabled="status")
+                                input.form__user(type="text" aria-label="Username or email" v-model.trim="$v.user.$model" placeholder="Username or email" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.user.required") Field is required
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faLock")
-                                input.form__password(v-if="!peek" type="password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
-                                input.form__password(v-else type="text" v-model="$v.password.$model" placeholder="Password" :disabled="status")
+                                input.form__password(v-if="!peek" type="password" aria-label="Password" v-model="$v.password.$model" placeholder="Password" :disabled="status" aria-required="true")
+                                input.form__password(v-else type="text" aria-label="Password" v-model="$v.password.$model" placeholder="Password" :disabled="status")
                                 font-awesome-icon.form__icon.form__eye(v-if="!peek" :icon="faEye" @click="peek = !peek")
                                 font-awesome-icon.form__icon.form__eye(v-else :icon="faEyeSlash" @click="peek = !peek")
                             span.form__note(v-if="!$v.password.required") Field is required
                         router-link(to="/forgot") Forgot password?
                         router-link(to="/signup" style="margin-bottom: 15px;") Create new account
-                        input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
+                        input.form__submit(type="submit" aria-label="Submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'log in'}" :disabled="status")
 </template>
 
 <script>

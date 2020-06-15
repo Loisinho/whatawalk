@@ -15,21 +15,21 @@
                         span.profile__amount(:title="profile.followers.amount") {{ amountFormat(profile.followers.amount) }}
                         router-link(to="followers") Followers
                 div.profile__actions(v-if="status === null")
-                    button.profile__follow(type="button" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
+                    button.profile__follow(type="button" :aria-label="profile.followers.status?'unfollow':'follow'" @click="followAction") {{ profile.followers.status? "unfollow": "follow" }}
                     Selector(@select-group="invite" v-bind:title="'Invite to'")
-                button.profile__edit(v-else-if="status === false" type="button" @click="edit") Edit
+                button.profile__edit(v-else-if="status === false" type="button" aria-label="Edit" @click="edit") Edit
         div.profile__data
             div.profile__group(:class="{'profile__group--edit': status === true}")
                 font-awesome-icon.profile__icon(v-if="profile.name || status === true" :icon="faUser")
-                input.profile__field(v-if="status === true" type="text" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
+                input.profile__field(v-if="status === true" type="text" aria-label="Name" v-model.trim="profile.name" maxlength="40" placeholder="What is your name?")
                 h3.profile__field(v-else) {{ profile.name }}
             div.profile__group(:class="{'profile__group--edit': status === true}")
                 font-awesome-icon.profile__icon(v-if="profile.ubication || status === true" :icon="faMapMarkerAlt")
-                input.profile__field(v-if="status === true" type="text" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
+                input.profile__field(v-if="status === true" type="text" aria-label="Ubication" v-model.trim="profile.ubication" maxlength="40" placeholder="Where are you from?")
                 h3.profile__field(v-else) {{ profile.ubication }}
-            textarea.profile__description(v-if="status === true" v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
+            textarea.profile__description(v-if="status === true" aria-label="About yourself" v-model="profile.description" rows="6" maxlength="254" placeholder="Tell us about yourself..") {{ profile.description }}
             p.profile__description(v-if="status === false") {{ profile.description }}
-            button.profile__delete(v-if="status === true" type="button" @click="deleteAccount") Delete Account
+            button.profile__delete(v-if="status === true" type="button" aria-label="Delete account" @click="deleteAccount") Delete Account
         PublicationCard(v-bind:key="publication._id" v-for="publication in profile.publications" v-bind:publication="publication" v-bind:status="status" @delete-publication="deletePublication")
         LoadMore(v-if="more" @search-more="searchPublications")
         NewPublication(@new-publication="newPublication")

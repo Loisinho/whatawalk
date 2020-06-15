@@ -1,12 +1,12 @@
 <template lang="pug">
     div.modal(:class="{'modal--active': active}")
         div.modal__edit(v-if="msg === null")
-            button.modal__btn.modal__confirm(type="button" @click="confirmEdit") confirm
-            button.modal__btn.modal__cancel(type="reset" @click="cancelEdit") cancel
+            button.modal__btn.modal__confirm(type="button" aria-label="Confirm" @click="confirmEdit") confirm
+            button.modal__btn.modal__cancel(type="reset" aria-label="Cancel" @click="cancelEdit") cancel
         div.modal__decision(v-else)
             p.modal__msg {{ msg }}
-            button.modal__btn.modal__confirm(type="button" @click="confirmDecision") confirm
-            button.modal__btn.modal__cancel(type="reset" @click="cancelDecision") cancel
+            button.modal__btn.modal__confirm(type="button" aria-label="Confirm" @click="confirmDecision") confirm
+            button.modal__btn.modal__cancel(type="reset" aria-label="Cancel" @click="cancelDecision") cancel
 </template>
 
 <script>

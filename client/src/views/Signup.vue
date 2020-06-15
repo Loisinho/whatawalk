@@ -9,14 +9,14 @@
                         div.form__group(:class="{'form__group--error': $v.email.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faEnvelope")
-                                input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" maxlength="254" :disabled="status")
+                                input.form__email(type="text" aria-label="Email" v-model.trim="$v.email.$model" placeholder="Email" maxlength="254" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.email.required") Field is required
                             span.form__note(v-if="!$v.email.email || !$v.email.maxLength") Invalid email address
                             span.form__note(v-if="!$v.email.isUnique") This email is already in use
                         div.form__group(:class="{'form__group--error': $v.username.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faUser")
-                                input.form__username(type="text" v-model.trim="$v.username.$model" placeholder="Username" maxlength="25" :disabled="status")
+                                input.form__username(type="text" aria-label="Username" v-model.trim="$v.username.$model" placeholder="Username" maxlength="25" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.username.required") Field is required
                             span.form__note(v-if="!$v.username.minLength") Username must have at least {{$v.username.$params.minLength.min}} letters
                             span.form__note(v-if="!$v.username.maxLength") Username must have at most {{$v.username.$params.maxLength.max}} letters
@@ -24,8 +24,8 @@
                         div.form__group(:class="{'form__group--error': $v.password.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
-                                input.form__password(v-if="!peek" type="password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
-                                input.form__password(v-else type="text" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
+                                input.form__password(v-if="!peek" type="password" aria-label="Password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status" aria-required="true")
+                                input.form__password(v-else type="text" aria-label="Password" v-model="$v.password.$model" placeholder="Password" maxlength="120" :disabled="status")
                                 font-awesome-icon.form__icon.form__eye(v-if="!peek" :icon="faEye" @click="peek = !peek")
                                 font-awesome-icon.form__icon.form__eye(v-else :icon="faEyeSlash" @click="peek = !peek")
                             span.form__note(v-if="!$v.password.required") Field is required
@@ -34,7 +34,7 @@
                         div.form__group(:class="{'form__group--error': $v.repeatPassword.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faKey")
-                                input.form__password(type="password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status")
+                                input.form__password(type="password" aria-label="Repeat password" v-model="$v.repeatPassword.$model" placeholder="Repeat password" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.repeatPassword.sameAsPassword") Passwords must be identical
                         input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'sign up'}" :disabled="status")
 </template>

@@ -5,8 +5,8 @@
                 p.msg__user(v-if="msg.user !== username && !msg.general") {{ msg.user }}
                 p.msg__text {{ msg.text }}
         form.chat__send(@submit.prevent="send" style="position: absolute; bottom: 0;")
-            textarea.chat__text(v-model="text" rows="2" maxlength="254" placeholder="...") {{ text }}
-            button.chat__btn(type="submit")
+            textarea.chat__text(v-model="text" aria-label="Message" rows="2" maxlength="254" placeholder="...") {{ text }}
+            button.chat__btn(type="submit" aria-label="Send")
                 font-awesome-icon(:icon="faPen")
 </template>
 

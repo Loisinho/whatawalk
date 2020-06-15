@@ -25,9 +25,9 @@
                                 p(@click="pick = 'users'") users
                                 p(@click="pick = 'groups'") groups
                                 p(@click="pick = 'publications'") publications
-                        input.menu__keyword(type="text" v-model.trim="keyword" placeholder="Keyword..")
-                        input(type="submit" value="" :disabled="keyword === ''")
-                        button.menu__search(type="button" @click="search" :disabled="keyword === ''")
+                        input.menu__keyword(type="text" aria-label="Keyword" v-model.trim="keyword" placeholder="Keyword.." aria-required="true")
+                        input(type="submit" aria-label="Search" value="" :disabled="keyword === ''")
+                        button.menu__search(type="button" aria-label="Search" @click="search" :disabled="keyword === ''")
                             font-awesome-icon(:icon="faSearch")
 </template>
 

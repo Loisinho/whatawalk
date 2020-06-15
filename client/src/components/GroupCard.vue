@@ -14,7 +14,7 @@
                         div.image__box
                         img(:src="webUrl + 'profile/' + member.user.img" alt="Member image")
                     div.chain__overly(v-if="group.members.length > 5") ...
-                button.chain__btn(v-if="group.join" @click.stop="join") join
+                button.chain__btn(v-if="group.join" aria-label="Join group" @click.stop="join") join
 </template>
 
 <script>

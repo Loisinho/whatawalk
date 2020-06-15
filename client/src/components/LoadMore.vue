@@ -1,5 +1,5 @@
 <template lang="pug">
-    button#load__btn(type="button" @click="search") Load
+    button#load__btn(type="button" aria-label="Load more" @click="search") Load
 </template>
 
 <script>

@@ -1,13 +1,13 @@
 <template lang="pug">
     div#new
         form.new__container(@submit.prevent="add" :class="{'new__container--open': open}")
-            div.new__icon(@click="add")
+            div.new__icon(aria-label="Create new post" @click="add")
                 font-awesome-icon(v-if="text === ''" :icon="faPen" :class="{'new__icon--close': open}")
                 font-awesome-icon(v-else :icon="faSave")
             div.new__form
-                textarea.new__text(v-model="text" rows="6" maxlength="254" placeholder="Writes..") {{ text }}
+                textarea.new__text(v-model="text" aria-label="Writes" rows="6" maxlength="254" placeholder="Writes..") {{ text }}
                 label.image__upload(for="image__file")
-                    input#image__file(type="file" @change="fileName")
+                    input#image__file(type="file" aria-label="Upload image" @change="fileName")
                     font-awesome-icon(:icon="faPaperclip")
                     span {{ img }}
             input(type="submit" value="" style="display: none;" :disabled="text === ''")

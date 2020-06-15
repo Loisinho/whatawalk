@@ -1,5 +1,5 @@
 <template lang="pug">
-    button#selector(type="button" @click="open" :class="{'selector__btn--active': optionsOpen}") {{ title }}
+    button#selector(type="button" aria-label="Open options" @click="open" :class="{'selector__btn--active': optionsOpen}") {{ title }}
         div.selector__options(:class="{'selector__options--active': optionsOpen}")
             p(v-bind:key="groups._id" v-for="group in groups" v-bind:group="group" @click="selectGroup(group._id)") {{ group.title }}
 </template>

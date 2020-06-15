@@ -9,10 +9,10 @@
                         div.form__group(:class="{'form__group--error': $v.email.$error}")
                             div.form__inputbox
                                 font-awesome-icon.form__icon(:icon="faEnvelope")
-                                input.form__email(type="text" v-model.trim="$v.email.$model" placeholder="Email" :disabled="status")
+                                input.form__email(type="text" aria-label="Email" v-model.trim="$v.email.$model" placeholder="Email" :disabled="status" aria-required="true")
                             span.form__note(v-if="!$v.email.required") Field is required
                         p.forgot__info A message will be sent to this email address.
-                        input.form__submit(type="submit" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'send email'}" :disabled="status")
+                        input.form__submit(type="submit" aria-label="Send" :value="btnValue" :class="{'form__submit--error': $v.$anyError, 'form__submit--success': btnValue !== 'send email'}" :disabled="status")
 </template>
 
 <script>
