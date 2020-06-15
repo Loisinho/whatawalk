@@ -10,6 +10,8 @@
                     router-link(to="/") Home
                 li(@click="menuStatus(false)")
                     router-link(to="/about") About
+                li(@click="menuStatus(false)")
+                    router-link(to="/privacy") Privacy
             ul(v-else)
                 li(@click="menuStatus(false)")
                     router-link(to="/publications") Publications
