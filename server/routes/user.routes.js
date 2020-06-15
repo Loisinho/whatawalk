@@ -43,7 +43,7 @@ router.post("/:username/profile/edit", hasAuth, upload.single("img"), user.edit)
 router.get("/search", hasAuth, user.search);
 router.get("/follow", hasAuth, user.follow);
 router.post("/recovery", user.recovery);
-router.post("/reset", user.reset);
+router.post("/reset", validator.reset, user.reset);
 router.get("/deleteaccount", user.deleteAccount);
 
 

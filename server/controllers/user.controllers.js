@@ -12,8 +12,8 @@ const nodemailer = require('nodemailer');
 const nodemailerOptions = {
     service: "gmail",
     auth: {
-        user: "",
-        pass: ""
+        user: "email",
+        pass: "email_password"
     }
 }
 const transporter = nodemailer.createTransport(nodemailerOptions);
@@ -296,18 +296,23 @@ exports.recovery = async function (req, res, next) {
 // POST reset password.
 exports.reset = async function (req, res, next) {
     try {
-        let user = await model.User.findOneAndUpdate({ email: req.body.email });
-        if (user) {
-            let token = await model.Token.findOneAndDelete({ _id: req.body.token });
-            if (token) {
-                user.password = await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10));
-                await user.save();
-                res.status(200).json("Ok");
+        let errors = validationResult(req);
+        if (errors.isEmpty()) {
+            let user = await model.User.findOneAndUpdate({ email: req.body.email });
+            if (user) {
+                let token = await model.Token.findOneAndDelete({ _id: req.body.token });
+                if (token) {
+                    user.password = await bcrypt.hash(req.body.password, bcrypt.genSaltSync(10));
+                    await user.save();
+                    res.status(200).json("Ok");
+                } else {
+                    res.status(422).json("Oops, an error occurred.");
+                }
             } else {
                 res.status(422).json("Oops, an error occurred.");
             }
         } else {
-            res.status(422).json("Oops, an error occurred.");
+            res.status(422).json(errors.errors[0].msg);
         }
     } catch (error) {
         res.status(422).json("Oops, an error occurred.");

@@ -21,7 +21,7 @@ const publicationRoutes = require("./routes/publication.routes");
 // Express module instance.
 const app = express();
 
-// Enable CORS, Development mode ONLY
+// NOTE: Enable CORS, Development mode ONLY
 const cors = require("cors");
 app.use(cors({
     origin: "http://localhost:8080",
@@ -118,6 +118,7 @@ var server = httpsServer.listen(process.env.HTTPS_PORT, () =>
 
 
 // SocketIO module.
+// NOTE: Choose server according to mode.
 const io = require("socket.io")(httpServer);
 
 var socketClients = [];

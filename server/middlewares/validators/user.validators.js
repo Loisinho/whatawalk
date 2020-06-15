@@ -43,3 +43,9 @@ exports.login = [
         if (!await bcrypt.compare(value, user.password)) throw new Error("Incorrect password");
     })
 ];
+
+exports.reset = [
+    body("password", "Invalid password")
+        .not().isEmpty()
+        .isLength({min: 6, max: 120})
+];
