@@ -6,7 +6,7 @@
 
 *Documentation in Spanish*
 
-# Proxecto de fin de ciclo DAW
+# Proyecto de fin de ciclo DAW
 
 ## Descripción
 
