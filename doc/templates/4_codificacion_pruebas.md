@@ -1,4 +1,4 @@
-# Codificación e Probas
+# Codificación y Pruebas
 
 ## Codificación
 
