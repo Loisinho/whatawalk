@@ -17,7 +17,7 @@
 La aplicación está desarrollada en un entorno Node JavaScript (versión estable v12.16.3), junto con el sistema de base de datos NoSQL de MongoDB (v4.2.5), los cuales abrá que tener instalados previamente.
 Luego, el directorio principal de la aplicación contiene dos subdirectorios: uno para la parte front-end y otro para el servidor o back-end.
 
-Primero debemos entrar en el directorio [client](https://github.com/Loisinho/whatawalk/tree/master/client) e instalar los paquetes necesarios para su funcionamiento:
+Primero debemos entrar en el directorio [client](./client) e instalar los paquetes necesarios para su funcionamiento:
 ```
 cd ./client/
 npm install
@@ -30,7 +30,7 @@ npm run build
 ```
 *Cada uno monta los archivos de una forma distinta, **dev** incluirá código de ayuda para el momento de desarrollar, **dev-server** creará un servidor local y **build** montará archivos listos para producción.*
 
-Una vez montados, entraremos en el directorio [server](https://github.com/Loisinho/whatawalk/tree/master/server) e instalaremos sus paquetes:
+Una vez montados, entraremos en el directorio [server](./server) e instalaremos sus paquetes:
 ```
 cd ./server/
 npm install
@@ -78,7 +78,7 @@ Para encontrarme contáctame en:
 
 ## Licencia
 
-Este proyecto se encuentra bajo la [licencia MIT](https://github.com/Loisinho/whatawalk/blob/master/LICENSE).
+Este proyecto se encuentra bajo la [licencia MIT](./LICENSE).
 
 ## Guía de contribución
 
@@ -89,7 +89,7 @@ Este proyecto permite la colaboración mediante Forks del repositorio. Con los �
 1. [Estudio preliminar](doc/templates/1_estudio_preliminar.md)
 2. [Análisis: Requerimientos del sistema](doc/templates/2_analisis.md)
 3. [Diseño](doc/templates/3_diseño.md)
-4. [Codificación y Pruebas](doc/templates/4_codificacion_probas.md)
+4. [Codificación y Pruebas](doc/templates/4_codificacion_pruebas.md)
 
 #### Anexos
 1. [Referencias](doc/templates/a1_referencias.md)
