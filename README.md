@@ -39,9 +39,9 @@ Y ejecutamos uno de los siguientes comandos para iniciar el servidor:
 ```
 npm run start
 npm run dev
-npm forever
+npm run forever
 ```
-*El uso de algunos comandos dependen de paquetes que deben estar instaladas. Estos son **npm run dev** y **npm run forever**, que hacen uso de [nodemon](https://www.npmjs.com/package/nodemon) y [forever](https://www.npmjs.com/package/forever) respectivamente.*
+*El uso de algunos comandos dependen de paquetes que deben estar instalados. Estos son **npm run dev** y **npm run forever**, que hacen uso de [nodemon](https://www.npmjs.com/package/nodemon) y [forever](https://www.npmjs.com/package/forever) respectivamente.*
 
 ## Uso
 
@@ -63,7 +63,9 @@ Me considero un desarrollador full-stack especializado en:
     - SCSS
 - MONGODB
 - MYSQL
+
 Y con amplios conocimientos en:
+
 - PHP
 - Python
 - C/C++
