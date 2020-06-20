@@ -156,6 +156,7 @@ export default {
             float: right;
             margin: 7.5px;
             font-size: 25px;
+            color: #ffffff;
             cursor: pointer;
         }
     }

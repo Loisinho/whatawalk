@@ -12,7 +12,7 @@ const nodemailer = require('nodemailer');
 const nodemailerOptions = {
     service: "gmail",
     auth: {
-        user: "email",
+        user: "email_address",
         pass: "email_password"
     }
 }

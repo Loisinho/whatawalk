@@ -226,6 +226,8 @@ export default {
                 }
             } else if (n >= 1) {
                 suf = "K";
+            } else {
+                n = amount;
             }
             return n + suf;
         }
